@@ -1,0 +1,35 @@
+apiVersion: skaffold/v4beta2
+#apiVersion: skaffold/v3alpha1
+kind: Config
+manifests:
+  rawYaml:
+  - service.yaml
+  #hooks:
+  #    before:
+  #      - host:
+  #          command: 
+  #            ["sh", "-c", "gcloud run services delete quotes-front --region=us-central1 --quiet | cat"]
+  #              ["sh", "-c", "gcloud run deploy service.yaml --region=us-central1 --quiet"]
+  #              ["sh", "-c", "gcloud run services set-iam-policy quotes-front policy.yaml --region=us-central1 --quiet"]
+  #          os: [darwin, linux]
+  #    after:
+  #      - host:
+  #          command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front policy.yaml --region=us-central1 --quiet"]
+
+metadata:
+  name: quotes-front
+build:
+  artifacts:
+  - image: famousquotes-front
+    context: .
+    docker:
+      dockerfile: Dockerfile  
+deploy:
+  cloudrun:
+    projectid: gab-devops-1
+    region: us-central1
+    hooks:
+#      before:
+#        - command: ["sh", "-c", "gcloud run services delete quotes-front --region=us-central1 --quiet | cat"]
+      after:
+       - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front policy.yaml --region=us-central1 --quiet"]
