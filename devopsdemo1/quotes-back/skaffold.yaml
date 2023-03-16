@@ -17,7 +17,7 @@ metadata:
   name: getting-started-kustomize
 build:
   artifacts:
-  - image: famousquotes
+  - image: famousquotes-back
     context: .
 #    sync:
 #      infer: 

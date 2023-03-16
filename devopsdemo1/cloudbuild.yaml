@@ -11,21 +11,81 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 steps:
-  
+
   # [START cloudbuild_go_image_yaml]
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 
-           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes:$BUILD_ID', './app']
+           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID', './quotes-front/.']
   # [END cloudbuild_go_image_yaml]
   
   # [START cloudbuild_go_push_yaml]
   # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes:$BUILD_ID']
+    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID']
   # [END cloudbuild_go_push_yaml]
 
-  # [START trigger cloud deploy]
+
+  # [START cloudbuild_go_image_yaml]
+  # Docker Build
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 
+           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:$BUILD_ID', './quotes-back/.']
+  # [END cloudbuild_go_image_yaml]
+  
+  # [START cloudbuild_go_push_yaml]
+  # Docker push to Google Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:$BUILD_ID']
+  # [END cloudbuild_go_push_yaml]
+
+  # [START trigger cloud deploy for front end]
+  # Docker push to Google Artifact Registry
+  #- name: 'gcr.io/k8s-skaffold/pack'
+  #  entrypoint: 'pack'
+  #  args: ['build', '--builder=gcr.io/buildpacks/builder', '--publish', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
+  - id: Build the application
+    name: 'gcr.io/k8s-skaffold/skaffold:slim'
+    args: ['skaffold', 'build', '--file-output', 'artifacts.json', '-f', 'quotes-front/skaffold.yaml', '--default-repo', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
+  #- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #  entrypoint: 'bash'
+  #  args:
+  #  - '-c'
+  #  - > 
+  #    gcloud deploy releases create release-$BUILD_ID 
+  #    --project=$PROJECT_ID --region=$LOCATION
+  #    --skaffold-version=skaffold_preview
+  #    --skaffold-file=quotes-front/skaffold.yaml 
+  #    --delivery-pipeline=devopsdemo1-run  --to-target=dev
+  #    --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID 
+  # [END trigger cloud deploy]
+
+ # Create a new release with Cloud Deploy
+  - id: Create a Cloud Deploy release
+    name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      [
+        'deploy',
+        'releases',
+        'create',
+        'release-${BUILD_ID}',
+        '--skaffold-version',
+        'skaffold_preview',
+        '--skaffold-file',
+        'quotes-front/skaffold.yaml',
+        '--region',
+        '${LOCATION}',
+        '--delivery-pipeline',
+        'devopsdemo1-run',
+        '--to-target',
+        'dev',
+        '--build-artifacts',
+        'artifacts.json'
+ #       '--images',
+ #       '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/canary-repo/famousquotes-front:${BUILD_ID}'
+      ]
+
+  # [START trigger cloud deploy for backend]
   # Docker push to Google Artifact Registry
 #  - name: 'gcr.io/k8s-skaffold/pack'
 #    entrypoint: 'pack'
@@ -36,7 +96,8 @@ steps:
     - '-c'
     - > 
       gcloud deploy releases create release-$BUILD_ID 
-      --project=$PROJECT_ID --region=$LOCATION 
-      --delivery-pipeline=canary --to-target=dev 
-      --images=famousquotes=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes:$BUILD_ID 
+      --project=$PROJECT_ID --region=$LOCATION
+      --skaffold-file=quotes-back/skaffold.yaml 
+      --delivery-pipeline=devopsdemo1-gke --to-target=dev 
+      --images=famousquotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:$BUILD_ID 
     # [END trigger cloud deploy]

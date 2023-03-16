@@ -1,4 +1,8 @@
-# Deployments with CloudBuild, Cloud Deploy, using Flaggera/GatewayAPI for Canary 
+# CI/CD Demo on GCP 
+CloudBuild & Cloud Deploy for CI/CD  
+Flagger/GatewayAPI for Canary using GMP metrics 
+# 
+Set Env  
 ```
 export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
 export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
@@ -6,8 +10,7 @@ export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_P
 ```
 Create Proxy-only subnet, needed for regionnal LB using gatewayClassName: gke-l7-rilb 
 
-Not used with gatewayClassName: gke-l7-global-external-managed
-#  
+Note : The Proxy-only subnet is not used with gatewayClassName: gke-l7-global-external-managed  
 ```
 #gcloud compute networks subnets create proxy \
 #    --purpose=REGIONAL_MANAGED_PROXY \
@@ -16,8 +19,31 @@ Not used with gatewayClassName: gke-l7-global-external-managed
 #    --network=default \
 #    --range=10.103.0.0/23
 ```
-# GKE Cluster
-Cluster with HPA and Workload Identity preinstalled
+Create an artefact repo and configure docker and skaffold to relate to it
+```
+gcloud artifacts repositories create canary-repo --repository-format=docker \
+--location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository"
+gcloud auth configure-docker $GOOGLE_CLOUD_REGION-docker.pkg.dev
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo
+```
+Configure IAM
+```
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+--member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+--format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+--role="roles/clouddeploy.jobRunner"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+--member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+--format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+--role="roles/container.developer"
+
+@todo:
+#add IAM for GMP
+#add IAM of Cloud Build
+
+```
+Create a GKE Cluster with HPA and Workload Identity preinstalled
 ```
 gcloud beta container clusters create "example-cluster" --cluster-version "1.24.5-gke.600" --region "$GOOGLE_CLOUD_REGION"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
 ```
@@ -25,8 +51,7 @@ Connect to cluster
 ```
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_REGION
 ```
-
-# Bootstrap Flagger and the Gateway
+Bootstrap Flagger and the Gateway
 Install Flagger for Gateway API
 ```
 kubectl apply -k github.com/fluxcd/flagger//kustomize/gatewayapi
@@ -52,7 +77,22 @@ gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.g
 
 ```
 
-Deploy App
+Replace variables in files
+
+Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
+
+```
+
+sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
+#on mac : sed -i "" "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
+
+sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
+
+@todo:
+#other file to adapt 
+#add IAM of Cloud Build
+```
+Deploy App 
 ```
 # skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
 skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
@@ -83,10 +123,8 @@ kubectl annotate serviceaccount gmp \
 
 kubectl apply -n prod -f gmp-frontend.yaml
 ```
-
-# Create Cloud Deploy Pipeline
-Set permissions for Cloud Deploy and apply pipeline
-
+Create Cloud Deploy Pipelines & Set permissions for Cloud Deploy and apply pipeline
+```
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
@@ -97,18 +135,33 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --role="roles/container.developer"
 
 gcloud deploy apply --file clouddeploy.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
-
-# Trigger Pipeline
+```
+Trigger Pipelines
+```
 Create new release for deployment
  skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID -p prod
 
 skaffold build --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID 
 
-gcloud deploy releases create release-001 \
-  --project=$GOOGLE_CLOUD_PROJECT_ID  \
-  --region=$GOOGLE_CLOUD_REGION \
-  --delivery-pipeline=canary \
-  --images=famousquotes=gcr.io/$GOOGLE_CLOUD_PROJECT_ID/famousquotes:899d24a-dirty
+#in quotes-front (CloudRun)
+gcloud deploy releases create release-109 \
+ --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
+ --skaffold-version=skaffold_preview \
+ --delivery-pipeline=devopsdemo1-run \
+ --images=famousquotes-front=$(skaffold build -q | jq -r ".builds[].tag")
+
+#in quotes-back (GKE)
+gcloud deploy releases create release-106 \
+ --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
+ --delivery-pipeline=devopsdemo1-gke --to-target=dev \
+ --images=famousquotes-back=$(skaffold build -q | jq -r ".builds[].tag")
+
+```
+Use Cloudbuild for new realeases
+```
+
+gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
+
 
 curl --header 'Host: app.dev.gabrielbechara.com' http://10.132.0.48
 curl --header 'Host: app.prod.gabrielbechara.com' http://10.132.0.48
@@ -116,8 +169,9 @@ curl --header 'Host: app.prod.gabrielbechara.com' http://10.132.0.48
 After the release is deploy to dev, promote it to production
 
 gcloud deploy releases promote  --release=release-001 --delivery-pipeline=canary --region=$GOOGLE_CLOUD_REGION --to-target=prod
-
+```
 ## Observe the pipeline
+```
 kubectl -n prod describe canary/app
 gcloud compute url-maps export gkegw1-ll1w-prod-app-4bpekl57o1qy --region=$GOOGLE_CLOUD_REGION
 

@@ -1,1 +1,1 @@
-{"builds":[{"imageName":"famousquotes","tag":"us-central1-docker.pkg.dev/gab-devops-1/canary-repo/famousquotes:latest@sha256:e1e4bb3d071cbf77910006ea82abd817fd9bf6c799ebfa1bd62c13186962c360"}]}
+{"builds":[{"imageName":"famousquotes-back","tag":"us-central1-docker.pkg.dev/gab-devops-1/canary-repo/famousquotes-back:latest@sha256:e1e4bb3d071cbf77910006ea82abd817fd9bf6c799ebfa1bd62c13186962c360"}]}

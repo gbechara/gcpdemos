@@ -28,4 +28,4 @@ spec:
     spec:
       containers:
       - name: app
-        image: famousquotes
+        image: famousquotes-back
