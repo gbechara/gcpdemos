@@ -44,21 +44,27 @@ steps:
   #- name: 'gcr.io/k8s-skaffold/pack'
   #  entrypoint: 'pack'
   #  args: ['build', '--builder=gcr.io/buildpacks/builder', '--publish', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
-  - id: Build the application
-    name: 'gcr.io/k8s-skaffold/skaffold:slim'
-    args: ['skaffold', 'build', '--file-output', 'artifacts.json', '-f', 'quotes-front/skaffold.yaml', '--default-repo', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
-  #- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  #  entrypoint: 'bash'
-  #  args:
-  #  - '-c'
-  #  - > 
-  #    gcloud deploy releases create release-$BUILD_ID 
-  #    --project=$PROJECT_ID --region=$LOCATION
-  #    --skaffold-version=skaffold_preview
-  #    --skaffold-file=quotes-front/skaffold.yaml 
-  #    --delivery-pipeline=devopsdemo1-run  --to-target=dev
-  #    --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID 
-  # [END trigger cloud deploy]
+#  - id: Build the application
+#    name: 'gcr.io/k8s-skaffold/skaffold:slim'
+#    args: ['skaffold', 'build', '--file-output', 'quotes-front/artifacts.json', '-f', 'quotes-front/skaffold.yaml', '--default-repo', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
+  - name: 'gcr.io/k8s-skaffold/skaffold:slim'
+    entrypoint: 'bash'
+    args: 
+    - '-c'
+    - > 
+      cd quotes-front/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo
+#  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+#    entrypoint: 'bash'
+#    args:
+#    - '-c'
+#    - > 
+#      gcloud deploy releases create release-$BUILD_ID 
+#      --project=$PROJECT_ID --region=$LOCATION
+#      --skaffold-version=skaffold_preview
+#      --source=quotes-front/
+#      --delivery-pipeline=devopsdemo1-run --to-target=dev
+#      --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID 
+ #  [END trigger cloud deploy]
 
  # Create a new release with Cloud Deploy
   - id: Create a Cloud Deploy release
@@ -71,8 +77,10 @@ steps:
         'release-${BUILD_ID}',
         '--skaffold-version',
         'skaffold_preview',
-        '--skaffold-file',
-        'quotes-front/skaffold.yaml',
+  #      '--skaffold-file',
+  #      'quotes-front/skaffold.yaml',
+         '--source',
+        'quotes-front/',
         '--region',
         '${LOCATION}',
         '--delivery-pipeline',
@@ -97,7 +105,7 @@ steps:
     - > 
       gcloud deploy releases create release-$BUILD_ID 
       --project=$PROJECT_ID --region=$LOCATION
-      --skaffold-file=quotes-back/skaffold.yaml 
+      --source=quotes-back/
       --delivery-pipeline=devopsdemo1-gke --to-target=dev 
       --images=famousquotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:$BUILD_ID 
     # [END trigger cloud deploy]

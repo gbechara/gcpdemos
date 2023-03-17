@@ -4,11 +4,12 @@ metadata:
  name: quotes-front
  annotations:
   run.googleapis.com/ingress: all
-annotations:
-  autoscaling.knative.dev/minScale: 0
-  autoscaling.knative.dev/maxScale: 1
 spec:
  template:
-  spec:
-   containers:
-   - image: famousquotes-front
+    metatdata:
+      annotations:
+        autoscaling.knative.dev/minScale: 0
+        autoscaling.knative.dev/maxScale: 1
+    spec:
+      containers:
+      - image: famousquotes-front

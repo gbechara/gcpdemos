@@ -67,7 +67,7 @@ class LoggedIn extends React.Component {
             <div className="col-lg-12">
               <br />
               <span className="pull-right"><a onClick={this.refresh}>Refresh</a> <a onClick={this.logout}>Log out</a></span>
-              <h2>Hello World v0.99.5.without.cloudrun.1</h2>
+              <h2>Hello World v.0.1</h2>
               <div className="row">
                 {this.state.citations.map(function(citation, i){
                   return (<Citation key={i} citation={citation} />);

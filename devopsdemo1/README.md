@@ -132,9 +132,46 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-    --role="roles/container.developer"
+    --role="roles/container.developer"    
+#gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+#    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+#    --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
+#    --role="roles/run.developer"
+#gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+#    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+#    --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
+#    --role="roles/run.admin"
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/run.developer"
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/run.admin"
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/run.serviceAgent"        
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/artifactregistry.reader"
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/artifactregistry.writer"    
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/monitoring.metricWriter"
 
-gcloud deploy apply --file clouddeploy.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
+```
+Deploy Pipelines
+```
+#gcloud deploy apply --file clouddeploy.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
+gcloud deploy apply --file clouddeploy-run.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
+gcloud deploy apply --file clouddeploy-gke.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
 ```
 Trigger Pipelines
 ```
