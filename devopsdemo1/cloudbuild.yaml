@@ -47,51 +47,51 @@ steps:
 #  - id: Build the application
 #    name: 'gcr.io/k8s-skaffold/skaffold:slim'
 #    args: ['skaffold', 'build', '--file-output', 'quotes-front/artifacts.json', '-f', 'quotes-front/skaffold.yaml', '--default-repo', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
-  - name: 'gcr.io/k8s-skaffold/skaffold:slim'
-    entrypoint: 'bash'
-    args: 
-    - '-c'
-    - > 
-      cd quotes-front/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo
-#  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+#  - name: 'gcr.io/k8s-skaffold/skaffold:slim'
 #    entrypoint: 'bash'
-#    args:
+#    args: 
 #    - '-c'
 #    - > 
-#      gcloud deploy releases create release-$BUILD_ID 
-#      --project=$PROJECT_ID --region=$LOCATION
-#      --skaffold-version=skaffold_preview
-#      --source=quotes-front/
-#      --delivery-pipeline=devopsdemo1-run --to-target=dev-run
-#      --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID 
+#      cd quotes-front/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - > 
+      gcloud deploy releases create release-$BUILD_ID 
+      --project=$PROJECT_ID --region=$LOCATION
+      --skaffold-version=skaffold_preview
+      --source=quotes-front/
+      --delivery-pipeline=devopsdemo1-run --to-target=dev-run
+      --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID 
  #  [END trigger cloud deploy]
 
  # Create a new release with Cloud Deploy
-  - id: Create a Cloud Deploy release
-    name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      [
-        'deploy',
-        'releases',
-        'create',
-        'release-${BUILD_ID}',
-        '--skaffold-version',
-        'skaffold_preview',
+ # - id: Create a Cloud Deploy release
+ #   name: 'gcr.io/cloud-builders/gcloud'
+ #   args:
+ #     [
+ #       'deploy',
+ #      'releases',
+ #       'create',
+  #      'release-${BUILD_ID}',
+  #      '--skaffold-version',
+  #      'skaffold_preview',
   #      '--skaffold-file',
   #      'quotes-front/skaffold.yaml',
-         '--source',
-        'quotes-front/',
-        '--region',
-        '${LOCATION}',
-        '--delivery-pipeline',
-        'devopsdemo1-run',
-        '--to-target',
-        'dev-run',
-        '--build-artifacts',
-        'artifacts.json'
+  #       '--source',
+  #      'quotes-front/',
+  #      '--region',
+  #      '${LOCATION}',
+  #      '--delivery-pipeline',
+  #      'devopsdemo1-run',
+  #      '--to-target',
+  #      'dev-run',
+  #      '--build-artifacts',
+  #      'artifacts.json'
  #       '--images',
  #       '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/canary-repo/famousquotes-front:${BUILD_ID}'
-      ]
+  #    ]
 
   # [START trigger cloud deploy for backend]
   # Docker push to Google Artifact Registry
