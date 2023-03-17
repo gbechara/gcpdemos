@@ -45,7 +45,7 @@ steps:
   #    gcloud deploy releases create release-$BUILD_ID 
   #    --project=$PROJECT_ID --region=$LOCATION
   #    --skaffold-version=skaffold_preview
-  #    --delivery-pipeline=devopsdemo1-run  --to-target=dev
+  #    --delivery-pipeline=devopsdemo1-run  --to-target=dev-run
   #    --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID 
   # [END trigger cloud deploy]
 
@@ -65,7 +65,7 @@ steps:
         '--delivery-pipeline',
        'devopsdemo1-run',
        '--to-target',
-        'dev',
+        'dev-run',
         '--build-artifacts',
         'artifacts.json'
  #       '--images',

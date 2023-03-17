@@ -35,3 +35,4 @@ deploy:
        - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front policy.yaml --region=us-central1 --quiet"]
 profiles:
 - name: dev
+- name: prod
