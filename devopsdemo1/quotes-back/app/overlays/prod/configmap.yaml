@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  quotesURL: http://quotes-prod.prod.svc:8080/api/citations
+  writersURL: http://writers-prod.prod.svc:8080/api/writers

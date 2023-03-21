@@ -14,11 +14,11 @@
 apiVersion: skaffold/v2beta29
 kind: Config
 metadata:
-  name: getting-started-kustomize
+  name: quotes-back
 build:
   artifacts:
-  - image: famousquotes-back
-    context: .
+  - image: quotes-app
+    context: app
 #    sync:
 #      infer: 
 #        - kodata/
@@ -27,22 +27,36 @@ build:
 #    ko: {}
 # use docker build         
     docker:
-      dockerfile: Dockerfile
+      dockerfile: app/Dockerfile
 #      noCache: false
 #      pullParent: false
 #      squash: false
+  - image: quotes
+    context: quotes
+    docker:
+      dockerfile: quotes/Dockerfile
+  - image: writers
+    context: writers
+    docker:
+      dockerfile: writers/Dockerfile
 deploy:
   kustomize:
     paths:
-    - overlays/dev
+    - app/overlays/dev
+    - quotes/overlays/dev
+    - writers/overlays/dev
 profiles:
 - name: dev
   deploy:
     kustomize:
       paths:
-      - overlays/dev
+      - app/overlays/dev
+      - quotes/overlays/dev
+      - writers/overlays/dev
 - name: prod
   deploy:
     kustomize:
       paths:
-      - overlays/prod
+      - app/overlays/prod
+      - quotes/overlays/prod
+      - writers/overlays/prod

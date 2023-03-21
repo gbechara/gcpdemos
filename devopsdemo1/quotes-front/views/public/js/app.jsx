@@ -27,10 +27,12 @@ class LoggedIn extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      citations: []
+      citations: [],
+      writers: [],
     }
 
     this.serverRequest = this.serverRequest.bind(this);
+ 
     this.logout = this.logout.bind(this);
 
    }
@@ -47,15 +49,21 @@ class LoggedIn extends React.Component {
     }
 
     serverRequest() {
- //     $.get("http://34.98.114.247/api/citations", res => {
-      $.get("https://app.dev.gabrielbechara.com/api/citations", res => {
-        this.setState({
-          citations: res
-        });
-      });
+    //     $.get("http://34.98.114.247/api/citations", res => {
+          $.get("https://app.dev.gabrielbechara.com/api/citations", res => {
+            this.setState({
+              citations: res
+            });
+          });  
+          $.get("https://app.dev.gabrielbechara.com/api/writers", res => {
+            this.setState({
+              citations: this.state.citations,
+              writers: res
+            });
+          });  
+        }
+      
 
-  }
-  
   componentDidMount() {
     this.serverRequest();
   }
@@ -67,12 +75,18 @@ class LoggedIn extends React.Component {
             <div className="col-lg-12">
               <br />
               <span className="pull-right"><a onClick={this.refresh}>Refresh</a> <a onClick={this.logout}>Log out</a></span>
-              <h2>Hello World v.0.3</h2>
+              <h2>Hello World v.0.4</h2>
               <div className="row">
                 {this.state.citations.map(function(citation, i){
                   return (<Citation key={i} citation={citation} />);
                 })}
               </div>
+              <div className="row">
+                {this.state.writers.map(function(writer, i){
+                  return (<Writer key={i} writer={writer} />);
+                })}
+              </div>
+
             </div>
         </div>
       </div>
@@ -135,5 +149,47 @@ class Citation extends React.Component {
     )
   }
 }
+
+class Writer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      writers: [],
+    }
+
+    this.serverRequest = this.serverRequest.bind(this);
+  }
+    
+
+  refresh() {
+    location.reload();
+  }
+
+  serverRequest() {
+           $.get("https://app.dev.gabrielbechara.com/api/writers", res => {
+            this.setState({
+              writers: res
+            });
+            this.props.writer = res;
+            console.log("res writer ... ", res);
+          })
+        }
+ 
+
+  render() {
+    console.log("res writer ... ", this.state.writers);
+    return (
+    <div className="col-xs-4">
+        <div className="panel panel-default">
+          <div className="panel-heading" style={{backgroundColor: this.props.writer.color, color: '#ffffff', fontWeight: 'bold'}}>#{this.props.writer.id} <span className="pull-right"></span></div>
+          <div className="panel-body" style={{backgroundColor: this.props.writer.color, color: '#ffffff', fontWeight: 'bold'}}>
+            {this.props.writer.writer}
+          </div>
+                  </div>
+      </div>
+    )
+  }
+}
+
 
 ReactDOM.render(<App />, document.getElementById('monapp'));
