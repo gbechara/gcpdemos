@@ -1,6 +1,6 @@
 # CI/CD Demo on GCP 
 
-![Architecture of the Demo](https://github.com/gbechara/gcpdemos/devopsdemos1/blob//arch.png?raw=true)
+![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/arch.png?raw=true)
 
 CloudBuild & Cloud Deploy for CI/CD  
 Flagger/GatewayAPI for Canary using GMP metrics 
