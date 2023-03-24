@@ -12,4 +12,8 @@ spec:
         autoscaling.knative.dev/maxScale: 1
     spec:
       containers:
-      - image: famousquotes-front
+      - image: quotes-front
+# for react env var are not read at runtime (kept this here for future usage)
+#        env:
+#          - name: APP_BACK_URL
+#            value: app.dev.gabrielbechara.com

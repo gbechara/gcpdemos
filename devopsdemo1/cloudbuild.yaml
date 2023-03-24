@@ -16,13 +16,13 @@ steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 
-           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID', './quotes-front/.']
+           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-front:$BUILD_ID', './quotes-front/.']
   # [END cloudbuild_go_image_yaml]
   
   # [START cloudbuild_go_push_yaml]
   # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID']
+    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-front:$BUILD_ID']
   # [END cloudbuild_go_push_yaml]
 
 
@@ -30,13 +30,13 @@ steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 
-           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:$BUILD_ID', './quotes-back/.']
+           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID', './quotes-back/.']
   # [END cloudbuild_go_image_yaml]
   
   # [START cloudbuild_go_push_yaml]
   # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:$BUILD_ID']
+    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID']
   # [END cloudbuild_go_push_yaml]
 
   # [START trigger cloud deploy for front end]
@@ -63,7 +63,7 @@ steps:
       --skaffold-version=skaffold_preview
       --source=quotes-front/
       --delivery-pipeline=devopsdemo1-run --to-target=dev-run
-      --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:$BUILD_ID 
+      --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-front:$BUILD_ID 
  #  [END trigger cloud deploy]
 
  # Create a new release with Cloud Deploy
@@ -90,7 +90,7 @@ steps:
   #      '--build-artifacts',
   #      'artifacts.json'
  #       '--images',
- #       '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/canary-repo/famousquotes-front:${BUILD_ID}'
+ #       '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/canary-repo/quotes-front:${BUILD_ID}'
   #    ]
 
   # [START trigger cloud deploy for backend]
@@ -107,5 +107,5 @@ steps:
       --project=$PROJECT_ID --region=$LOCATION
       --source=quotes-back/
       --delivery-pipeline=devopsdemo1-gke --to-target=dev-gke 
-      --images=famousquotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:$BUILD_ID 
+      --images=quotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID 
     # [END trigger cloud deploy]

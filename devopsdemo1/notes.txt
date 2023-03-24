@@ -43,7 +43,7 @@ gcloud deploy apply --file clouddeploy-gke.yaml \
 gcloud deploy releases create release-101 \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
  --delivery-pipeline=canary --to-target=dev \
- --images=famousquotes-back=$(skaffold build -q | jq -r ".builds[].tag")
+ --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 
 #ERROR: (gcloud.deploy.releases.create) FAILED_PRECONDITION: if a Cloud Run target is used all targets in a pipeline must be Cloud Run targets. dev-back is not: failed precondition
@@ -54,24 +54,24 @@ gcloud deploy releases create release-114 \
  --skaffold-version=skaffold_preview \
  --skaffold-file=quotes-front/skaffold.yaml \
  --delivery-pipeline=devopsdemo1-run --to-target=dev \
- --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-front:86002a7-dirty 
-# --images=famousquotes-front=$(skaffold -f=quotes-front/skaffold.yaml build -q | jq -r ".builds[].tag")
+ --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-front:86002a7-dirty 
+# --images=quotes-front=$(skaffold -f=quotes-front/skaffold.yaml build -q | jq -r ".builds[].tag")
 
 #cd quotes-back
 gcloud deploy releases create release-115 \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
  --skaffold-file=quotes-back/skaffold.yaml \
  --delivery-pipeline=devopsdemo1-gke --to-target=dev \
- --images=famousquotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/famousquotes-back:86002a7-dirty
-# --images=famousquotes-back=$(skaffold build -q | jq -r ".builds[].tag")
+ --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:86002a7-dirty
+# --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 
-#gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo/famousquotes-back ./app
+#gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo/quotes-back ./app
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
 
 gcloud auth application-default login
-#gcloud run services add-iam-policy-binding famousquotes-front --member="allUsers"  --role=roles/run.invoker --region=$GOOGLE_CLOUD_REGION
-#gcloud run deploy famousquotes-front --allow-unauthenticated --image=$SKAFFOLD_DEFAULT_REPO/famousquotes-front:6148d1b-dirty --platform managed --region=$GOOGLE_CLOUD_REGION
+#gcloud run services add-iam-policy-binding quotes-front --member="allUsers"  --role=roles/run.invoker --region=$GOOGLE_CLOUD_REGION
+#gcloud run deploy quotes-front --allow-unauthenticated --image=$SKAFFOLD_DEFAULT_REPO/quotes-front:6148d1b-dirty --platform managed --region=$GOOGLE_CLOUD_REGION
 gcloud run services set-iam-policy quotes-front policy.yaml --region=$GOOGLE_CLOUD_REGION
 
 gcloud compute ssl-certificates delete gab-devops-certificate
@@ -81,3 +81,8 @@ gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.g
 gcloud container clusters resize example-cluster --num-nodes=0 --region=us-central1
 gcloud container clusters resize example-cluster --num-nodes=1 --region=us-central1
 gcloud deploy delivery-pipelines delete canary --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID --force
+
+npm install react
+npm install webpack
+npm i webpack webpack-dev-server webpack-cli --save-dev
+npm install process

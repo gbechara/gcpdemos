@@ -15,8 +15,10 @@ FROM node:14-alpine as nodebuilder
 WORKDIR /code
 COPY views/ ./views/ 
 WORKDIR /code/views
+ARG REACT_APP_BACK_URL
+RUN echo "App Backend Url  $REACT_APP_BACK_URL"
+RUN sed -i "s/REACT_APP_BACK_URL/$REACT_APP_BACK_URL/g" public/js/app.jsx
 RUN npm run build
-
 
 FROM golang:1.19 as golangbuilder
 WORKDIR /code

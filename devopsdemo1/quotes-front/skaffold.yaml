@@ -1,9 +1,13 @@
 apiVersion: skaffold/v4beta2
 #apiVersion: skaffold/v3alpha1
 kind: Config
+#manifests:
+#  rawYaml:
+#  - service.yaml
 manifests:
-  rawYaml:
-  - service.yaml
+  kustomize:
+    paths:
+      - overlays/dev
   #hooks:
   #    before:
   #      - host:
@@ -20,10 +24,33 @@ metadata:
   name: quotes-front
 build:
   artifacts:
-  - image: famousquotes-front
+  - image: quotes-front-dev
     context: .
     docker:
-      dockerfile: Dockerfile  
+      dockerfile: Dockerfile
+      buildArgs:
+        REACT_APP_BACK_URL: app.dev.gabrielbechara.com
+  - image: quotes-front-prod
+    context: .
+    docker:
+      dockerfile: Dockerfile
+      buildArgs:
+        REACT_APP_BACK_URL: app.prod.gabrielbechara.com
+
+
+profiles:
+- name: dev
+  manifests:
+    kustomize:
+      paths:
+        - overlays/dev
+
+- name: prod
+  manifests:
+    kustomize:
+      paths:
+        - overlays/prod     
+
 deploy:
   cloudrun:
     projectid: gab-devops-1
@@ -32,7 +59,9 @@ deploy:
 #      before:
 #        - command: ["sh", "-c", "gcloud run services delete quotes-front --region=us-central1 --quiet | cat"]
       after:
-       - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front policy.yaml --region=us-central1 --quiet"]
-profiles:
-- name: dev
-- name: prod
+       - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
+       - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
+#profiles:
+#- name: dev
+#- name: prod
+  

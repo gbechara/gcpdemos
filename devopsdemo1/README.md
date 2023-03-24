@@ -188,13 +188,13 @@ gcloud deploy releases create release-109 \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
  --skaffold-version=skaffold_preview \
  --delivery-pipeline=devopsdemo1-run \
- --images=famousquotes-front=$(skaffold build -q | jq -r ".builds[].tag")
+ --images=quotes-front=$(skaffold build -q | jq -r ".builds[].tag")
 
 #in quotes-back (GKE)
 gcloud deploy releases create release-106 \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
  --delivery-pipeline=devopsdemo1-gke --to-target=dev \
- --images=famousquotes-back=$(skaffold build -q | jq -r ".builds[].tag")
+ --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 ```
 Use Cloudbuild for new realeases

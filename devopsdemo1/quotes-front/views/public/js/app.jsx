@@ -50,12 +50,13 @@ class LoggedIn extends React.Component {
 
     serverRequest() {
     //     $.get("http://34.98.114.247/api/citations", res => {
-          $.get("https://app.dev.gabrielbechara.com/api/citations", res => {
+    //      $.get("https://app.dev.gabrielbechara.com/api/citations", res => {
+          $.get('https://REACT_APP_BACK_URL/api/citations', res => {
             this.setState({
               citations: res
             });
           });  
-          $.get("https://app.dev.gabrielbechara.com/api/writers", res => {
+          $.get("https://REACT_APP_BACK_URL/api/writers", res => {
             this.setState({
               citations: this.state.citations,
               writers: res
@@ -117,7 +118,7 @@ class Citation extends React.Component {
   serverRequest(citation) {
     $.post(
  //     "http://34.98.114.247/api/citations/like/" + citation.id,
-      "https://app.dev.gabrielbechara.com/api/citations/like/" + citation.id,
+      "https://REACT_APP_BACK_URL/api/citations/like/" + citation.id,
       { like: 1 },
       res => {
         console.log("res... ", res);
@@ -166,7 +167,7 @@ class Writer extends React.Component {
   }
 
   serverRequest() {
-           $.get("https://app.dev.gabrielbechara.com/api/writers", res => {
+           $.get("https://REACT_APP_BACK_URL/api/writers", res => {
             this.setState({
               writers: res
             });
