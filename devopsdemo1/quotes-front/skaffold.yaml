@@ -37,7 +37,6 @@ build:
       buildArgs:
         REACT_APP_BACK_URL: app.prod.gabrielbechara.com
 
-
 profiles:
 - name: dev
   manifests:

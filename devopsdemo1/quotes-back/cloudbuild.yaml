@@ -16,15 +16,15 @@ steps:
 
   # [START cloudbuild_go_image_yaml]
   # Docker Build
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 
-           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID', '.']
+#  - name: 'gcr.io/cloud-builders/docker'
+#    args: ['build', '-t', 
+#           '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID', '.']
   # [END cloudbuild_go_image_yaml]
   
   # [START cloudbuild_go_push_yaml]
   # Docker push to Google Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID']
+#  - name: 'gcr.io/cloud-builders/docker'
+#    args: ['push', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID']
   # [END cloudbuild_go_push_yaml]
 
 
@@ -33,6 +33,9 @@ steps:
 #  - name: 'gcr.io/k8s-skaffold/pack'
 #    entrypoint: 'pack'
 #    args: ['build', '--builder=gcr.io/buildpacks/builder', '--publish', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
+  - id: Build the application
+    name: 'gcr.io/k8s-skaffold/skaffold:slim'
+    args: ['skaffold', 'build', '--file-output', 'artifacts.json', '--default-repo', '$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo']
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
@@ -41,5 +44,6 @@ steps:
       gcloud deploy releases create release-$BUILD_ID 
       --project=$PROJECT_ID --region=$LOCATION
       --delivery-pipeline=devopsdemo1-gke --to-target=dev-gke 
-      --images=quotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID 
+      --build-artifacts=artifacts.json 
+#      --images=quotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID 
     # [END trigger cloud deploy]

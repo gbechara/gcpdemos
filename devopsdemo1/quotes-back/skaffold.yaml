@@ -27,18 +27,18 @@ build:
 #    ko: {}
 # use docker build         
     docker:
-      dockerfile: app/Dockerfile
+      dockerfile: Dockerfile
 #      noCache: false
 #      pullParent: false
 #      squash: false
   - image: quotes
     context: quotes
     docker:
-      dockerfile: quotes/Dockerfile
+      dockerfile: Dockerfile
   - image: writers
     context: writers
     docker:
-      dockerfile: writers/Dockerfile
+      dockerfile: Dockerfile
 deploy:
   kustomize:
     paths:

@@ -65,10 +65,6 @@ gcloud deploy releases create release-115 \
  --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:86002a7-dirty
 # --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
-
-#gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo/quotes-back ./app
-gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
-
 gcloud auth application-default login
 #gcloud run services add-iam-policy-binding quotes-front --member="allUsers"  --role=roles/run.invoker --region=$GOOGLE_CLOUD_REGION
 #gcloud run deploy quotes-front --allow-unauthenticated --image=$SKAFFOLD_DEFAULT_REPO/quotes-front:6148d1b-dirty --platform managed --region=$GOOGLE_CLOUD_REGION
@@ -82,7 +78,10 @@ gcloud container clusters resize example-cluster --num-nodes=0 --region=us-centr
 gcloud container clusters resize example-cluster --num-nodes=1 --region=us-central1
 gcloud deploy delivery-pipelines delete canary --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID --force
 
-npm install react
-npm install webpack
-npm i webpack webpack-dev-server webpack-cli --save-dev
-npm install process
+#npm install react
+#npm install webpack
+#npm i webpack webpack-dev-server webpack-cli --save-dev
+#npm install process
+
+#gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo/quotes-back ./app
+gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
