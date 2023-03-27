@@ -1,9 +1,9 @@
 export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1 
 export GOOGLE_CLOUD_REGION=us-central1
-export ARTIFACT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo
+export ARTIFACT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 
-gcloud artifacts repositories create canary-repo --repository-format=docker \
---location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository for canary blog"
+gcloud artifacts repositories create devopsdemo1repo --repository-format=docker \
+--location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository"
 gcloud auth configure-docker $GOOGLE_CLOUD_REGION-docker.pkg.dev
 
 docker build -t cloud-custom-workstation-1 .

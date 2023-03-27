@@ -1,11 +1,11 @@
 export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1 
 export GOOGLE_CLOUD_REGION=us-central1
-export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 
-gcloud artifacts repositories create canary-repo --repository-format=docker \
---location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository for canary blog"
+gcloud artifacts repositories create devopsdemo1repo --repository-format=docker \
+--location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository for devopsdemo1" 
 gcloud auth configure-docker $GOOGLE_CLOUD_REGION-docker.pkg.dev
-export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 
 
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
@@ -54,7 +54,7 @@ gcloud deploy releases create release-114 \
  --skaffold-version=skaffold_preview \
  --skaffold-file=quotes-front/skaffold.yaml \
  --delivery-pipeline=devopsdemo1-run --to-target=dev \
- --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-front:86002a7-dirty 
+ --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-front:86002a7-dirty 
 # --images=quotes-front=$(skaffold -f=quotes-front/skaffold.yaml build -q | jq -r ".builds[].tag")
 
 #cd quotes-back
@@ -62,7 +62,7 @@ gcloud deploy releases create release-115 \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
  --skaffold-file=quotes-back/skaffold.yaml \
  --delivery-pipeline=devopsdemo1-gke --to-target=dev \
- --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:86002a7-dirty
+ --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-back:86002a7-dirty
 # --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 gcloud auth application-default login
@@ -83,7 +83,7 @@ gcloud deploy delivery-pipelines delete canary --region=$GOOGLE_CLOUD_REGION --p
 #npm i webpack webpack-dev-server webpack-cli --save-dev
 #npm install process
 
-#gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo/quotes-back ./app
+#gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo/quotes-back ./app
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
 
 gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\

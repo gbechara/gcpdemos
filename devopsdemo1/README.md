@@ -11,7 +11,7 @@ Set Env
 ```
 export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
 export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
-export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
 Create Proxy-only subnet, needed for regionnal LB using gatewayClassName: gke-l7-rilb 
 
@@ -26,10 +26,10 @@ Note : The Proxy-only subnet is not used with gatewayClassName: gke-l7-global-ex
 ```
 Create an artefact repo and configure docker and skaffold to relate to it
 ```
-gcloud artifacts repositories create canary-repo --repository-format=docker \
+gcloud artifacts repositories create devopsdemo1repo --repository-format=docker \
 --location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository"
 gcloud auth configure-docker $GOOGLE_CLOUD_REGION-docker.pkg.dev
-export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
 Configure IAM
 ```
