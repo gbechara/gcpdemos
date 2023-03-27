@@ -85,3 +85,11 @@ gcloud deploy delivery-pipelines delete canary --region=$GOOGLE_CLOUD_REGION --p
 
 #gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/canary-repo/quotes-back ./app
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
+
+gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\
+    --region=us-central1 \
+    --repo-name=gcpdemos \
+    --repo-owner=gbechara \
+    --branch-pattern=^main$ \
+    --build-config=devopsdemo1/cloudbuild.yaml \
+    --include-logs-with-status
