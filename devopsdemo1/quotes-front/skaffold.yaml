@@ -24,31 +24,19 @@ metadata:
   name: quotes-front
 build:
   artifacts:
-  - image: quotes-front-dev
+  - image: quotes-front
     context: .
     docker:
       dockerfile: Dockerfile
       buildArgs:
         REACT_APP_BACK_URL: app.dev.gabrielbechara.com
-  - image: quotes-front-prod
-    context: .
-    docker:
-      dockerfile: Dockerfile
-      buildArgs:
-        REACT_APP_BACK_URL: app.prod.gabrielbechara.com
+#  - image: quotes-front-prod
+#    context: .
+#    docker:
+#      dockerfile: Dockerfile
+#      buildArgs:
+#        REACT_APP_BACK_URL: app.prod.gabrielbechara.com
 
-profiles:
-- name: dev
-  manifests:
-    kustomize:
-      paths:
-        - overlays/dev
-
-- name: prod
-  manifests:
-    kustomize:
-      paths:
-        - overlays/prod     
 
 deploy:
   cloudrun:
@@ -60,7 +48,34 @@ deploy:
       after:
        - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
        - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
-#profiles:
-#- name: dev
-#- name: prod
+
+profiles:
+- name: dev
+  build:
+    artifacts:
+    - image: quotes-front
+      context: .
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          REACT_APP_BACK_URL: app.dev.gabrielbechara.com
+  manifests:
+    kustomize:
+      paths:
+        - overlays/dev
+
+- name: prod
+  build:
+    artifacts:
+    - image: quotes-front
+      context: .
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          REACT_APP_BACK_URL: app.prod.gabrielbechara.com
+
+  manifests:
+    kustomize:
+      paths:
+        - overlays/prod
   

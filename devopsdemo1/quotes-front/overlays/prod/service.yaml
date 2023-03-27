@@ -16,11 +16,8 @@ kind: Service
 metadata:
  name: quotes-front
 spec:
- template:
-    metatdata:
+  template:
+    metadata:
       annotations:
-        autoscaling.knative.dev/minScale: 0
-        autoscaling.knative.dev/maxScale: 2
-    spec:
-      containers:
-      - image: quotes-front-prod    
+        autoscaling.knative.dev/minScale: '1'
+        autoscaling.knative.dev/maxScale: '3'  

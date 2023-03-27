@@ -10,17 +10,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
- name: quotes-front
+  name: quotes-front
 spec:
- template:
-    metatdata:
+  template:
+    metadata:
       annotations:
-        autoscaling.knative.dev/minScale: 0
-        autoscaling.knative.dev/maxScale: 1
-    spec:
-      containers:
-      - image: quotes-front-dev
+        autoscaling.knative.dev/maxScale: '2'

@@ -63,7 +63,7 @@ steps:
       --skaffold-version=skaffold_preview
       --source=quotes-front/
       --delivery-pipeline=devopsdemo1-run --to-target=dev-run
-      --build-artifacts=artifacts.json
+      --build-artifacts=quotes-front/artifacts.json
 #      --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-front:$BUILD_ID 
  #  [END trigger cloud deploy]
 
@@ -114,6 +114,6 @@ steps:
       --project=$PROJECT_ID --region=$LOCATION
       --source=quotes-back/
       --delivery-pipeline=devopsdemo1-gke --to-target=dev-gke 
-      --build-artifacts=artifacts.json
+      --build-artifacts=quotes-back/artifacts.json
 #      --images=quotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/canary-repo/quotes-back:$BUILD_ID 
     # [END trigger cloud deploy]
