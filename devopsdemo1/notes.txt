@@ -2,7 +2,7 @@ export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1
 export GOOGLE_CLOUD_REGION=us-central1
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 
-gcloud artifacts repositories create devopsdemo1repo --repository-format=docker \
+gcloud artifacts repositories create devopsdemo2repo --repository-format=docker \
 --location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository for devopsdemo1" 
 gcloud auth configure-docker $GOOGLE_CLOUD_REGION-docker.pkg.dev
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
