@@ -28,6 +28,8 @@ Create an artefact repo and configure docker and skaffold to relate to it
 ```
 gcloud artifacts repositories create devopsdemo1repo --repository-format=docker \
 --location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository"
+gcloud artifacts repositories create devopsdemo1npm --repository-format=npm \
+--location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Node repository"
 gcloud auth configure-docker $GOOGLE_CLOUD_REGION-docker.pkg.dev
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
@@ -172,6 +174,73 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --role="roles/monitoring.metricWriter"
 
 ```
+Service accounts roles for cloud sql database (split later dev and prod)
+```
+gcloud iam service-accounts create cloudsql-sa \
+  --display-name="Cloud SQL SA"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/cloudsql.client"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/cloudsql.instanceUser"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/logging.logWriter"
+
+gcloud iam service-accounts add-iam-policy-binding \
+  --role="roles/iam.workloadIdentityUser" \
+  --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[dev/ksa-cloud-sql-dev]" \
+  cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com    
+
+gcloud iam service-accounts add-iam-policy-binding \
+  --role="roles/iam.workloadIdentityUser" \
+  --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[prod/ksa-cloud-sql-prod]" \
+  cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
+
+kubectl annotate serviceaccount \
+  ksa-cloud-sql-dev  \
+  --namespace dev \
+  iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com  
+
+kubectl annotate serviceaccount \
+  ksa-cloud-sql-prod  \
+  --namespace prod \
+  iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
+
+```
+Create a cloud sql database (split later dev and prod)
+```
+gcloud sql instances create devopsdemo-instance \
+  --database-version=POSTGRES_14 \
+  --cpu=1 \
+  --memory=4GB \
+  --region=us-central1 \
+  --database-flags=cloudsql.iam_authentication=on
+
+gcloud sql databases create quotes-app-db \
+  --instance=devopsdemo-instance
+
+gcloud sql users create cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam \
+  --instance=devopsdemo-instance \
+  --type=cloud_iam_service_account
+
+
+#kubectl create secret generic cloudsql-secret \
+#  --from-literal=username=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com \
+#  --from-literal=password=<YOUR-DATABASE-PASSWORD> \
+#  --from-literal=database=devopsdemo-instance
+
+# kubectl create secret generic cloudsql-privateip \
+#    --from-literal=db_host=<YOUR-PRIVATE-IP-ADDRESS>
+
+https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine
+https://codelabs.developers.google.com/codelabs/cloud-sql-go-connector#4  
+
+```
 Deploy Pipelines
 ```
 #gcloud deploy apply --file clouddeploy.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
@@ -211,6 +280,20 @@ curl --header 'Host: app.prod.gabrielbechara.com' http://10.132.0.48
 After the release is deploy to dev, promote it to production
 
 gcloud deploy releases promote  --release=release-001 --delivery-pipeline=canary --region=$GOOGLE_CLOUD_REGION --to-target=prod
+
+```
+## Create a cloud build trigger for both front-end on run and back-end microservices assembly on gke
+Note : The github cloudcloudbuild (cloudbuild-github.yaml) is needed for this foder structure (all building blocks under the same directory)
+```
+
+
+gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\
+    --region=us-central1 \
+    --repo-name=gcpdemos \
+    --repo-owner=gbechara \
+    --branch-pattern=^main$ \
+    --build-config=devopsdemo1/cloudbuild-github.yaml \
+    --include-logs-with-status
 ```
 ## Observe the pipeline
 ```

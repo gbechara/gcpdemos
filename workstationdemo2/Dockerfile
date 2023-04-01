@@ -11,10 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
+FROM us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest
 
-resources:
-  - deployment.yaml
-  - service.yaml
-  - service-account.yaml
+RUN sudo apt-get update -y
+RUN sudo apt-get upgrade -y
+RUN sudo apt-get install -y jq
+RUN sudo apt-get install postgresql-client -y
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash - && sudo apt-get install -y nodejs

@@ -14,11 +14,25 @@
 package main
 
 import (
+//	"context"
+	"database/sql"
+	"fmt"
+	"log"
+//	"net"
 	"net/http"
+	"os"
+
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"cloud.google.com/go/cloudsqlconn"
+	"cloud.google.com/go/cloudsqlconn/postgres/pgxv4"
+//	"github.com/jackc/pgx/v4"
+//	"github.com/jackc/pgx/v4/stdlib"
 )
+
+var dbPool *sql.DB
 
 type myForm struct {
     Colors []string `form:"colors[]"`
@@ -40,6 +54,15 @@ type myForm struct {
   }
 
 func main() {
+
+	db, cleanup := getDB()
+	dbPool = db
+	defer cleanup()
+
+//	getWriters := `SELECT * FROM writers`
+
+log.Println("getting connection ")
+
 
 	r := gin.Default()
 
@@ -86,7 +109,104 @@ func prometheusHandler() gin.HandlerFunc {
 func WritersHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	
+ 
+	rows, err := dbPool.Query("SELECT * FROM writers")
+	if err != nil {
+		log.Fatalf("DB.Query: %v", err)
+	}
+	log.Println("get rows ")
+
+	defer rows.Close()
+
+
+	for rows.Next() {
+		var id int
+		var likes int
+		var writer string
+		var color string
+		err := rows.Scan(&id, &likes, &writer, &color)
+		if err != nil {
+		  log.Fatalf("Rows.Scan: %v", err)
+		}
+		log.Println("appending rows ")
+
+		Writers = append(Writers, Writer{ID: id, Likes: likes, Writer: writer, Color: color})
+	}
+
+
 	c.JSON(http.StatusOK, Writers)
 }
   
-  
+// getDB creates a connection to the database
+// based on environment variables.
+func getDB() (*sql.DB, func() error) {
+
+	
+  dsn := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable", os.Getenv("INSTANCE_CONNECTION_NAME"), os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
+//  dsn := fmt.Sprintf("user=%s dbname=%s sslmode=disable", os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
+
+/*config, err := pgxv.ParseConfig(dsn)
+  if err != nil {
+	return nil, err
+}*/
+
+
+
+  log.Println("instance: ", os.Getenv("INSTANCE_CONNECTION_NAME"))
+  log.Println("dsn: ", dsn)  
+
+  var opts []cloudsqlconn.Option
+ // if usePrivate != "" {
+//		  opts = append(opts, cloudsqlconn.WithDefaultDialOptions(cloudsqlconn.WithPrivateIP()))
+//  }
+opts = append(opts, cloudsqlconn.WithIAMAuthN())
+
+cleanup, err := pgxv4.RegisterDriver("cloudsql-postgres", opts...)
+if err != nil {
+  log.Fatalf("Error on pgx4.RegisterDriver: %v", err)
+}
+
+
+  /*d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
+        if err != nil {
+                return nil, err
+        }
+
+        // Use the Cloud SQL connector to handle connecting to the instance.
+        // This approach does *NOT* require the Cloud SQL proxy.
+        config.DialFunc = func(ctx context.Context, network, instance string) (net.Conn, error) {
+			return d.Dial(ctx, os.Getenv("INSTANCE_CONNECTION_NAME"))
+	}
+	dbURI := stdlib.RegisterConnConfig(config)*/
+ 
+
+	//dbPool, err := sql.Open("cloudsql-postgres", dbURI)
+
+	dbPool, err := sql.Open("cloudsql-postgres", dsn)
+
+  if err != nil {
+    log.Fatalf("Error on sql.Open: %v", err)
+  }
+
+  createWriters := `CREATE TABLE IF NOT EXISTS writers (
+    id INT,
+    likes INT,
+	writer VARCHAR (50),
+	color VARCHAR (50),
+    PRIMARY KEY (id)
+  );`
+
+  _, err = dbPool.Exec(createWriters)
+  if err != nil {
+    log.Fatalf("unable to create table: %s", err)
+  }
+
+  newWriter := `INSERT INTO writers(id,likes,writer, color) VALUES  (0,0,'test','test');`
+
+  _, err = dbPool.Exec(newWriter)
+  if err != nil {
+    log.Fatalf("unable to create newWriter: %s", err)
+  }
+
+  return dbPool, cleanup
+}

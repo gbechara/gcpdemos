@@ -20,6 +20,7 @@ nameSuffix: -dev
 patchesStrategicMerge:
 - deployment.yaml
 - service.yaml
+- service-account.yaml
 
 bases:
 - ../../base

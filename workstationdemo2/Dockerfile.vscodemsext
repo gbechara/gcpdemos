@@ -17,3 +17,7 @@ RUN sudo apt-get update -y
 RUN sudo apt-get upgrade -y
 RUN sudo apt-get install -y jq
 RUN curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash - && sudo apt-get install -y nodejs
+
+RUN wget https://storage.cloud.google.com/vscodeext/ms-vscode-remote.remote-containers-0.289.0.vsix && \
+   unzip ms-vscode-remote.remote-containers-0.289.0.vsix "extension/*" &&\
+   mv extension /opt/code-oss/extensions/dev-containers

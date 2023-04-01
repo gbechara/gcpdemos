@@ -26,6 +26,16 @@ spec:
       labels:
         app: writers
     spec:
+      serviceAccountName: ksa-cloud-sql
       containers:
       - name: writers
         image: writers
+        env:
+        - name: INSTANCE_CONNECTION_NAME
+          value: gab-devops-1:us-central1:devopsdemo-instance
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_IAM_USER
+          value: cloudsql-sa@$gab-devops-1.iam
+        - name: DB_NAME
+          value: quotes-app-db
