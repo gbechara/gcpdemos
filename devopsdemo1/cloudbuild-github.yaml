@@ -57,13 +57,16 @@ steps:
     entrypoint: 'bash'
     args:
     - '-c'
-    - > 
+    - >
+      cd devopsdemo1/quotes-front/ && 
       gcloud deploy releases create release-$BUILD_ID 
       --project=$PROJECT_ID --region=$LOCATION
       --skaffold-version=skaffold_preview
-      --source=devopsdemo1/quotes-front/
+//      --source=devopsdemo1/quotes-front/
       --delivery-pipeline=devopsdemo1-run --to-target=dev-run
-      --build-artifacts=devopsdemo1/quotes-front/artifacts.json
+//      --build-artifacts=devopsdemo1/quotes-front/artifacts.json
+      --build-artifacts=artifacts.json
+
 #      --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-front:$BUILD_ID 
  #  [END trigger cloud deploy]
 

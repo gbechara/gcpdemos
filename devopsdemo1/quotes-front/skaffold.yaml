@@ -30,13 +30,6 @@ build:
       dockerfile: Dockerfile
       buildArgs:
         REACT_APP_BACK_URL: app.dev.gabrielbechara.com
-#  - image: quotes-front-prod
-#    context: .
-#    docker:
-#      dockerfile: Dockerfile
-#      buildArgs:
-#        REACT_APP_BACK_URL: app.prod.gabrielbechara.com
-
 
 deploy:
   cloudrun:
@@ -63,6 +56,13 @@ profiles:
     kustomize:
       paths:
         - overlays/dev
+  deploy:
+    cloudrun:
+      projectid: gab-devops-1
+      region: us-central1
+      hooks:
+        after:
+        - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
   build:
@@ -78,4 +78,10 @@ profiles:
     kustomize:
       paths:
         - overlays/prod
-  
+  deploy:
+    cloudrun:
+      projectid: gab-devops-1
+      region: us-central1
+      hooks:
+        after:
+        - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
