@@ -188,12 +188,15 @@ if err != nil {
     log.Fatalf("Error on sql.Open: %v", err)
   }
 
+
+  dropWriters := `DROP TABLE IF EXISTS writers;`
+  _, err = dbPool.Exec(dropWriters)
+
   createWriters := `CREATE TABLE IF NOT EXISTS writers (
-    id INT,
+    id SERIAL PRIMARY KEY,
     likes INT,
 	writer VARCHAR (50),
-	color VARCHAR (50),
-    PRIMARY KEY (id)
+	color VARCHAR (50)
   );`
 
   _, err = dbPool.Exec(createWriters)
@@ -201,7 +204,7 @@ if err != nil {
     log.Fatalf("unable to create table: %s", err)
   }
 
-  newWriter := `INSERT INTO writers(id,likes,writer, color) VALUES  (0,0,'test','test');`
+  newWriter := `INSERT INTO writers(likes,writer, color) VALUES  (0,'Un auteur','#4285F4');`
 
   _, err = dbPool.Exec(newWriter)
   if err != nil {
