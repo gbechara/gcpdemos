@@ -70,7 +70,7 @@ profiles:
       name: apply-policy
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
       command: ["/bin/sh"]
-      args: ["-c", "cat << EOF > policy.yaml
+      args: ["-c", "cat <<EOF > policy.yaml
       bindings:
       - members:
         - allUsers
@@ -107,7 +107,7 @@ profiles:
       name: apply-policy
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
       command: ["/bin/sh"]
-      args: ["-c", "cat << EOF > policy.yaml
+      args: ["-c", "cat <<EOF > policy.yaml
       bindings:
       - members:
         - allUsers
