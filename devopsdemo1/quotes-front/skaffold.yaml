@@ -69,7 +69,8 @@ profiles:
     container:
       name: apply-policy
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
-      command: ["/bin/sh"]
+#      command: ["/bin/sh"]
+      entrypoint: 'bash'
       args: ["-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
@@ -99,5 +100,6 @@ profiles:
     container:
       name: apply-policy
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
-      command: ["/bin/sh"]
+#      command: ["/bin/sh"]
+      entrypoint: 'bash'
       args: ["-c", "gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
