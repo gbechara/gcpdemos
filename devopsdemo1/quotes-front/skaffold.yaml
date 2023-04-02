@@ -75,7 +75,8 @@ profiles:
       - members:
         - allUsers
         role: roles/run.invoker
-      > EOF &&
+      EOF 
+      &&
       gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
@@ -111,5 +112,6 @@ profiles:
       - members:
         - allUsers
         role: roles/run.invoker
-      > EOF &&
+      EOF 
+      &&
       gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
