@@ -189,8 +189,8 @@ if err != nil {
   }
 
 
-  dropWriters := `DROP TABLE IF EXISTS writers;`
-  _, err = dbPool.Exec(dropWriters)
+ // dropWriters := `DROP TABLE IF EXISTS writers;`
+ // _, err = dbPool.Exec(dropWriters)
 
   createWriters := `CREATE TABLE IF NOT EXISTS writers (
     id SERIAL PRIMARY KEY,
@@ -204,7 +204,7 @@ if err != nil {
     log.Fatalf("unable to create table: %s", err)
   }
 
-  newWriter := `INSERT INTO writers(likes,writer, color) VALUES  (0,'Un auteur','#4285F4');`
+  newWriter := `INSERT INTO writers(likes,writer, color) VALUES  (0,'Un auteur ...','#4285F4');`
 
   _, err = dbPool.Exec(newWriter)
   if err != nil {
