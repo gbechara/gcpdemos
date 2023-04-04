@@ -118,6 +118,8 @@ func WritersHandler(c *gin.Context) {
 
 	defer rows.Close()
 
+	var myWriters = []Writer{}
+	
 
 	for rows.Next() {
 		var id int
@@ -130,11 +132,11 @@ func WritersHandler(c *gin.Context) {
 		}
 		log.Println("appending rows ")
 
-		Writers = append(Writers, Writer{ID: id, Likes: likes, Writer: writer, Color: color})
+		myWriters = append(myWriters, Writer{ID: id, Likes: likes, Writer: writer, Color: color})
 	}
 
 
-	c.JSON(http.StatusOK, Writers)
+	c.JSON(http.StatusOK, myWriters)
 }
   
 // getDB creates a connection to the database
@@ -189,14 +191,14 @@ if err != nil {
   }
 
 
- // dropWriters := `DROP TABLE IF EXISTS writers;`
- // _, err = dbPool.Exec(dropWriters)
+  dropWriters := `DROP TABLE IF EXISTS writers;`
+  _, err = dbPool.Exec(dropWriters)
 
   createWriters := `CREATE TABLE IF NOT EXISTS writers (
     id SERIAL PRIMARY KEY,
     likes INT,
-	writer VARCHAR (50),
-	color VARCHAR (50)
+	writer VARCHAR (255),
+	color VARCHAR (255)
   );`
 
   _, err = dbPool.Exec(createWriters)
@@ -204,12 +206,17 @@ if err != nil {
     log.Fatalf("unable to create table: %s", err)
   }
 
-  newWriter := `INSERT INTO writers(likes,writer, color) VALUES  (0,'Un auteur ...','#4285F4');`
+  //newWriter := `INSERT INTO writers(likes, writer, color) VALUES  (0,?,?);`
+  
+  for _, wr := range Writers {
+	log.Println("wr.Likes: ", wr.Likes, "wr.Writer: ", wr.Writer, "wr.Color: ", wr.Color)  
+  	_, err = dbPool.Exec("INSERT INTO writers (likes, writer, color) VALUES  ($1, $2, $3)", wr.Likes, wr.Writer, wr.Color)
+	if err != nil {
+	log.Fatalf("unable to create new Writer: %s", err)
+	}	
+  } 
 
-  _, err = dbPool.Exec(newWriter)
-  if err != nil {
-    log.Fatalf("unable to create newWriter: %s", err)
-  }
+
 
   return dbPool, cleanup
 }

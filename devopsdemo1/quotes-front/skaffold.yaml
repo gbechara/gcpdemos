@@ -64,20 +64,20 @@ profiles:
         after:
         - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
 # hooks are not used by cloud deploy, using verify instead
-  verify:
-  - name: apply-policy
-    container:
-      name: apply-policy
-      image: gcr.io/google.com/cloudsdktool/cloud-sdk
-      command: ["/bin/sh"]
-      args: ["-c", "cat <<EOF > policy.yaml
-      bindings:
-      - members:
-        - allUsers
-        role: roles/run.invoker
-      EOF 
-      &&
-      gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
+#  verify:
+#  - name: apply-policy
+#    container:
+#      name: apply-policy
+#      image: gcr.io/google.com/cloudsdktool/cloud-sdk
+#      command: ["/bin/sh"]
+#      args: ["-c", "cat <<EOF > policy.yaml
+#      bindings:
+#      - members:
+#        - allUsers
+#        role: roles/run.invoker
+#      EOF 
+#      &&
+#      gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
   build:
@@ -101,17 +101,17 @@ profiles:
         after:
         - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 # hooks are not used by cloud deploy, using verify instead
-  verify:
-  - name: apply-policy
-    container:
-      name: apply-policy
-      image: gcr.io/google.com/cloudsdktool/cloud-sdk
-      command: ["/bin/sh"]
-      args: ["-c", "cat <<EOF > policy.yaml
-      bindings:
-      - members:
-        - allUsers
-        role: roles/run.invoker
-      EOF 
-      &&
-      gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
+#  verify:
+#  - name: apply-policy
+#    container:
+#      name: apply-policy
+#      image: gcr.io/google.com/cloudsdktool/cloud-sdk
+#      command: ["/bin/sh"]
+#      args: ["-c", "cat <<EOF > policy.yaml
+#      bindings:
+#      - members:
+#        - allUsers
+#        role: roles/run.invoker
+#      EOF 
+#      &&
+#      gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
