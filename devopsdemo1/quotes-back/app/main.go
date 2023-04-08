@@ -56,7 +56,7 @@ type Citations = []Citation
 type Writer struct {
 	ID    int    `json:"id" binding:"required"`
 	Likes int    `json:"likes"`
-	Writer  string `json:"Writer" binding:"required"`
+	Writer  string `json:"writer" binding:"required"`
 	Color  string `json:"color" binding:"required"` 
 }
   

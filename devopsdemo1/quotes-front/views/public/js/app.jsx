@@ -178,7 +178,7 @@ class Writer extends React.Component {
       writers: [],
     }
 
-    this.serverRequest = this.serverRequest.bind(this);
+//    this.serverRequest = this.serverRequest.bind(this);
   }
     
 
@@ -186,7 +186,7 @@ class Writer extends React.Component {
     location.reload();
   }
 
-  serverRequest() {
+  /*serverRequest(writer) {
            $.get("https://REACT_APP_BACK_URL/api/writers", res => {
             this.setState({
               writers: res
@@ -194,11 +194,11 @@ class Writer extends React.Component {
             this.props.writer = res;
             console.log("res writer ... ", res);
           })
-        }
+        }*/
  
 
   render() {
-    console.log("res writer ... ", this.state.writers);
+    console.log("res writer ... ", this.props.writer);
     return (
     <div className="col-xs-4">
         <div className="panel panel-default">
@@ -206,7 +206,7 @@ class Writer extends React.Component {
           <div className="panel-body" style={{backgroundColor: this.props.writer.color, color: '#ffffff', fontWeight: 'bold'}}>
             {this.props.writer.writer}
           </div>
-                  </div>
+        </div>
       </div>
     )
   }
