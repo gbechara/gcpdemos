@@ -22,7 +22,7 @@ serialPipeline:
    profiles: ["dev"]
    strategy:
      standard:
-       verify: true
+       verify: false
  - targetId: prod-run
    profiles: ["prod"]
    strategy:

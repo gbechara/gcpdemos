@@ -14,44 +14,36 @@
 package main
 
 import (
-//	"context"
 	"database/sql"
 	"fmt"
 	"log"
-//	"net"
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"cloud.google.com/go/cloudsqlconn"
 	"cloud.google.com/go/cloudsqlconn/postgres/pgxv4"
-//	"github.com/jackc/pgx/v4"
-//	"github.com/jackc/pgx/v4/stdlib"
 )
 
 var dbPool *sql.DB
 
-type myForm struct {
-    Colors []string `form:"colors[]"`
-}
 
   
-  type Writer struct {
+type Writer struct {
 	ID    int    `json:"id" binding:"required"`
 	Likes int    `json:"likes"`
 	Writer  string `json:"Writer" binding:"required"`
 	Color  string `json:"color" binding:"required"` 
 }
   
-  /** we'll create a list of Writer */
-  var Writers = []Writer{
+/** a list of initial Writers */
+var Writers = []Writer{
 	Writer{1, 0, "Victor Hugo.", "#4285F4"},
 	Writer{2, 0, "Balzac.", "#DB4437"},
 	Writer{3, 0, "Danton.","#545454"},
-  }
+}
 
 func main() {
 
@@ -59,15 +51,7 @@ func main() {
 	dbPool = db
 	defer cleanup()
 
-//	getWriters := `SELECT * FROM writers`
-
-log.Println("getting connection ")
-
-
 	r := gin.Default()
-
-	// Serve frontend static files
-	r.Use(static.Serve("/", static.LocalFile("./views/public", true)))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -82,12 +66,14 @@ log.Println("getting connection ")
 	})
 
 
-	r.GET("/metrics", prometheusHandler())
+	r.GET("/metrics", PrometheusHandler())
 
 
 	api := r.Group("/api")
 	{
 		api.GET("/writers", WritersHandler)
+		api.GET("/writers/insertwriter/:Writer/:Color", InsertWritersHandler)
+
 	}
 
 	r.Run()
@@ -99,7 +85,7 @@ func indexHandler(c *gin.Context) {
 }
 
 
-func prometheusHandler() gin.HandlerFunc {
+func PrometheusHandler() gin.HandlerFunc {
 	h := promhttp.Handler()
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)
@@ -107,9 +93,9 @@ func prometheusHandler() gin.HandlerFunc {
 }
 
 func WritersHandler(c *gin.Context) {
+	
 	c.Header("Content-Type", "application/json")
 	
- 
 	rows, err := dbPool.Query("SELECT * FROM writers")
 	if err != nil {
 		log.Fatalf("DB.Query: %v", err)
@@ -120,7 +106,6 @@ func WritersHandler(c *gin.Context) {
 
 	var myWriters = []Writer{}
 	
-
 	for rows.Next() {
 		var id int
 		var likes int
@@ -138,85 +123,79 @@ func WritersHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, myWriters)
 }
-  
-// getDB creates a connection to the database
-// based on environment variables.
+
+
+func InsertWritersHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
+	wr := Writer{1, 0, "test writer", "#4285F4"}
+
+    wr.Writer = c.Params.ByName("Writer")    
+	wr.Color = c.Params.ByName("Color")
+
+	_, err := dbPool.Query("SELECT * FROM writers where writer = $1",wr.Writer)
+	if err != nil {
+		log.Fatalf("DB.Query: %v", err)
+	}
+	log.Println("get rows ")
+
+	log.Println("writer : inserting new writer : wr.Likes: ", wr.Likes, "wr.Writer: ", wr.Writer, "wr.Color: ", wr.Color)  
+	_, err = dbPool.Exec("INSERT INTO writers (likes, writer, color) VALUES  ($1, $2, $3)", wr.Likes, wr.Writer, wr.Color)
+	if err != nil {
+		log.Fatalf("unable to create new Writer: %s", err)
+	}	
+		
+	c.JSON(http.StatusOK, wr)
+}
+	
+	
 func getDB() (*sql.DB, func() error) {
 
-	
-  dsn := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable", os.Getenv("INSTANCE_CONNECTION_NAME"), os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
-//  dsn := fmt.Sprintf("user=%s dbname=%s sslmode=disable", os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
+	//dsn := fmt.Sprintf("user=%s dbname=%s sslmode=disable", os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
+	dsn := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable", os.Getenv("INSTANCE_CONNECTION_NAME"), os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
 
-/*config, err := pgxv.ParseConfig(dsn)
-  if err != nil {
-	return nil, err
-}*/
+  	log.Println("instance: ", os.Getenv("INSTANCE_CONNECTION_NAME"))
+  	log.Println("dsn: ", dsn)  
 
+  	var opts []cloudsqlconn.Option
+	//if usePrivate != "" {
+	//	opts = append(opts, cloudsqlconn.WithDefaultDialOptions(cloudsqlconn.WithPrivateIP()))
+	// }
+	opts = append(opts, cloudsqlconn.WithIAMAuthN())
 
-
-  log.Println("instance: ", os.Getenv("INSTANCE_CONNECTION_NAME"))
-  log.Println("dsn: ", dsn)  
-
-  var opts []cloudsqlconn.Option
- // if usePrivate != "" {
-//		  opts = append(opts, cloudsqlconn.WithDefaultDialOptions(cloudsqlconn.WithPrivateIP()))
-//  }
-opts = append(opts, cloudsqlconn.WithIAMAuthN())
-
-cleanup, err := pgxv4.RegisterDriver("cloudsql-postgres", opts...)
-if err != nil {
-  log.Fatalf("Error on pgx4.RegisterDriver: %v", err)
-}
-
-
-  /*d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
-        if err != nil {
-                return nil, err
-        }
-
-        // Use the Cloud SQL connector to handle connecting to the instance.
-        // This approach does *NOT* require the Cloud SQL proxy.
-        config.DialFunc = func(ctx context.Context, network, instance string) (net.Conn, error) {
-			return d.Dial(ctx, os.Getenv("INSTANCE_CONNECTION_NAME"))
+	cleanup, err := pgxv4.RegisterDriver("cloudsql-postgres", opts...)
+	if err != nil {
+  		log.Fatalf("Error on pgx4.RegisterDriver: %v", err)
 	}
-	dbURI := stdlib.RegisterConnConfig(config)*/
- 
 
-	//dbPool, err := sql.Open("cloudsql-postgres", dbURI)
 
 	dbPool, err := sql.Open("cloudsql-postgres", dsn)
+  	if err != nil {
+    	log.Fatalf("Error on sql.Open: %v", err)
+  	}
 
-  if err != nil {
-    log.Fatalf("Error on sql.Open: %v", err)
-  }
+  	dropWriters := `DROP TABLE IF EXISTS writers;`
+  	_, err = dbPool.Exec(dropWriters)
 
+  	createWriters := `CREATE TABLE IF NOT EXISTS writers (
+    	id SERIAL PRIMARY KEY,
+    	likes INT,
+		writer VARCHAR (255),
+		color VARCHAR (255)
+  	);`
 
-  dropWriters := `DROP TABLE IF EXISTS writers;`
-  _, err = dbPool.Exec(dropWriters)
-
-  createWriters := `CREATE TABLE IF NOT EXISTS writers (
-    id SERIAL PRIMARY KEY,
-    likes INT,
-	writer VARCHAR (255),
-	color VARCHAR (255)
-  );`
-
-  _, err = dbPool.Exec(createWriters)
-  if err != nil {
-    log.Fatalf("unable to create table: %s", err)
-  }
-
-  //newWriter := `INSERT INTO writers(likes, writer, color) VALUES  (0,?,?);`
+  	_, err = dbPool.Exec(createWriters)
+  	if err != nil {
+    	log.Fatalf("unable to create table: %s", err)
+  	}
   
-  for _, wr := range Writers {
-	log.Println("wr.Likes: ", wr.Likes, "wr.Writer: ", wr.Writer, "wr.Color: ", wr.Color)  
-  	_, err = dbPool.Exec("INSERT INTO writers (likes, writer, color) VALUES  ($1, $2, $3)", wr.Likes, wr.Writer, wr.Color)
-	if err != nil {
-	log.Fatalf("unable to create new Writer: %s", err)
-	}	
-  } 
+  	for _, wr := range Writers {
+		log.Println("wr.Likes: ", wr.Likes, "wr.Writer: ", wr.Writer, "wr.Color: ", wr.Color)  
+  		_, err = dbPool.Exec("INSERT INTO writers (likes, writer, color) VALUES  ($1, $2, $3)", wr.Likes, wr.Writer, wr.Color)
+		if err != nil {
+			log.Fatalf("unable to create new Writer: %s", err)
+		}	
+  	} 
 
-
-
-  return dbPool, cleanup
+  	return dbPool, cleanup
 }

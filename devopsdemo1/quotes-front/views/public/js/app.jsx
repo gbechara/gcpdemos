@@ -48,6 +48,12 @@ class LoggedIn extends React.Component {
       location.reload();
     }
 
+    addNewWriter() {
+      $.get("https://REACT_APP_BACK_URL/api/writers/insertwriter/Hugo/%234285F4");
+      location.reload();   
+    }
+  
+
     serverRequest() {
     //     $.get("http://34.98.114.247/api/citations", res => {
     //      $.get("https://app.dev.gabrielbechara.com/api/citations", res => {
@@ -75,8 +81,22 @@ class LoggedIn extends React.Component {
         <div className="col-xs-8 col-xs-offset-2 jumbotron">
             <div className="col-lg-12">
               <br />
-              <span className="pull-right"><a onClick={this.refresh}>Refresh</a> <a onClick={this.logout}>Log out</a></span>
-              <h2>Hello World v.0.4</h2>
+              <div className="table" >
+                <span class="row">
+                <span class="column">
+                    <a onClick={this.addNewWriter}>New Writer </a>                 
+                  </span>
+                  <span class="column">
+                    <a onClick={this.refresh}>Refresh </a>                 
+                  </span>
+                  <span class="column">
+                    <a onClick={this.logout}>Log out</a>
+                  </span>  
+                </span>  
+              </div>  
+ 
+ 
+              <h2>Hello World v.0.1</h2>
               <div className="row">
                 {this.state.citations.map(function(citation, i){
                   return (<Citation key={i} citation={citation} />);

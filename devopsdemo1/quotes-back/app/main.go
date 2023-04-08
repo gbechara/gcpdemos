@@ -22,16 +22,17 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
-	 "os"
+	"os"
 	//	"log"
 	"strconv"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 
- //   "github.com/go-resty/resty/v2"
+	//   "github.com/go-resty/resty/v2"
 	"github.com/itsjamie/gin-cors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -51,10 +52,11 @@ type Citation struct {
   /** we'll create a list of Citations */
 type Citations = []Citation
 
+  
 type Writer struct {
 	ID    int    `json:"id" binding:"required"`
 	Likes int    `json:"likes"`
-	Writers  string `json:"writer" binding:"required"`
+	Writer  string `json:"Writer" binding:"required"`
 	Color  string `json:"color" binding:"required"` 
 }
   
@@ -115,6 +117,8 @@ func main() {
 		api.GET("/citations", CitationsHandler)
 		api.POST("/citations/like/:CitationID", LikeCitation)
 		api.GET("/writers", WritersHandler)
+		api.GET("/writers/insertwriter/:Writer/:Color", InsertWritersHandler)
+
 	}
 
 	r.Run()
@@ -226,4 +230,32 @@ func CitationsHandler(c *gin.Context) {
   func WritersHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	c.JSON(http.StatusOK, listWriters())
+  }
+
+  func InsertWritersHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	var writersURL = os.Getenv("WRITERS_URL")
+	
+	var wr Writer =  Writer{1, 0, "DEFAULT", "#4285F4"}
+
+   /* if err := c.ShouldBindJSON(&wr); err != nil {
+        c.JSON(400, gin.H{"error": "Insert writer error"})
+        return
+    }*/
+
+    wr.Writer = c.Params.ByName("Writer")    
+	wr.Color = c.Params.ByName("Color")
+
+	log.Printf("app: inserting new writer : "+ wr.Writer +","+wr.Color)
+
+	ret , err := http.Get(writersURL+"/insertwriter/"+url.QueryEscape(wr.Writer+"/"+wr.Color))
+
+    if err != nil {
+        log.Println("QuoteApp: unable to connect writers")
+    }
+    defer ret.Body.Close()
+    log.Printf("Quote App: list of writers")
+
+    c.JSON(200,  gin.H{"app: writer inserted": wr.Writer +","+wr.Color})
+
   }
