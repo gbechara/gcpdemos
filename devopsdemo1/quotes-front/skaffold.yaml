@@ -30,6 +30,7 @@ build:
       dockerfile: Dockerfile
       buildArgs:
         REACT_APP_BACK_URL: app.dev.gabrielbechara.com
+        REACT_APP_ENV: dev
 
 deploy:
   cloudrun:
@@ -52,6 +53,7 @@ profiles:
         dockerfile: Dockerfile
         buildArgs:
           REACT_APP_BACK_URL: app.dev.gabrielbechara.com
+          REACT_APP_ENV: dev
   manifests:
     kustomize:
       paths:
@@ -88,6 +90,7 @@ profiles:
         dockerfile: Dockerfile
         buildArgs:
           REACT_APP_BACK_URL: app.prod.gabrielbechara.com
+          REACT_APP_ENV: prod
 
   manifests:
     kustomize:

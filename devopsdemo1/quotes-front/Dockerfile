@@ -16,9 +16,10 @@ WORKDIR /code
 COPY views/ ./views/ 
 WORKDIR /code/views
 ARG REACT_APP_BACK_URL
+ARG REACT_APP_ENV
 RUN echo "App Backend Url  $REACT_APP_BACK_URL"
-RUN sed -i "s/REACT_APP_BACK_URL/$REACT_APP_BACK_URL/g" public/js/app.jsx
-RUN npm run build
+#RUN sed -i "s/REACT_APP_BACK_URL/$REACT_APP_BACK_URL/g" public/js/app.jsx
+RUN npm run build:$REACT_APP_ENV
 
 FROM golang:1.19 as golangbuilder
 WORKDIR /code

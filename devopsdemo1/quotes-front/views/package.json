@@ -9,12 +9,17 @@
     "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.10.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:dev": "NODE_ENV=dev react-scripts start",
+    "start:prod": "NODE_ENV=prod react-scripts start",
     "build": "react-scripts build",
+    "build:dev": "NODE_ENV=dev react-scripts build",
+    "build:prod": "NODE_ENV=prod react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -41,6 +46,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "dotenv-webpack": "^8.0.1",
     "webpack": "^5.76.3",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.1"
