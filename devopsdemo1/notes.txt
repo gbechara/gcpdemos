@@ -82,6 +82,8 @@ gcloud deploy delivery-pipelines delete canary --region=$GOOGLE_CLOUD_REGION --p
 #npm install webpack
 #npm i webpack webpack-dev-server webpack-cli --save-dev
 #npm install process
+npm install semantic-ui-react semantic-ui-css
+npm install react-bootstrap
 
 #gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo/quotes-back ./app
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./

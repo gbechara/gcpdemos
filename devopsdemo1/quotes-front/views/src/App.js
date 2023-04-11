@@ -1,7 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
-import QuotesList from './js/quoteslist';
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import ListQuotes from './js/listquotes';
+import InsertWriter from './js/insertwriter';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
@@ -22,11 +23,16 @@ function App() {
       </header>
     </div>*/
     <Router>
-      <div className="main">
-        <div>
-          <QuotesList />
-        </div>
-      </div>
+
+        <div className="main">
+          <div>
+           
+            <Routes>
+              <Route path='/insertwriter' element={<InsertWriter/>} />
+              <Route path='/' element={<ListQuotes/>} />             
+            </Routes>
+          </div>
+        </div>  
       </Router>
   );
 }
