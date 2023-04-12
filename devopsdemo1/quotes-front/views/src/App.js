@@ -25,7 +25,7 @@ function App() {
     <Router>
 
         <div className="main">
-          <div>
+          <div className="main">
            
             <Routes>
               <Route path='/insertwriter' element={<InsertWriter/>} />

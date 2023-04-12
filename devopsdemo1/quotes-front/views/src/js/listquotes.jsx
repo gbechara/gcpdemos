@@ -90,25 +90,14 @@ class LoggedIn extends React.Component {
       <div className="container">
         <div className="col-xs-8 col-xs-offset-2 jumbotron">
             <div className="col-lg-12">
-              <Table striped bordered responsive hover size="sm">
-                <tbody>
-                  <tr>
-                    <td>
-                      <Link to='insertwriter'>
-                        <a>Insert Writer</a>
-                      </Link>
-                    </td>
-                    <td>
-                      <a onClick={this.refresh}>Refresh </a>                 
-                    </td>
-                    <td>
-                      <a onClick={this.logout}>Log out</a>
-                    </td>  
-                  </tr> 
-                </tbody> 
-              </Table>  
- 
- 
+               
+              <div class="topnav" id="myTopnav">
+                <a href="/" class="active">Liste Quotes</a>
+                <a href="/insertwriter">Insert Writer</a>
+                <a onClick={this.refresh}>Refresh </a> 
+                <a onClick={this.logout}>Log out</a>
+              </div>
+
               <h3>List of quotes and writers</h3>
               <div className="row">
                 {this.state.citations.map(function(citation, i){
