@@ -11,3 +11,12 @@ docker run --privileged -p 8080:80 cloud-custom-workstation-1
 
 docker tag cloud-custom-workstation-1:latest  $ARTIFACT_REPO/cloud-custom-workstation-1:latest
 docker push $ARTIFACT_REPO/cloud-custom-workstation-1
+
+
+#test a workstation image with a different docker network
+
+docker build -t cloud-custom-workstation-2 -f Dockerfile.network .
+docker tag cloud-custom-workstation-2:latest  $ARTIFACT_REPO/cloud-custom-workstation-2:latest
+docker push $ARTIFACT_REPO/cloud-custom-workstation-2
+
+#docker network inspect bridge

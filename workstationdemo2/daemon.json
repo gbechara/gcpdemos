@@ -1,0 +1,8 @@
+{
+	"live-restore": true,
+	"bip": "10.10.0.1/16",
+	"default-address-pools": [{
+		"base": "10.0.0.0/8",
+		"size": 16
+	}]
+}

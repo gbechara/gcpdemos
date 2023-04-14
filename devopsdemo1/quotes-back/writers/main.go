@@ -120,7 +120,6 @@ func WritersHandler(c *gin.Context) {
 		myWriters = append(myWriters, Writer{ID: id, Likes: likes, Writer: writer, Color: color})
 	}
 
-
 	c.JSON(http.StatusOK, myWriters)
 }
 

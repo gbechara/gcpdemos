@@ -96,10 +96,11 @@ class NewWriter extends React.Component {
             <div className="col-lg-12">
 
               <div class="topnav" id="myTopnav">
-                <a href="/">Liste Quotes</a>
-                <a href="/insertwriter" class="active">Insert Writer</a>
+                <Link to='/' size='0'>Liste Quotes</Link>
+                <Link to='/insertwriter' class="active" size='0'>Insert Writer</Link>                
                 <a onClick={this.refresh}>Refresh </a> 
                 <a onClick={this.logout}>Log out</a>
+
               </div>
 
 
@@ -123,7 +124,7 @@ class NewWriter extends React.Component {
                       <option value="#0F9D58">Green</option>
                       <option value="#545454">Grey</option>
                     </select>
-                </Form.Field>
+                </Form.Field><br/>
                 <Button type='submit' disabled={!this.state.formValid}>Submit</Button>
               </Form>
           </div>
