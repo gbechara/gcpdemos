@@ -79,7 +79,7 @@ steps:
       cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo
 
 # Create attestation to deploy only images built by Cloud Build
-  - id: Create attestation 
+  - id: Create attestation for quotes-app 
     name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
@@ -90,7 +90,7 @@ steps:
       - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
 
 # Create attestation to deploy only images built by Cloud Build
-  - id: Create attestation 
+  - id: Create attestation for quotes 
     name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
@@ -101,7 +101,7 @@ steps:
       - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
 
 # Create attestation to deploy only images built by Cloud Build
-  - id: Create attestation 
+  - id: Create attestation for writer 
     name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
