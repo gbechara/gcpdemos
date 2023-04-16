@@ -18,7 +18,7 @@ metadata:
 build:
   tagPolicy:
     gitCommit: 
-      variant: AbbrevCommitSha
+      variant: CommitSha
   artifacts:
   - image: quotes-app
     context: app
