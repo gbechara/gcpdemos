@@ -17,7 +17,8 @@ metadata:
   name: quotes-back
 build:
   tagPolicy:
-    gitCommit: {variant: AbbrevCommitSha}
+    gitCommit: 
+      variant: AbbrevCommitSha
   artifacts:
   - image: quotes-app
     context: app
