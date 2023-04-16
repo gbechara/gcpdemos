@@ -78,7 +78,7 @@ steps:
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
-      - 'projects/${PROJECT_ID}/locations/us-central1/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
+      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
 
   # [START trigger cloud deploy for backend]
   # Docker push to Google Artifact Registry
