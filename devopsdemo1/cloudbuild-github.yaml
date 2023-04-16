@@ -69,6 +69,16 @@ steps:
 #      --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-front:$BUILD_ID 
  #  [END trigger cloud deploy]
 
+# Create attestation to deploy only images built by Cloud Build
+  - id: Create attestation 
+    name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+    args:
+      - '--artifact-url'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-front:${SHORT_SHA}'
+      - '--attestor'
+      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
+      - '--keyversion'
+      - 'projects/${PROJECT_ID}/locations/us-central1/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
 
   # [START trigger cloud deploy for backend]
   # Docker push to Google Artifact Registry
