@@ -83,11 +83,35 @@ steps:
     name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-back:${REVISION_ID}'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA}'
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
       - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
+
+# Create attestation to deploy only images built by Cloud Build
+  - id: Create attestation 
+    name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+    args:
+      - '--artifact-url'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}'
+      - '--attestor'
+      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
+      - '--keyversion'
+      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
+
+# Create attestation to deploy only images built by Cloud Build
+  - id: Create attestation 
+    name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+    args:
+      - '--artifact-url'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}'
+      - '--attestor'
+      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
+      - '--keyversion'
+      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
+
+
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
