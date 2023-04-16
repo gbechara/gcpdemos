@@ -268,8 +268,26 @@ gcloud deploy releases create release-106 \
  --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 ```
-Use Cloudbuild for new realeases
+Use Cloudbuild for new releases
 ```
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
+    --role="roles/binaryauthorization.attestorsViewer"
+
+
+# Permission cloudkms.cryptoKeyVersions.viewPublicKey
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
+    --role="roles/cloudkms.signerVerifier"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+    --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
+    --role="roles/containeranalysis.notes.attacher"
+
 
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
 
