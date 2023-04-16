@@ -16,6 +16,8 @@ kind: Config
 metadata:
   name: quotes-back
 build:
+  tagPolicy:
+    gitCommit: {variant: AbbrevCommitSha}
   artifacts:
   - image: quotes-app
     context: app
