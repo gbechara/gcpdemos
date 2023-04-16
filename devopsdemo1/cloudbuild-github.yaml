@@ -76,36 +76,36 @@ steps:
     args: 
     - '-c'
     - > 
-      cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo
+      cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo && export $COMMIT_SHA_8=echo COMMIT_SHA 
 
 # Create attestation to deploy only images built by Cloud Build
-  - id: Create attestation for quotes-app 
-    name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+#  - id: Create attestation for quotes-app 
+  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA}'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA:0:8}'
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
       - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
 
 # Create attestation to deploy only images built by Cloud Build
-  - id: Create attestation for quotes 
-    name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+#  - id: Create attestation for quotes 
+  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA:0:8}'
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
       - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
 
 # Create attestation to deploy only images built by Cloud Build
-  - id: Create attestation for writer 
-    name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+#  - id: Create attestation for writer 
+  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA:0:8}'
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
