@@ -76,14 +76,14 @@ steps:
     args: 
     - '-c'
     - > 
-      cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo 
+      cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo && export COMMIT_SHA_8=${COMMIT_SHA:0:8}
 
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for quotes-app 
   - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA:0:8}'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA_8}'
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
@@ -94,7 +94,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA:0:8}'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA_8}'
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
@@ -105,7 +105,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
     args:
       - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA:0:8}'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA_8}'
       - '--attestor'
       - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
       - '--keyversion'
