@@ -76,7 +76,7 @@ steps:
     args: 
     - '-c'
     - > 
-      cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo && ${COMMIT_SHA:0:8} > workspace/commit_id.txt
+      cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo && ${COMMIT_SHA:0:8} > /workspace/commit_id.txt
 
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for quotes-app 
