@@ -212,6 +212,15 @@ kubectl annotate serviceaccount \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 ```
+Service accounts roles for alloydb test (split later dev and prod)
+```
+
+#gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+#  --member="serviceAccount:cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+#  --role="roles/alloydb.admin"
+
+
+```
 Create a cloud sql database (split later dev and prod)
 ```
 gcloud sql instances create devopsdemo-instance \

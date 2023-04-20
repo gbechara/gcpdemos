@@ -25,6 +25,10 @@ import (
 
 	"cloud.google.com/go/cloudsqlconn"
 	"cloud.google.com/go/cloudsqlconn/postgres/pgxv4"
+
+//	 "cloud.google.com/go/alloydbconn"
+//   "cloud.google.com/go/alloydbconn/driver/pgxv4"
+	
 )
 
 var dbPool *sql.DB
@@ -152,23 +156,27 @@ func getDB() (*sql.DB, func() error) {
 
 	//dsn := fmt.Sprintf("user=%s dbname=%s sslmode=disable", os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable", os.Getenv("INSTANCE_CONNECTION_NAME"), os.Getenv("DB_IAM_USER"), os.Getenv("DB_NAME"))
+	//dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", "projects/gab-devops-1/locations/us-central1/clusters/devopsdemo-alloydb-cluster-1/instances/devopsdemo-alloydb-instance-1", "postgres","password", os.Getenv("DB_NAME"))
 
   	log.Println("instance: ", os.Getenv("INSTANCE_CONNECTION_NAME"))
   	log.Println("dsn: ", dsn)  
 
   	var opts []cloudsqlconn.Option
+	//var opts []alloydbconn.Option
 	//if usePrivate != "" {
 	//	opts = append(opts, cloudsqlconn.WithDefaultDialOptions(cloudsqlconn.WithPrivateIP()))
 	// }
 	opts = append(opts, cloudsqlconn.WithIAMAuthN())
 
 	cleanup, err := pgxv4.RegisterDriver("cloudsql-postgres", opts...)
+	//cleanup, err := pgxv4.RegisterDriver("alloydb", opts...)
 	if err != nil {
   		log.Fatalf("Error on pgx4.RegisterDriver: %v", err)
 	}
 
 
 	dbPool, err := sql.Open("cloudsql-postgres", dsn)
+	//dbPool, err := sql.Open("alloydb", dsn)
   	if err != nil {
     	log.Fatalf("Error on sql.Open: %v", err)
   	}

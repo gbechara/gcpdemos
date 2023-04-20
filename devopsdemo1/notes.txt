@@ -26,7 +26,7 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 
 sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
 on mac : sed -i "" "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
-
+net
 sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
 on mac : sed -i "" "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
 
@@ -89,5 +89,14 @@ npm install react-bootstrap
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
 
 
-
-
+#network utils
+#sudo apt install net-tools -y
+sudo apt install iproute2 -y
+sudo apt-get install ethtool
+sudo apt-get install bridge-utils
+netstat -rn
+arp 
+ip link sh
+ethtool -S eth0
+brctl show
+ip -br addr sh
