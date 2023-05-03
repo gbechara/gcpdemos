@@ -20,4 +20,7 @@ spec:
     metadata:
       annotations:
         autoscaling.knative.dev/minScale: '0'
-        autoscaling.knative.dev/maxScale: '3'  
+        autoscaling.knative.dev/maxScale: '3' 
+    spec:
+      containers:
+      - image: quotes-front-prod        

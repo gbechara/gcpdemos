@@ -23,15 +23,23 @@ manifests:
 metadata:
   name: quotes-front
 build:
+# needs 2 artifacts in build phasis since reacjs env variable are changed at build time and build 
+# will not occurs between dev and prod in a cloud deploy pipeline 
   artifacts:
-  - image: quotes-front
+  - image: quotes-front-dev
     context: .
     docker:
       dockerfile: Dockerfile
       buildArgs:
         REACT_APP_BACK_URL: app.dev.gabrielbechara.com
         REACT_APP_ENV: dev
-
+  - image: quotes-front-prod
+    context: .
+    docker:
+      dockerfile: Dockerfile
+      buildArgs:
+        REACT_APP_BACK_URL: app.prod.gabrielbechara.com
+        REACT_APP_ENV: prod
 deploy:
   cloudrun:
     projectid: gab-devops-1
@@ -45,15 +53,6 @@ deploy:
 
 profiles:
 - name: dev
-  build:
-    artifacts:
-    - image: quotes-front
-      context: .
-      docker:
-        dockerfile: Dockerfile
-        buildArgs:
-          REACT_APP_BACK_URL: app.dev.gabrielbechara.com
-          REACT_APP_ENV: dev
   manifests:
     kustomize:
       paths:
@@ -82,16 +81,6 @@ profiles:
 #      gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
-  build:
-    artifacts:
-    - image: quotes-front
-      context: .
-      docker:
-        dockerfile: Dockerfile
-        buildArgs:
-          REACT_APP_BACK_URL: app.prod.gabrielbechara.com
-          REACT_APP_ENV: prod
-
   manifests:
     kustomize:
       paths:

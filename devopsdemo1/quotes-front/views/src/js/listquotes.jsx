@@ -98,7 +98,7 @@ class LoggedIn extends React.Component {
                 <a onClick={this.logout}>Log out</a>
               </div>
 
-              <h3>List of quotes and writers v0.2</h3>
+              <h3>List of quotes and writers v0.3</h3>
               <div className="row">
                 {this.state.citations.map(function(citation, i){
                   return (<Citation key={i} citation={citation} />);

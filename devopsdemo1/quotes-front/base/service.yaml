@@ -10,9 +10,9 @@ spec:
       annotations:
         autoscaling.knative.dev/minScale: '1'
         autoscaling.knative.dev/maxScale: '2'
-    spec:
-      containers:
-      - image: quotes-front
+#    spec:
+#      containers:
+#      - image: quotes-front
 # for react env var are not read at runtime (kept this here for future usage)
 #        env:
 #          - name: APP_BACK_URL
