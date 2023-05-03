@@ -18,6 +18,7 @@ WORKDIR /code/views
 ARG REACT_APP_BACK_URL
 ARG REACT_APP_ENV
 RUN echo "App Backend Url  $REACT_APP_BACK_URL"
+RUN echo "App Build REACT_APP_ENV  $REACT_APP_ENV"
 #RUN sed -i "s/REACT_APP_BACK_URL/$REACT_APP_BACK_URL/g" public/js/app.jsx
 RUN npm run build:$REACT_APP_ENV
 
