@@ -45,7 +45,7 @@ type myForm struct {
   var Citations = []Citation{
 	Citation{1, 0, "Le talent sans génie est peu de chose. Le génie sans talent n’est rien !", "#4285F4"},
 	Citation{2, 0, "On ne se baigne jamais deux fois dans le même fleuve.", "#DB4437"},
-	Citation{3, 0, "Ose savoir ! v0.3  ", "#F4B400"},
+	Citation{3, 0, "Ose savoir ! v0.5  ", "#F4B400"},
 	Citation{4, 0, "Le courage n'est pas l'absence de peur, mais la capacité de vaincre ce qui fait peur.", "#0F9D58"},
 	Citation{5, 0, "Après le pain, l’éducation est le premier besoin d’un peuple.","#545454"},
   }
