@@ -60,7 +60,7 @@ steps:
     - >
       cd devopsdemo1/quotes-front/ 
       &&
-      export $CLOUD_RUN_POLICY_FILE=`cat policy.json`
+      export CLOUD_RUN_POLICY_FILE=`cat policy.json`
       &&
       sed -i "s/CLOUD_RUN_POLICY_FILE/$CLOUD_RUN_POLICY_FILE/g" skaffold.yaml
       && 
