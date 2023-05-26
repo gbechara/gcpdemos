@@ -92,11 +92,11 @@ profiles:
       &&
       echo $RELEASE    
       &&
-      echo \"'bindings': ['members': ['allUsers'], 'role': 'roles/run.invoker']\" > policy.yaml
+      echo \"{"bindings": [{"members": ["allUsers"],"role": "roles/run.invoker"}]}\" > policy.json
       &&
-      cat policy.yaml
+      cat policy.json
       &&
-      gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
+      gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
 
 - name: prod
   manifests:
