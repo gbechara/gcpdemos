@@ -82,6 +82,10 @@ profiles:
       &&
       pwd
       &&
+      ls -trail /workspace/
+      &&
+      ls -trail /workspace/verify/ 
+      &&
       gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
