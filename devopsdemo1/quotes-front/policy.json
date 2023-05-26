@@ -1,10 +1,10 @@
 {
-  "bindings": [
+  'bindings': [
     {
-      "members": [
-        "allUsers"
+      'members': [
+        'allUsers'
       ],
-      "role": "roles/run.invoker"
+      'role': 'roles/run.invoker'
     }
   ]
 }
