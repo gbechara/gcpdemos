@@ -62,7 +62,7 @@ steps:
       &&
       export CLOUD_RUN_POLICY_FILE=`cat policy.json`
       &&
-      sed -i "s/CLOUD_RUN_POLICY_FILE/$CLOUD_RUN_POLICY_FILE/g" skaffold.yaml
+      sed -i "s/CLOUD_RUN_POLICY_FILE/${$_CLOUD_RUN_POLICY_FILE}/g" skaffold.yaml
       && 
       gcloud deploy releases create release-$BUILD_ID 
       --project=$PROJECT_ID --region=$LOCATION
@@ -73,6 +73,9 @@ steps:
 #      --build-artifacts=devopsdemo1/quotes-front/artifacts.json
 #      --images=quotes-front=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-front:$BUILD_ID 
  #  [END trigger cloud deploy]
+    substitutions:
+      _CLOUD_RUN_POLICY_FILE: `cat policy.json`
+
 
   # [START trigger cloud deploy for backend]
   # Docker push to Google Artifact Registry
