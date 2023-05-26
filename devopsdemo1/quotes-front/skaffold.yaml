@@ -92,7 +92,7 @@ profiles:
       &&
       echo $RELEASE    
       &&
-      echo \"{"bindings": [{"members": ["allUsers"],"role": "roles/run.invoker"}]}\" > policy.json
+      echo \"{'bindings': [{'members': ['allUsers'],'role': 'roles/run.invoker'}]}\" > policy.json
       &&
       cat policy.json
       &&
