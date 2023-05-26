@@ -90,18 +90,12 @@ profiles:
       &&
       echo $PIPELINE
       &&
-      echo $RELEASE
+      echo $RELEASE    
       &&
-      echo $SKAFFOLD_CONFIG_URI
-      &&
-      echo $skaffold_config_uri     
-      &&
-      cat <<'EOF' > policy.yaml
-      bindings:
+      echo 'bindings:
       - members:
         - allUsers
-        role: roles/run.invoker
-      EOF
+        role: roles/run.invoker' > policy.yaml
       &&
       gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 
