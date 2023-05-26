@@ -96,7 +96,7 @@ profiles:
       &&
       cat policy.json
       &&
-      gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
+      gcloud run services set-iam-policy quotes-front-dev policy.json --region=us-central1 --quiet | cat"]
 
 - name: prod
   manifests:
