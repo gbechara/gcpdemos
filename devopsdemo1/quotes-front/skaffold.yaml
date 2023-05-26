@@ -92,16 +92,7 @@ profiles:
       &&
       echo $RELEASE    
       &&
-      echo \"{
-  'bindings': [
-    {
-      'members': [
-        'allUsers'
-      ],
-      'role': 'roles/run.invoker'
-    }
-  ]
-}\" > policy.json
+      echo \"{'bindings': [{'members': ['allUsers'],'role': 'roles/run.invoker'}]}\" > policy.json
       &&
       cat policy.json
       &&
@@ -126,13 +117,6 @@ profiles:
       name: apply-policy
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
       command: ["/bin/sh"]
-#      args: ["-c", "cat <<EOF > policy.yaml
-#      bindings:
-#      - members:
-#        - allUsers
-#        role: roles/run.invoker
-#      EOF 
-#      &&
       args: ["-c", "echo $PATH
       &&
       echo \"{'bindings': [{'members': ['allUsers'],'role': 'roles/run.invoker'}]}\" > policy.json
