@@ -92,10 +92,7 @@ profiles:
       &&
       echo $RELEASE    
       &&
-      echo 'bindings:
-      - members:
-        - allUsers
-        role: roles/run.invoker' > policy.yaml
+      echo "'bindings': ['members': ['allUsers'], 'role': 'roles/run.invoker']'" > policy.yaml
       &&
       cat policy.yaml
       &&
