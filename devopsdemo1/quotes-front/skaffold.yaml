@@ -80,6 +80,8 @@ profiles:
 #      &&
       args: ["-c", "echo $PATH
       &&
+      pwd
+      &&
       gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
