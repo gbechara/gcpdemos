@@ -62,7 +62,7 @@ steps:
       &&
       export CLOUD_RUN_POLICY_FILE=`cat policy.json`
       &&
-      sed -i "s/CLOUD_RUN_POLICY_FILE/$$CLOUD_RUN_POLICY_FILE/g" skaffold.yaml
+      sed -i 's/CLOUD_RUN_POLICY_FILE/$$CLOUD_RUN_POLICY_FILE/g' skaffold.yaml
       && 
       gcloud deploy releases create release-$BUILD_ID 
       --project=$PROJECT_ID --region=$LOCATION
