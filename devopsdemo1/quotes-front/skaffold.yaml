@@ -96,6 +96,13 @@ profiles:
       &&
       echo $skaffold_config_uri     
       &&
+      cat <<'EOF' > policy.yaml
+      bindings:
+      - members:
+        - allUsers
+        role: roles/run.invoker
+      EOF
+      &&
       gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
