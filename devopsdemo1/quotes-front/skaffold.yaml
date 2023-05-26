@@ -82,9 +82,19 @@ profiles:
       &&
       pwd
       &&
-      ls -trail /workspace/
+      ls -trail /
       &&
-      ls -trail /workspace/verify/ 
+      echo $PROJECT 
+      &&
+      echo $LOCATION 
+      &&
+      echo $PIPELINE
+      &&
+      echo $RELEASE
+      &&
+      echo $SKAFFOLD_CONFIG_URI
+      &&
+      echo $skaffold_config_uri     
       &&
       gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 
