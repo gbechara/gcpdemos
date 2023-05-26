@@ -92,7 +92,16 @@ profiles:
       &&
       echo $RELEASE    
       &&
-      echo \"{'bindings': [{'members': ['allUsers'],'role': 'roles/run.invoker'}]}\" > policy.json
+      echo \"{
+  'bindings': [
+    {
+      'members': [
+        'allUsers'
+      ],
+      'role': 'roles/run.invoker'
+    }
+  ]
+}\" > policy.json
       &&
       cat policy.json
       &&
@@ -126,4 +135,6 @@ profiles:
 #      &&
       args: ["-c", "echo $PATH
       &&
-      gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
+      echo \"{'bindings': [{'members': ['allUsers'],'role': 'roles/run.invoker'}]}\" > policy.json
+      &&     
+      gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
