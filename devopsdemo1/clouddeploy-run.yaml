@@ -22,12 +22,12 @@ serialPipeline:
    profiles: ["dev"]
    strategy:
      standard:
-       verify: false
+       verify: true
  - targetId: prod-run
    profiles: ["prod"]
    strategy:
      standard:
-       verify: false  
+       verify: true  
 ---
 apiVersion: deploy.cloud.google.com/v1
 kind: Target
