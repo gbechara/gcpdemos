@@ -1,0 +1,10 @@
+{
+    "cloudcode.aiCompanion.forceAIDA": true,
+    "cloudcode.aiCompanion.languages": [
+        "go",
+        "java"
+    ],
+    "cloudcode.aiCompanion.codeGeneration.automatic": true,
+    "cloudcode.aiCompanion.codeGeneration.enable": true,
+    "cloudcode.beta.enableAICompanionChat": true
+}

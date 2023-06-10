@@ -20,3 +20,8 @@ docker tag cloud-custom-workstation-2:latest  $ARTIFACT_REPO/cloud-custom-workst
 docker push $ARTIFACT_REPO/cloud-custom-workstation-2
 
 #docker network inspect bridge
+
+# vscode on base image 
+docker build -t cloud-custom-workstation-vscode -f Dockerfile.vscode .
+docker tag cloud-custom-workstation-vscode:latest  $ARTIFACT_REPO/cloud-custom-workstation-vscode:latest
+docker push $ARTIFACT_REPO/cloud-custom-workstation-vscode
