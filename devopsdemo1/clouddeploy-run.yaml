@@ -22,12 +22,20 @@ serialPipeline:
    profiles: ["dev"]
    strategy:
      standard:
-       verify: true
+       predeploy:
+        actions: ["predeploy-action"]
+       postdeploy:
+        actions: ["postdeploy-action"]
+       verify: false    
  - targetId: prod-run
    profiles: ["prod"]
    strategy:
      standard:
-       verify: true  
+       verify: false
+       predeploy:
+        actions: ["predeploy-action"]
+       postdeploy:
+        actions: ["postdeploy-action"]
 ---
 apiVersion: deploy.cloud.google.com/v1
 kind: Target

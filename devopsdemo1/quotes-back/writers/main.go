@@ -33,8 +33,6 @@ import (
 
 var dbPool *sql.DB
 
-
-  
 type Writer struct {
 	ID    int    `json:"id" binding:"required"`
 	Likes int    `json:"likes"`

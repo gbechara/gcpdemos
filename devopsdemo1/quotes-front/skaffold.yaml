@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta2
+apiVersion: skaffold/v4beta5
 #apiVersion: skaffold/v3alpha1
 kind: Config
 #manifests:
@@ -49,7 +49,7 @@ deploy:
 #        - command: ["sh", "-c", "gcloud run services delete quotes-front --region=us-central1 --quiet | cat"]
       after:
        - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
-       - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
+#      - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 
 profiles:
 - name: dev
@@ -64,6 +64,42 @@ profiles:
       hooks:
         after:
         - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
+  customActions:
+  - name: predeploy-action
+    containers:
+    - name: predeploy-echo
+      image: ubuntu
+      command: ["/bin/sh"]
+      args: ["-c", 'echo "this is a predeploy action"' ]
+  - name: postdeploy-action
+    containers:
+    - name: postdeploy-echo
+      image: ubuntu
+      command: ["/bin/sh"]
+      args: ["-c", 'echo "this is a postdeploy action"' ]
+    - name: postdeploy-apply-policy
+      image: gcr.io/google.com/cloudsdktool/cloud-sdk
+      command: ["/bin/sh"]
+      args: ["-c", "echo $PATH
+      &&
+      pwd
+      &&
+      ls -trail /
+      &&
+      echo $PROJECT 
+      &&
+      echo $LOCATION 
+      &&
+      echo $PIPELINE
+      &&
+      echo $RELEASE    
+      &&
+      echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
+      &&
+      cat policy.json
+      &&
+      gcloud run services set-iam-policy quotes-front-dev policy.json --region=us-central1 --quiet | cat"]
+
 # hooks are not used by cloud deploy, using verify instead
   verify:
   - name: apply-policy
@@ -110,6 +146,43 @@ profiles:
       hooks:
         after:
         - command: ["sh", "-c", "gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
+  customActions:
+  - name: predeploy-action
+    containers:
+    - name: predeploy-echo
+      image: ubuntu
+      command: ["/bin/sh"]
+      args: ["-c", 'echo "this is a predeploy action"' ]
+  - name: postdeploy-action
+    containers:
+    - name: postdeploy-echo
+      image: ubuntu
+      command: ["/bin/sh"]
+      args: ["-c", 'echo "this is a postdeploy action"' ]
+    - name: postdeploy-apply-policy
+      image: gcr.io/google.com/cloudsdktool/cloud-sdk
+      command: ["/bin/sh"]
+      args: ["-c", "echo $PATH
+      &&
+      pwd
+      &&
+      ls -trail /
+      &&
+      echo $PROJECT 
+      &&
+      echo $LOCATION 
+      &&
+      echo $PIPELINE
+      &&
+      echo $RELEASE    
+      &&
+      echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
+      &&
+      cat policy.json
+      &&
+      gcloud run services set-iam-policy quotes-front-dev policy.json --region=us-central1 --quiet | cat"]
+
+
 # hooks are not used by cloud deploy, using verify instead
   verify:
   - name: apply-policy
