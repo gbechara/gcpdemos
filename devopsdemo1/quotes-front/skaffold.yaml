@@ -76,7 +76,7 @@ profiles:
     - name: postdeploy-echo
       image: ubuntu
       command: ["/bin/sh"]
-      args: ["-c", 'echo "this is a postdeploy action cat polici.yaml" && cat policy.yaml' ]
+      args: ["-c", 'echo "this is a postdeploy action"' ]
     - name: postdeploy-apply-policy
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
       command: ["/bin/sh"]
