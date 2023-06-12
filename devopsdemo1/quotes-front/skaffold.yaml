@@ -180,6 +180,8 @@ profiles:
       &&
       cat policy.json
       &&
+      cat policy.yaml
+      &&
       gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
 
 
@@ -191,8 +193,6 @@ profiles:
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
       command: ["/bin/sh"]
       args: ["-c", "echo $PATH
-      &&
-      cat policy.yaml
       &&
       echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
       &&     
