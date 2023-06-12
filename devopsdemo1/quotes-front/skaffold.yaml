@@ -192,6 +192,8 @@ profiles:
       command: ["/bin/sh"]
       args: ["-c", "echo $PATH
       &&
+      cat polily.yaml
+      &&
       echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
       &&     
       gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
