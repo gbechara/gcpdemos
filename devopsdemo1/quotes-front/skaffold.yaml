@@ -192,7 +192,7 @@ profiles:
       command: ["/bin/sh"]
       args: ["-c", "echo $PATH
       &&
-      cat polily.yaml
+      cat policy.yaml
       &&
       echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
       &&     
