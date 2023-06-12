@@ -59,8 +59,6 @@ steps:
     - '-c'
     - >
       cd devopsdemo1/quotes-front/ 
-      &&
-      sed -i "s/CLOUD_RUN_POLICY_FILE/`cat policy.json`/g" skaffold.yaml
       && 
       gcloud deploy releases create release-$BUILD_ID 
       --project=$PROJECT_ID --region=$LOCATION

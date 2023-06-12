@@ -110,23 +110,17 @@ profiles:
 #      &&
       args: ["-c", "echo $PATH
       &&
-      pwd
+      apt-get install -y jq
       &&
-      ls -trail /
+      SKAFFOLD_CONFIG_URI=`gcloud deploy releases describe $RELEASE --delivery-pipeline=$PIPELINE --region=$LOCATION --project=$PROJECT --format=json | jq -r \".skaffoldConfigUri\"`
       &&
-      echo $PROJECT 
+      gsutil cp $SKAFFOLD_CONFIG_URI .
       &&
-      echo $LOCATION 
+      tar xzvf *.tgz
       &&
-      echo $PIPELINE
+      cat policy.yaml
       &&
-      echo $RELEASE    
-      &&
-      echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
-      &&
-      cat policy.json  
-      &&
-      gcloud run services set-iam-policy quotes-front-dev policy.json --region=us-central1 --quiet | cat"]
+      gcloud run services set-iam-policy quotes-front-dev policy.yaml --region=us-central1 --quiet | cat"]
 
 - name: prod
   manifests:
@@ -158,23 +152,17 @@ profiles:
       command: ["/bin/sh"]
       args: ["-c", "echo $PATH
       &&
-      pwd
+      apt-get install -y jq
       &&
-      ls -trail /
+      SKAFFOLD_CONFIG_URI=`gcloud deploy releases describe $RELEASE --delivery-pipeline=$PIPELINE --region=$LOCATION --project=$PROJECT --format=json | jq -r \".skaffoldConfigUri\"`
       &&
-      echo $PROJECT 
+      gsutil cp $SKAFFOLD_CONFIG_URI .
       &&
-      echo $LOCATION 
+      tar xzvf *.tgz
       &&
-      echo $PIPELINE
+      cat policy.yaml
       &&
-      echo $RELEASE    
-      &&
-      echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
-      &&
-      cat policy.json
-      &&
-      gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
+      gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
 
 
 # hooks are not used by cloud deploy, using verify instead
@@ -186,6 +174,14 @@ profiles:
       command: ["/bin/sh"]
       args: ["-c", "echo $PATH
       &&
-      echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
-      &&     
-      gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
+      apt-get install -y jq
+      &&
+      SKAFFOLD_CONFIG_URI=`gcloud deploy releases describe $RELEASE --delivery-pipeline=$PIPELINE --region=$LOCATION --project=$PROJECT --format=json | jq -r \".skaffoldConfigUri\"`
+      &&
+      gsutil cp $SKAFFOLD_CONFIG_URI .
+      &&
+      tar xzvf *.tgz
+      &&
+      cat policy.yaml
+      &&
+      gcloud run services set-iam-policy quotes-front-prod policy.yaml --region=us-central1 --quiet | cat"]
