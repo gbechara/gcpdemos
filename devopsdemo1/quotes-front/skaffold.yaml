@@ -132,6 +132,8 @@ profiles:
       &&
       cat policy.json
       &&
+      cat policy.yaml    
+      &&
       gcloud run services set-iam-policy quotes-front-dev policy.json --region=us-central1 --quiet | cat"]
 
 - name: prod
