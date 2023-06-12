@@ -76,7 +76,7 @@ profiles:
     - name: postdeploy-echo
       image: ubuntu
       command: ["/bin/sh"]
-      args: ["-c", 'echo "this is a postdeploy action"' ]
+      args: ["-c", 'echo "this is a postdeploy action cat polici.yaml" && cat policy.yaml' ]
     - name: postdeploy-apply-policy
       image: gcr.io/google.com/cloudsdktool/cloud-sdk
       command: ["/bin/sh"]
@@ -97,8 +97,6 @@ profiles:
       echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
       &&
       cat policy.json
-      &&
-      cat policy.yaml
       &&
       gcloud run services set-iam-policy quotes-front-dev policy.json --region=us-central1 --quiet | cat"]
 
@@ -132,9 +130,7 @@ profiles:
       &&
       echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
       &&
-      cat policy.json
-      &&
-      cat policy.yaml    
+      cat policy.json  
       &&
       gcloud run services set-iam-policy quotes-front-dev policy.json --region=us-central1 --quiet | cat"]
 
@@ -183,8 +179,6 @@ profiles:
       echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
       &&
       cat policy.json
-      &&
-      cat policy.yaml
       &&
       gcloud run services set-iam-policy quotes-front-prod policy.json --region=us-central1 --quiet | cat"]
 
