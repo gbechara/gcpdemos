@@ -100,7 +100,7 @@ profiles:
       &&
       apt-get install -y jq
       &&
-      SKAFFOLD_CONFIG_URI=`gcloud deploy releases describe $RELEASE --delivery-pipeline=$PIPELINE --region=$LOCATION --project=$PROJECT --format=json | jq -r ".skaffoldConfigUri"`
+      SKAFFOLD_CONFIG_URI=`gcloud deploy releases describe $RELEASE --delivery-pipeline=$PIPELINE --region=$LOCATION --project=$PROJECT --format=json | jq -r \".skaffoldConfigUri\"`
       &&
       gsutil cp $SKAFFOLD_CONFIG_URI .
       &&
