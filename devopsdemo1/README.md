@@ -43,6 +43,11 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
 --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+--role="roles/clouddeploy.releaser"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+--member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+--format="value(projectNumber)")-compute@developer.gserviceaccount.com \
 --role="roles/container.developer"
 
 @todo:

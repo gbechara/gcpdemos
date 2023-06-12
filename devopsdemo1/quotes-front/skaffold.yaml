@@ -82,22 +82,6 @@ profiles:
       command: ["/bin/sh"]
       args: ["-c", "echo $PATH
       &&
-      pwd
-      &&
-      ls -trail /
-      &&
-      echo $PROJECT 
-      &&
-      echo $LOCATION 
-      &&
-      echo $PIPELINE
-      &&
-      echo $RELEASE    
-      &&
-      echo \"CLOUD_RUN_POLICY_FILE\" > policy.json
-      &&
-      cat policy.json
-      &&
       apt-get install -y jq
       &&
       SKAFFOLD_CONFIG_URI=`gcloud deploy releases describe $RELEASE --delivery-pipeline=$PIPELINE --region=$LOCATION --project=$PROJECT --format=json | jq -r \".skaffoldConfigUri\"`
