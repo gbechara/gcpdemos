@@ -87,6 +87,7 @@ Create certificate for Gateways
 gcloud compute ssl-certificates create gab-dev-certificate --domains app.dev.gabrielbechara.com --global
 gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.gabrielbechara.com --global
 
+
 ```
 
 Replace variables in files
@@ -215,6 +216,26 @@ kubectl annotate serviceaccount \
   ksa-cloud-sql-prod  \
   --namespace prod \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
+
+```
+Service accounts roles for LLM (split later dev and prod) and IAP SA
+```
+gcloud iam service-accounts create llm-sa \
+  --display-name="LLM SA"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:llm-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/aiplatform.user"
+
+gcloud beta services identity create --service=iap.googleapis.com --project=gab-devops-1  
+
+```
+Create certificate for HPPT LB used by IAP
+```
+
+gcloud compute ssl-certificates create llm-dev-certificate --domains app.prod.gabrielbechara.com --global
+gcloud compute ssl-certificates create llm-prod-certificate --domains app.prod.gabrielbechara.com --global
+
 
 ```
 Service accounts roles for alloydb test (split later dev and prod)

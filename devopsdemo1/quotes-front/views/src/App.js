@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import ListQuotes from './js/listquotes';
 import InsertWriter from './js/insertwriter';
+import AskLLM from './js/askllm';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -28,8 +29,9 @@ function App() {
           <div className="main">
            
             <Routes>
+              <Route path='/' element={<ListQuotes/>} />
               <Route path='/insertwriter' element={<InsertWriter/>} />
-              <Route path='/' element={<ListQuotes/>} />             
+              <Route path='/askllm' element={<AskLLM/>} />             
             </Routes>
           </div>
         </div>  

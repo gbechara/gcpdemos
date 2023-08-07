@@ -10,8 +10,6 @@ export default function InsertWriter() {
 
 class NewWriter extends React.Component {
 
-
-
     constructor(props) {
       super(props);
       this.state = {
@@ -59,7 +57,7 @@ class NewWriter extends React.Component {
         break;
       case 'color':
         colorValid = value.length >= 7;
-        fieldValidationErrors.colorValid = colorValid ? '': ' a color is should have 7 caracters';
+        fieldValidationErrors.colorValid = colorValid ? '': ' a color is should have 7 characters';
         break;
       default:
         break;
@@ -96,8 +94,9 @@ class NewWriter extends React.Component {
             <div className="col-lg-12">
 
               <div class="topnav" id="myTopnav">
-                <Link to='/' size='0'>Liste Quotes</Link>
-                <Link to='/insertwriter' class="active" size='0'>Insert Writer</Link>                
+                <Link to='/' size='0'>List Quotes</Link>
+                <Link to='/insertwriter' class="active" size='0'>Insert Writer</Link>
+                <Link to='/askllm' size='0'>Ask LLM</Link>                
                 <a onClick={this.refresh}>Refresh </a> 
                 <a onClick={this.logout}>Log out</a>
 

@@ -42,8 +42,8 @@ type Writer struct {
   
 /** a list of initial Writers */
 var Writers = []Writer{
-	Writer{1, 0, "Victor Hugo.", "#4285F4"},
-	Writer{2, 0, "Balzac.", "#DB4437"},
+	Writer{1, 0, "Paul Valéry.", "#4285F4"},
+	Writer{2, 0, "Héraclite.", "#DB4437"},
 	Writer{3, 0, "Danton.","#545454"},
 }
 

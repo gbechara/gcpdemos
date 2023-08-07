@@ -92,8 +92,9 @@ class LoggedIn extends React.Component {
             <div className="col-lg-12">
                
               <div class="topnav" id="myTopnav">
-                <Link to='/' size='0' class="active">Liste Quotes</Link>
-                <Link to='/insertwriter' size='0'>Insert Writer</Link>                
+                <Link to='/' size='0' class="active">List Quotes</Link>
+                <Link to='/insertwriter' size='0'>Insert Writer</Link>
+                <Link to='/askllm' size='0'>Ask LLM</Link>                
                 <a onClick={this.refresh}>Refresh </a> 
                 <a onClick={this.logout}>Log out</a>
               </div>

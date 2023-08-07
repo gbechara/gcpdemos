@@ -6,5 +6,6 @@
     ],
     "cloudcode.aiCompanion.codeGeneration.automatic": true,
     "cloudcode.aiCompanion.codeGeneration.enable": true,
-    "cloudcode.beta.enableAICompanionChat": true
+    "cloudcode.beta.enableAICompanionChat": true,
+    "git.ignoreLimitWarning": true
 }

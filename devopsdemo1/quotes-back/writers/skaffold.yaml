@@ -1,0 +1,19 @@
+apiVersion: skaffold/v4beta5
+kind: Config
+metadata:
+  name: writers
+build:
+  artifacts:
+    - image: writers
+      docker:
+        dockerfile: Dockerfile
+manifests:
+  kustomize:
+    paths:
+      - overlays/dev
+profiles:
+  - name: prod
+    manifests:
+      kustomize:
+        paths:
+          - overlays/prod
