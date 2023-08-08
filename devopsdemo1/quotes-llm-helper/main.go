@@ -86,7 +86,7 @@ type SafetySetting struct {
 
 var defaultSafetySettings = []SafetySetting {
 //    SafetySetting{"HARM_CATEGORY_DANGEROUS", "BLOCK_LOW_AND_ABOVE",},
-//    SafetySetting{"HARM_CATEGORY_UNSPECIFIED", "BLOCK_NONE",},
+    SafetySetting{"HARM_CATEGORY_UNSPECIFIED", "BLOCK_NONE",},
 }
 
 type PalmClient struct {
