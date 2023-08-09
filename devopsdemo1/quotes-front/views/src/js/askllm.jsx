@@ -82,16 +82,22 @@ class AskBard extends React.Component {
       ]},
      "content":"Apple Watch Series 7, Apple Watch SE, Apple Watch Series 6, Apple Watch Series 5, Apple Watch Series 4, Apple Watch Series 3, Apple Watch Series 2, Apple Watch Series 1"}]
   }
+  format 2 
+  {"predictions":[
+    {"candidates":[{"content":"The quote  is form the wonderful and extraordinary ","author":"1"}],
+    "safetyAttributes":[{"categories":[],"blocked":false,"scores":[]}],
+    "citationMetadata":[{"citations":[]}],"content":""}]}
 */
     //let response = `https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`;
     //this.setState({promptresponse: "test"});
-    window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`, res => {  
+    window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:${encodeURIComponent(this.state.prompt)}`, res => {  
      console.log("Réponse LLM2");
      console.log(res); 
      console.log(res.predictions);
      console.log(res.predictions[0].content);
       this.setState({
-        promptresponse: res.predictions[0].content
+        //promptresponse: res.predictions[0].content
+        promptresponse: res.predictions[0].candidates[0].content
       });
     });
 

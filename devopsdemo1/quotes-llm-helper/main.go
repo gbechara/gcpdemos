@@ -34,8 +34,43 @@ type Content struct {
 	Content string `json:"content"`
 }
 
+type Message struct {
+	Author string `json:"author"`
+	Content string `json:"content"`
+}
+
+type Instances struct {
+	Examples []Example `json:"examples"`
+	Messages []Message `json:"messages"`
+}
+
+
+type Example  struct {
+	Input Input `json:"input"`
+	Output Output `json:"output"`
+}
+
+type Input struct {
+	Content string `json:"content"`
+} 
+
+
+type Output struct {
+	Content string `json:"content"`
+} 
+
+var defaultExamples = []Example { 
+	Example{ 
+		Input {"Who is this quote from : Le talent sans genie est peu de chose. Le genie sans talent n est rien !"},
+		Output {"The quote  is form the wonderful and extraordinary Paul Valery"},
+	},
+	Example{ 
+		Input {"Who is this quote from : on ne se baigne jamais deux fois dans le meme fleuve."},
+		Output {"The quote  is form the wonderful and extraordinary Heraclite d Ephese"},
+	},
+}
 type Parameters struct {
-	SafetySettings  []SafetySetting `json:"safetySettings"`
+//	SafetySettings  []SafetySetting `json:"safetySettings"`
 	Temperature     float64 `json:"temperature"`
 	MaxOutputTokens int     `json:"maxOutputTokens"`
 	TopP            float64 `json:"topP"`
@@ -44,7 +79,9 @@ type Parameters struct {
 
 
 type PalmRequest struct {
-	Instances  []Content   `json:"instances"`
+//	Examples  []Example   `json:"examples"`
+//	Instances  []Content   `json:"instances"`
+	Instances  []Instances   `json:"instances"`
 //	SafetySettings []SafetySetting `json:"safetySettings"`
 	Parameters *Parameters `json:"parameters"`
 }
@@ -54,16 +91,21 @@ type PalmRequest struct {
 	Parameters *Parameters `json:"parameters"`
 }*/
 
+type Candidates  struct {
+	Content string `json:"content"`
+	Author string `json:"author"`
+}
 
 // JSON response from the Palm API
 type PalmResponse struct {
 	Predictions []struct {
-		SafetyAttributes struct {
+		Candidates []Candidates  `json:"candidates"`
+		SafetyAttributes []struct {
 			Categories []string  `json:"categories"`
 			Blocked    bool      `json:"blocked"`
 			Scores     []float64 `json:"scores"`
 		} `json:"safetyAttributes"`
-		CitationMetadata struct {
+		CitationMetadata []struct {
 			Citations []any `json:"citations"`
 		} `json:"citationMetadata"`
 		Content string `json:"content"`
@@ -71,7 +113,7 @@ type PalmResponse struct {
 }
 
 var defaultParameters = &Parameters{
-	SafetySettings: defaultSafetySettings,
+//	SafetySettings: defaultSafetySettings,
 	Temperature:     0.2,
 	MaxOutputTokens: 256,
 	TopP:            0.8,
@@ -128,12 +170,9 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.GET("/llm-helper/:Prompt", LLMHelperHandler)
-
 	}
 
-	
 	r.Run()
-
 	//
 }
 
@@ -155,7 +194,8 @@ func LLMHelperHandler(c *gin.Context) {
  //func callLLM(prompt string, c *gin.Context) string {
 
 	region := "us-central1"
-	modelName := "text-bison@001"
+	//modelName := "text-bison@001"
+	modelName := "text-bison"
 	projectId := "gab-devops-1"
 
 	palmClient := NewClient(region, projectId, modelName, c)
@@ -182,7 +222,7 @@ func LLMHelperHandler(c *gin.Context) {
 	*/
 
 	fmt.Printf("The initial prompt is \n%s\n\n", prompt)
-	fmt.Printf("The generated answer is \n%s\n", response.Predictions[0].Content)
+	fmt.Printf("The generated answer is \n%s\n", response.Predictions[0].Candidates[0].Content)
 	return *response
 	//return *&response.Predictions[len(response.Predictions)-1].Content
 }
@@ -201,7 +241,10 @@ func LLMHelperHandler(c *gin.Context) {
 }
 
 func (p *PalmClient) createPalmURL(region string, projectId string, modelName string) string {
-	return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict", region, projectId, region, modelName)
+	//return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict", region, projectId, region, modelName)
+	//return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict -d", region, projectId, region, modelName)
+	//return "https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/chat-bison:predict -d"
+	return "https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/chat-bison:predict"
 }
 func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (response *PalmResponse, err error) {
 	//Create the client if not exist
@@ -221,11 +264,17 @@ func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (respons
 	    //request = PalmRequest{Parameters: parameters, SafetySettings: defaultSafetySettings}
 	}
 
-	request.Instances = append(request.Instances, Content{prompt})
+
+
+	var messages = []Message{}
+	messages = append(messages, Message{ "user","Who is this quote from : "+prompt})
+	request.Instances = append(request.Instances, Instances{defaultExamples, messages})
+	
 
 	// Managed JSON, should never fail, ignore the err.
 	requestJson, _ := json.Marshal(request)
 
+	fmt.Printf("The palmUrl is \n%s\n\n", p.palmUrl)
 	fmt.Printf("The requestJson is \n%s\n\n", requestJson)
 
 	//Call API
@@ -258,6 +307,7 @@ func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (respons
 	} else {
 		errorMessage := fmt.Sprintf("API call with error %s\n", rawResponse.Status)
 		fmt.Println(errorMessage)
+		fmt.Println(rawResponse)
 		err = errors.New(errorMessage)
 		return nil, err
 	}
