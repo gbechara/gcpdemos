@@ -94,15 +94,25 @@ class AskBard extends React.Component {
      console.log("Réponse LLM2");
      console.log(res); 
      console.log(res.predictions);
-     console.log(res.predictions[0].content);
-      this.setState({
+      /*this.setState({
         //promptresponse: res.predictions[0].content
         promptresponse: res.predictions[0].candidates[0].content
+      });*/
+    
+
+    if (res.predictions[0].content.length){
+      console.log(res.predictions[0].content);
+      this.setState({
+        promptresponse: res.predictions[0].content
       });
-    });
-
-
-
+     } else
+     {
+      console.log(res.predictions[0].candidates[0].content);
+      this.setState({
+        promptresponse: res.predictions[0].candidates[0].content
+     });
+    };
+  });
   }
 
   render() {

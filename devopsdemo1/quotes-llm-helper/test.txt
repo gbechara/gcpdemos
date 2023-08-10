@@ -8,3 +8,14 @@ curl -v \
 https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/chat-bison:predict -d \
 '{"instances":[{"examples":[{"input":{"content":"Who is this quote from : Le talent sans genie est peu de chose. Le genie sans talent n est rien !"},"output":{"content":"The quote  is form the wonderful and extraordinary Paul Valéry"}},{"input":{"content":"Who is this quote from : on ne se baigne jamais deux fois dans le meme fleuve."},"output":{"content":"The quote  is form the wonderful and extraordinary Heraclite d Ephese"}}],"messages":[{"author":"user","content":"Who is this quote from : Ose Savoir !"}]}],"parameters":{"temperature":0.2,"maxOutputTokens":256,"topP":0.8,"topK":40}}
 '
+
+MODEL_ID=text-bison
+PROJECT_ID=gab-devops-1
+
+curl -v \
+-X POST \
+-H "Authorization: Bearer $(gcloud auth print-access-token)" \
+-H "Content-Type: application/json" \
+https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/text-bison:predict -d \
+'{"instances":[{"prompt":"list the watches"}],"parameters":{"temperature":0.2,"maxOutputTokens":256,"topP":0.8,"topK":40}}
+'
