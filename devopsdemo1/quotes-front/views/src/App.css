@@ -175,3 +175,7 @@
     transform: rotate(360deg);
   }
 }
+
+textarea {
+  max-width: 100%;
+}

@@ -89,20 +89,9 @@ class NewWriter extends React.Component {
 
 
     return (
-      <div className="container">
-          <div className="col-xs-8 col-xs-offset-2 jumbotron"> 
-            <div className="col-lg-12">
-
-              <div class="topnav" id="myTopnav">
-                <Link to='/' size='0'>List Quotes</Link>
-                <Link to='/insertwriter' class="active" size='0'>Insert Writer</Link>
-                <Link to='/askllm' size='0'>Ask LLM</Link>                
-                <a onClick={this.refresh}>Refresh </a> 
-                <a onClick={this.logout}>Log out</a>
-
-              </div>
-
-
+      <div>
+ 
+ 
               <h3>Create new writer</h3>
               
               <Form className="create-form" onSubmit={this.handleSubmit} formErrors={this.state.formErrors}>
@@ -126,8 +115,6 @@ class NewWriter extends React.Component {
                 </Form.Field><br/>
                 <Button type='submit' disabled={!this.state.formValid}>Submit</Button>
               </Form>
-          </div>
-        </div>
       </div>
 
     )

@@ -67,12 +67,12 @@ type Output struct {
  
 var defaultExamples = []Example { 
 	Example{ 
-		Input {"Who is this quote from : Le talent sans genie est peu de chose. Le genie sans talent n est rien !"},
-		Output {"The quote  is form the wonderful and extraordinary Paul Valery"},
+		Input {"Who is this quote from : Le talent sans genie est peu de chose. Le génie sans talent n'est rien !"},
+		Output {"The quote  is form the wonderful and extraordinary Paul Valéry"},
 	},
 	Example{ 
 		Input {"Who is this quote from : on ne se baigne jamais deux fois dans le meme fleuve."},
-		Output {"The quote  is form the wonderful and extraordinary Heraclite d Ephese"},
+		Output {"The quote  is form the wonderful and extraordinary Heraclite d'Ephèse"},
 	},
 }
 type Parameters struct {

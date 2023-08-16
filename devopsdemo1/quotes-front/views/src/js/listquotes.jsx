@@ -87,17 +87,18 @@ class LoggedIn extends React.Component {
 
   render() {
     return (
-      <div className="container">
-        <div className="col-xs-8 col-xs-offset-2 jumbotron">
-            <div className="col-lg-12">
-               
+      <div>
+             {/*    <div className="col-xs-8 col-xs-offset-2 jumbotron"> 
+                    <div className="col-lg-12">*/}
+
+              {/* 
               <div class="topnav" id="myTopnav">
                 <Link to='/' size='0' class="active">List Quotes</Link>
                 <Link to='/insertwriter' size='0'>Insert Writer</Link>
                 <Link to='/askllm' size='0'>Ask LLM</Link>                
                 <a onClick={this.refresh}>Refresh </a> 
                 <a onClick={this.logout}>Log out</a>
-              </div>
+              </div>*/}
 
               <h3>List of quotes and writers v0.7</h3>
               <div className="row">
@@ -111,8 +112,6 @@ class LoggedIn extends React.Component {
                 })}
               </div>
 
-            </div>
-        </div>
       </div>
     )
   }

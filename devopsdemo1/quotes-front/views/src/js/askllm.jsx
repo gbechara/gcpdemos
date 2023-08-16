@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { Button, Form } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import { FormErrors } from './FormErrors';
+import { View, StyleSheet, Text } from 'react-native';
+
 
 export default function AskLLM() {
   return (<AskBard />);
 }
+
 
 class AskBard extends React.Component {
 
@@ -17,7 +20,8 @@ class AskBard extends React.Component {
         promptValid: false,
         formErrors: {prompt: ''},
         formValid: false,
-        promptresponse: '...'
+        promptresponse: '...',
+        characterCount: 0
       }
 
       this.handleChange = this.handleChange.bind(this);
@@ -42,6 +46,8 @@ class AskBard extends React.Component {
     let fieldValidationErrors = this.state.formErrors;
     let promptValid = this.state.promptValid;
   
+    this.updateCharacterCount();
+
     switch(fieldName) {
       case 'prompt':
         promptValid = value.length >= 2;
@@ -52,7 +58,7 @@ class AskBard extends React.Component {
     }
     this.setState({formErrors: fieldValidationErrors,
                     promptValid: promptValid
-                  }, this.validateForm);
+                  }, this.validateForm,);
   }
 
 
@@ -64,7 +70,9 @@ class AskBard extends React.Component {
     return(error.length === 0 ? '' : 'has-error');
   }
 
-
+  updateCharacterCount() {
+    this.state.characterCount = this.state.prompt.length;
+  }
 
   handleSubmit(event) {
     //let response = window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`);
@@ -109,30 +117,16 @@ class AskBard extends React.Component {
      {
       console.log(res.predictions[0].candidates[0].content);
       this.setState({
-        promptresponse: res.predictions[0].candidates[0].content
-     });
+        promptresponse: res.predictions[0].candidates[0].content 
+     });      
     };
   });
   }
 
   render() {
 
-
     return (
-      <div className="container">
-          <div className="col-xs-8 col-xs-offset-2 jumbotron"> 
-            <div className="col-lg-12">
-
-
-              <div class="topnav" id="myTopnav">
-                <Link to='/' size='0'>List Quotes</Link>
-                <Link to='/insertwriter' size='0'>Insert Writer</Link>
-                <Link to='/askllm' class="active" size='0'>Ask LLM</Link>                
-                <a onClick={this.refresh}>Refresh </a> 
-                <a onClick={this.logout}>Log out</a>
-
-              </div>
-
+      <div>
 
               <h3>Ask LLM</h3>
               
@@ -142,13 +136,18 @@ class AskBard extends React.Component {
                 </div>
                 <Form.Field required='true' fluid >
                     <label aline>Hey Quotey who is the writer</label> <br/>
-                    <input name='prompt' placeholder='Enter the quote here' value={this.state.prompt} onChange={this.handleChange} style={{width: '350px'}}/>
-                    <label name='response'> {this.state.promptresponse} </label>
-                </Form.Field><br/>
+                    {/* <input name='prompt' placeholder='Enter the quote here' value={this.state.prompt} onChange={this.handleChange} style={{width: '350px'}}/><br/>*/}
+                    <textarea id="prompt" maxlength="350" rows="3" cols="100" placeholder='Enter the quote here' name="prompt"  value={this.state.prompt} onChange={this.handleChange}></textarea>
+                    {/* <label name='response'> {this.state.promptresponse} </label> */}
+                </Form.Field>
+                <div id="characterCount">{this.state.characterCount}</div>
                 <Button type='submit' disabled={!this.state.formValid}>Submit</Button>
+                <div id="formattedResponse">
+                    <Text>
+                      {this.state.promptresponse.replace(/\n/g,'\n')}
+                    </Text>
+                </div>
               </Form>
-          </div>
-        </div>
       </div>
 
     )

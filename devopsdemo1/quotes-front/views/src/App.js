@@ -3,7 +3,9 @@ import './App.css';
 import ListQuotes from './js/listquotes';
 import InsertWriter from './js/insertwriter';
 import AskLLM from './js/askllm';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink, Link } from 'react-router-dom';
+
+
 
 function App() {
   return (
@@ -25,19 +27,35 @@ function App() {
     </div>*/
     <Router>
 
-        <div className="main">
-          <div className="main">
-           
-            <Routes>
-              <Route path='/' element={<ListQuotes/>} />
-              <Route path='/insertwriter' element={<InsertWriter/>} />
-              <Route path='/askllm' element={<AskLLM/>} />             
-            </Routes>
+ 
+        <div className="container-fluid">
+          <div class="topnav" id="myTopnav">
+                <NavLink to='/' class="active" size='0'>List Quotes</NavLink>
+                <NavLink to='/insertwriter' size='0'>Insert Writer</NavLink>
+                <NavLink to='/askllm' size='0'>Ask LLM</NavLink>                
+                <a onClick={refresh}>Refresh </a> 
+                <a onClick={logout}>Log out</a>
+            </div>
+            <div>       
+              <Routes>
+                <Route path='/insertwriter' element={<InsertWriter/>} />
+                <Route path='/askllm' element={<AskLLM/>} />
+                <Route path='/' element={<ListQuotes/>} />             
+              </Routes>
           </div>
         </div>  
       </Router>
   );
 }
+
+function refresh() {
+  window.location.reload();
+}
+
+function logout() {
+  window.location.reload();
+}
+
 
 //ReactDOM.render(<App />, document.getElementById('monapp'));
 
