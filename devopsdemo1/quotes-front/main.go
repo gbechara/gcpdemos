@@ -46,6 +46,9 @@ func main() {
 	// Serve frontend static files
 	r.Use(static.Serve("/", static.LocalFile("./views/public", true)))
 
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./views/public/index.html")
+	})
 
     //r.LoadHTMLGlob("views/*")
     //r.GET("/", indexHandler)
