@@ -66,7 +66,7 @@ class LoggedIn extends React.Component {
     //     $.get("http://34.98.114.247/api/citations", res => {
     //      $.get("https://app.dev.gabrielbechara.com/api/citations", res => {
       //window.$.get('https://REACT_APP_BACK_URL/api/citations', res => {
-        window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/citations`, res => {
+        $.get(`https://${process.env.REACT_APP_BACK_URL}/api/citations`, res => {
             this.setState({
               citations: res
             });
