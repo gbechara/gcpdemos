@@ -63,8 +63,6 @@ type Writer struct {
   /** we'll create a list of Writers */
 type Writers = []Writer
 
-
-
 func main() {
 /*	 http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Hello World v0.74!")
@@ -101,16 +99,11 @@ func main() {
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "hey-cors-v0.4",
+			"message": "hey-cors-app-v0.4",
 		})
 	})
 
-
 	r.GET("/metrics", prometheusHandler())
-
-    //r.LoadHTMLGlob("views/*")
-    //r.GET("/", indexHandler)
-    //r.POST("/", formHandler)
 
 	api := r.Group("/api")
 	{
@@ -139,23 +132,8 @@ func formHandler(c *gin.Context) {
 func listQuotes() Citations {
 	var quotesURL = os.Getenv("QUOTES_URL")
     var citations Citations
-	//client := resty.New()
-	/*engine := gin.New()
-	engine.GET("http://quotes.dev.svc:8080/citations", func(context *gin.Context) {
-		//uri:=URI{}
-		// binding to URI
-		if err:=context.BindUri(&citations);err!=nil{
-		   context.AbortWithError(http.StatusBadRequest,err)
-		   return
-		}
-		//fmt.Println(uri)
-		context.JSON(http.StatusAccepted,&citations)
-		log.Println(citations)
-	 })
-	 engine.Run("http://quotes-dev.dev.svc")*/
-    ret , err := http.
-//        Get("http://quotes-dev.dev.svc:8080/api/citations")
-		Get(quotesURL)
+
+    ret , err := http.Get(quotesURL)
 
     if err != nil {
         log.Println("QuoteApp: unable to connect Quote")
@@ -233,26 +211,40 @@ func CitationsHandler(c *gin.Context) {
   }
 
   func InsertWritersHandler(c *gin.Context) {
+	
 	c.Header("Content-Type", "application/json")
 	var writersURL = os.Getenv("WRITERS_URL")
-	
 	var wr Writer =  Writer{1, 0, "DEFAULT", "#4285F4"}
 
-   /* if err := c.ShouldBindJSON(&wr); err != nil {
-        c.JSON(400, gin.H{"error": "Insert writer error"})
-        return
-    }*/
-
-    wr.Writer = c.Params.ByName("Writer")    
+    wr.Writer = c.Params.ByName("Writer")
 	wr.Color = c.Params.ByName("Color")
 
 	log.Printf("app: inserting new writer : "+ wr.Writer +","+wr.Color)
 
-	ret , err := http.Get(writersURL+"/insertwriter/"+url.QueryEscape(wr.Writer+"/"+wr.Color))
+	//ret , err := http.Get(writersURL+"/insertwriter/"+wr.Writer+"/"+wr.Color)
+
+	/*
+	writ , err := url.PathUnescape(wr.Writer+"/"+wr.Color)
+    if err != nil {
+        log.Println("QuoteApp: unable to PathUnescape writers")
+    }
+
+	ret , err := http.Get(writersURL+"/insertwriter/"+writ)
 
     if err != nil {
         log.Println("QuoteApp: unable to connect writers")
+    }*/
+
+	log.Println("writersURL : ", wr.Writer)
+	log.Println("writersURLEscaped : ",writersURL+url.PathEscape("/insertwriter/"+wr.Writer+"/"+wr.Color))
+	ret , err := http.Get(writersURL+url.PathEscape("/insertwriter/"+wr.Writer+"/"+wr.Color))
+
+	if err != nil {
+        log.Println("QuoteApp: unable to PathUnescape writers")
     }
+
+	
+
     defer ret.Body.Close()
     log.Printf("Quote App: list of writers")
 

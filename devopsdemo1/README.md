@@ -233,8 +233,8 @@ gcloud beta services identity create --service=iap.googleapis.com --project=gab-
 Create certificate for HPPT LB used by IAP
 ```
 
-gcloud compute ssl-certificates create llm-dev-certificate --domains app.prod.gabrielbechara.com --global
-gcloud compute ssl-certificates create llm-prod-certificate --domains app.prod.gabrielbechara.com --global
+gcloud compute ssl-certificates create llm-dev-certificate --domains llm.dev.gabrielbechara.com --global
+gcloud compute ssl-certificates create llm-prod-certificate --domains llm.prod.gabrielbechara.com --global
 
 
 ```

@@ -26,7 +26,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
-	"github.com/gin-gonic/contrib/static"
+//	"github.com/gin-gonic/contrib/static"
 )
 
 // JSON request from the Palm API
@@ -45,10 +45,9 @@ type Instances struct {
 	Prompt string `json:"prompt"`
 }
 
-type Instances2 struct {
+type InstancesTextBison struct {
 	Prompt string `json:"prompt"`
 }
-
 
 type Example  struct {
 	Input Input `json:"input"`
@@ -59,12 +58,10 @@ type Input struct {
 	Content string `json:"content"`
 } 
 
-
 type Output struct {
 	Content string `json:"content"`
-} 
+}
 
- 
 var defaultExamples = []Example { 
 	Example{ 
 		Input {"Who is this quote from : Le talent sans genie est peu de chose. Le génie sans talent n'est rien !"},
@@ -76,7 +73,6 @@ var defaultExamples = []Example {
 	},
 }
 type Parameters struct {
-//	SafetySettings  []SafetySetting `json:"safetySettings"`
 	Temperature     float64 `json:"temperature"`
 	MaxOutputTokens int     `json:"maxOutputTokens"`
 	TopP            float64 `json:"topP"`
@@ -84,16 +80,15 @@ type Parameters struct {
 }
 
 
-type PalmRequest struct {
+type PalmRequestChatBison struct {
 	Instances  []Instances   `json:"instances"`
 	Parameters *Parameters `json:"parameters"`
 }
 
-type PalmRequest2 struct {
-	Instances2  []Instances2   `json:"instances"`
+type PalmRequestTextBison struct {
+	InstancesTextBison  []InstancesTextBison   `json:"instances"`
 	Parameters *Parameters `json:"parameters"`
 }
-
 
 /*type PalmRequest struct {
 	Instances  []Content   `json:"instances"`
@@ -106,7 +101,7 @@ type Candidates  struct {
 }
 
 // JSON response from the Palm API
-type PalmResponse struct {
+type PalmResponseChatBison struct {
 	Predictions []struct {
 		Candidates []Candidates  `json:"candidates"`
 		SafetyAttributes []struct {
@@ -121,7 +116,7 @@ type PalmResponse struct {
 	} `json:"predictions"`
 }
 
-type PalmResponse2 struct {
+type PalmResponseTextBison struct {
 	Predictions []struct {
 		SafetyAttributes struct {
 			Categories []string  `json:"categories"`
@@ -136,7 +131,6 @@ type PalmResponse2 struct {
 }
 
 var defaultParameters = &Parameters{
-//	SafetySettings: defaultSafetySettings,
 	Temperature:     0.2,
 	MaxOutputTokens: 256,
 	TopP:            0.8,
@@ -163,10 +157,9 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(static.Serve("/", static.LocalFile("./views/public", true)))
+	//	r.Use(static.Serve("/", static.LocalFile("./views/public", true)))
 
 	r.GET("/metrics", prometheusHandler())
-
 	r.Use(cors.Middleware(cors.Config{
 		Origins:        "*",
 		Methods:        "GET, PUT, POST, DELETE",
@@ -189,14 +182,15 @@ func main() {
 		})
 	})
 
-
 	api := r.Group("/api")
 	{
 		api.GET("/llm-helper/:Prompt", LLMHelperHandler)
+		api.GET("/llm-helper-text-bison/:Prompt", LLMTextBisonHelperHandler)
+		api.GET("/llm-helper-chat-bison/:Prompt", LLMChatBisonHelperHandler)
 	}
 
 	r.Run()
-	//
+	
 }
 
 func prometheusHandler() gin.HandlerFunc {
@@ -206,33 +200,43 @@ func prometheusHandler() gin.HandlerFunc {
 	}
 }
 
-// CitationHandler returns a list of Citations available (in memory)
 func LLMHelperHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	prompt := c.Params.ByName("Prompt")
-	pr := callLLM(prompt, c)
+	pr := callLLMChatBison(prompt, c)
 	if (pr.Predictions[0].Candidates[0].Content == "The quote  is form the wonderful and extraordinary" || pr.Predictions[0].Candidates[0].Content == "The quote  is form the wonderful and extraordinary "){
-		pr2 := callLLM2(prompt, c)
+		pr2 := callLLMTextBison(prompt, c)
 		c.JSON(http.StatusOK, pr2)
 	} else {
 		c.JSON(http.StatusOK, pr)
 	}
+}
 
+func LLMChatBisonHelperHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	prompt := c.Params.ByName("Prompt")
+	pr := callLLMChatBison(prompt, c)
+	c.JSON(http.StatusOK, pr)
+}
 
-  }
-  
- func callLLM(prompt string, c *gin.Context) PalmResponse {
- //func callLLM(prompt string, c *gin.Context) string {
+func LLMTextBisonHelperHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	prompt := c.Params.ByName("Prompt")
+	pr := callLLMTextBison(prompt, c)
+	c.JSON(http.StatusOK, pr)
+}
+
+func callLLMChatBison(prompt string, c *gin.Context) PalmResponseChatBison {
 
 	region := "us-central1"
-	modelName := "text-bison@001"
-	//modelName := "text-bison"
+	//modelName := "chat-bison"
+	modelName := "chat-bison@001"
 	projectId := "gab-devops-1"
 
 	palmClient := NewClient(region, projectId, modelName, c)
 
 	// Use the default parameters
-	response, err := palmClient.CallPalmApi(prompt, nil)
+	response, err := palmClient.CallPalmApiChatBison(prompt, nil)
 
 	if err != nil {
 		fmt.Printf("error during the API call: %s\n", err)
@@ -249,40 +253,33 @@ func LLMHelperHandler(c *gin.Context) {
 			TopK:            40,
 		}
 
-		response, err := palmClient.CallPalmApi(prompt, myParameters)
+		response, err := palmClient.CallPalmApiChatBison(prompt, myParameters)
 	*/
 
-	fmt.Printf("The response in callLLM is \n%s\n\n", response)
+	fmt.Printf("The response in callLLMChatBison is \n%s\n\n", response)
 
 	fmt.Printf("The initial prompt is \n%s\n\n", prompt)
 	fmt.Printf("The generated answer is \n%s\n", response.Predictions[0].Candidates[0].Content)
 
 	return *response
-	//return *&response.Predictions[len(response.Predictions)-1].Content
 }
 
-func callLLM2(prompt string, c *gin.Context) PalmResponse2 {
-	//func callLLM(prompt string, c *gin.Context) string {
-   
+func callLLMTextBison(prompt string, c *gin.Context) PalmResponseTextBison {  
+	
 	region := "us-central1"
-	modelName := "text-bison@001"
 	//modelName := "text-bison"
+	modelName := "text-bison@001"
 	projectId := "gab-devops-1"
-
-		palmClient := NewClient2(region, projectId, modelName, c)
-
-		response, err := palmClient.CallPalmApi2(prompt, nil)
-
-		if err != nil {
-			fmt.Printf("error during the API call: %s\n", err)
-			return *response
-			//return *&response.Predictions[len(response.Predictions)-1].Content
-		}
-
-	   
-	   return *response
-	   //return *&response.Predictions[len(response.Predictions)-1].Content
-   }
+	
+	palmClient := NewClient(region, projectId, modelName, c)
+	response, err := palmClient.CallPalmApiTextBison(prompt, nil)
+	if err != nil {
+		fmt.Printf("error during the API call: %s\n", err)
+		return *response
+	}
+	
+	return *response
+}
 
 func NewClient(region string, projectId string, modelName string, c *gin.Context) *PalmClient {
 	var err error
@@ -298,32 +295,15 @@ func NewClient(region string, projectId string, modelName string, c *gin.Context
 }
 
 func (p *PalmClient) createPalmURL(region string, projectId string, modelName string) string {
-	//return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict", region, projectId, region, modelName)
 	//return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict -d", region, projectId, region, modelName)
 	//return "https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/chat-bison:predict -d"
-	return "https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/chat-bison:predict"
+	//return "https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/chat-bison:predict"
+	return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict", region, projectId, region, modelName)
 }
 
-func NewClient2(region string, projectId string, modelName string, c *gin.Context) *PalmClient {
-	var err error
-	p := &PalmClient{}
-	ctx := context.Background()
-	//ctx := c
-	p.client, _, err = httpGoogle.NewClient(ctx)
-	if err != nil {
-		panic("impossible to find a credential")
-	}
-	p.palmUrl = p.createPalmURL2(region, projectId, modelName)
-	return p
-}
-func (p *PalmClient) createPalmURL2(region string, projectId string, modelName string) string {
-	//return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict", region, projectId, region, modelName)
-	//return fmt.Sprintf("https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict -d", region, projectId, region, modelName)
-	//return "https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/chat-bison:predict -d"
-	return "https://us-central1-aiplatform.googleapis.com/v1/projects/gab-devops-1/locations/us-central1/publishers/google/models/text-bison:predict"
-}
 
-func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (response *PalmResponse, err error) {
+func (p *PalmClient) CallPalmApiChatBison(prompt string, parameters *Parameters) (response *PalmResponseChatBison, err error) {
+
 	//Create the client if not exist
 	if p.client == nil {
 		ctx := context.Background()
@@ -334,14 +314,10 @@ func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (respons
 	}
 
 	// Use default parameter by default
-	//request := PalmRequest{Parameters: defaultParameters, SafetySettings: defaultSafetySettings }
-	request := PalmRequest{Parameters: defaultParameters }
+	request := PalmRequestChatBison{Parameters: defaultParameters }
 	if parameters != nil {
-		request = PalmRequest{Parameters: parameters}
-	    //request = PalmRequest{Parameters: parameters, SafetySettings: defaultSafetySettings}
+		request = PalmRequestChatBison{Parameters: parameters}
 	}
-
-
 
 	var messages = []Message{}
 	var theprompt = ""
@@ -354,7 +330,7 @@ func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (respons
 	requestJson, _ := json.Marshal(request)
 
 	fmt.Printf("The palmUrl is \n%s\n\n", p.palmUrl)
-	fmt.Printf("The requestJson in CallPalmApi is \n%s\n\n", requestJson)
+	fmt.Printf("The requestJson in CallPalmApiChatBison is \n%s\n\n", requestJson)
 
 	//Call API
 	rawResponse, err := p.client.Post(p.palmUrl, "application/json", bytes.NewReader(requestJson))
@@ -375,7 +351,7 @@ func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (respons
 		}
 		defer rawResponse.Body.Close()
 
-		response = &PalmResponse{}
+		response = &PalmResponseChatBison{}
 		err = json.Unmarshal(respBody, response)
 		if err != nil {
 			errorMessage := fmt.Sprintf("json response parse with error %s\n", err)
@@ -393,7 +369,7 @@ func (p *PalmClient) CallPalmApi(prompt string, parameters *Parameters) (respons
 	return
 }
 
-func (p *PalmClient) CallPalmApi2(prompt string, parameters *Parameters) (response *PalmResponse2, err error) {
+func (p *PalmClient) CallPalmApiTextBison(prompt string, parameters *Parameters) (response *PalmResponseTextBison, err error) {
 	//Create the client if not exist
 	if p.client == nil {
 		ctx := context.Background()
@@ -405,16 +381,16 @@ func (p *PalmClient) CallPalmApi2(prompt string, parameters *Parameters) (respon
 
 	// Use default parameter by default
 	//request := PalmRequest{Parameters: defaultParameters, SafetySettings: defaultSafetySettings }
-	request := PalmRequest2{Parameters: defaultParameters }
+	request := PalmRequestTextBison{Parameters: defaultParameters }
 
 	var theprompt = prompt
-	request.Instances2 = append(request.Instances2, Instances2{theprompt})
+	request.InstancesTextBison = append(request.InstancesTextBison, InstancesTextBison{theprompt})
 	
 	// Managed JSON, should never fail, ignore the err.
 	requestJson, _ := json.Marshal(request)
 
 	fmt.Printf("The palmUrl is \n%s\n\n", p.palmUrl)
-	fmt.Printf("The requestJson in CallPalmApi2 is \n%s\n\n", requestJson)
+	fmt.Printf("The requestJson in CallPalmApiTextBison is \n%s\n\n", requestJson)
 
 	//Call API
 	rawResponse, err := p.client.Post(p.palmUrl, "application/json", bytes.NewReader(requestJson))
@@ -435,7 +411,7 @@ func (p *PalmClient) CallPalmApi2(prompt string, parameters *Parameters) (respon
 		}
 		defer rawResponse.Body.Close()
 
-		response = &PalmResponse2{}
+		response = &PalmResponseTextBison{}
 		err = json.Unmarshal(respBody, response)
 		if err != nil {
 			errorMessage := fmt.Sprintf("json response parse with error %s\n", err)

@@ -20,12 +20,17 @@ class AskBard extends React.Component {
         promptValid: false,
         formErrors: {prompt: ''},
         formValid: false,
-        promptresponse: '...',
-        characterCount: 0
+        promptresponse: '',
+        characterCount: 0,
+        promptchatbisonresponse: '',
+        prompttextbisonresponse: '',
       }
 
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
+      this.callChatBison = this.callChatBison.bind(this);
+      this.callTextBison = this.callTextBison.bind(this);
+
     }
 
   refresh() {
@@ -74,53 +79,93 @@ class AskBard extends React.Component {
     this.state.characterCount = this.state.prompt.length;
   }
 
+
   handleSubmit(event) {
-    //let response = window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`);
-    //console.log("Réponse LLM");
-    console.log(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`);
-    //console.log(response);
-/*
-{
-  "predictions":[
+    /*
     {
-    "safetyAttributes":{"categories":[],"blocked":false,"scores":[]},
-    "citationMetadata":{
-      "citations":[
-        {"endIndex":148,"startIndex":22,"url":"http://lfop.delidate.it/mr-tonito-2020-mp3.html"}
-      ]},
-     "content":"Apple Watch Series 7, Apple Watch SE, Apple Watch Series 6, Apple Watch Series 5, Apple Watch Series 4, Apple Watch Series 3, Apple Watch Series 2, Apple Watch Series 1"}]
-  }
-  format 2 
-  {"predictions":[
-    {"candidates":[{"content":"The quote  is form the wonderful and extraordinary ","author":"1"}],
-    "safetyAttributes":[{"categories":[],"blocked":false,"scores":[]}],
-    "citationMetadata":[{"citations":[]}],"content":""}]}
-*/
-    //let response = `https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`;
-    //this.setState({promptresponse: "test"});
+      "predictions":[
+        {
+        "safetyAttributes":{"categories":[],"blocked":false,"scores":[]},
+        "citationMetadata":{
+          "citations":[
+            {"endIndex":148,"startIndex":22,"url":"http://lfop.delidate.it/mr-tonito-2020-mp3.html"}
+          ]},
+        "content":"Apple Watch Series 7, Apple Watch SE, Apple Watch Series 6, Apple Watch Series 5, Apple Watch Series 4, Apple Watch Series 3, Apple Watch Series 2, Apple Watch Series 1"}]
+      }
+      format 2 
+      {"predictions":[
+        {"candidates":[{"content":"The quote  is form the wonderful and extraordinary ","author":"1"}],
+        "safetyAttributes":[{"categories":[],"blocked":false,"scores":[]}],
+        "citationMetadata":[{"citations":[]}],"content":""}]}
+    */
+
+    console.log(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`);
+    
     window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:${encodeURIComponent(this.state.prompt)}`, res => {  
-     console.log("Réponse LLM2");
-     console.log(res); 
-     console.log(res.predictions);
+      
+      console.log("Réponse LLM2");
+      console.log(res); 
+      console.log(res.predictions);
+      
       /*this.setState({
         //promptresponse: res.predictions[0].content
         promptresponse: res.predictions[0].candidates[0].content
       });*/
-    
 
-    if (res.predictions[0].content.length){
-      console.log(res.predictions[0].content);
-      this.setState({
-        promptresponse: res.predictions[0].content
-      });
-     } else
-     {
+      if (res.predictions[0].content.length){
+        console.log(res.predictions[0].content);
+        this.setState({
+          promptresponse: res.predictions[0].content
+        });
+        } else
+        {
+        console.log(res.predictions[0].candidates[0].content);
+        this.setState({
+          promptresponse: res.predictions[0].candidates[0].content 
+        });      
+      };
+
+    });
+
+  }
+
+  callChatBison(event) {
+
+    console.log(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper-chat-bison/:Prompt=${encodeURIComponent(this.state.prompt)}`);
+    
+    window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper-chat-bison/:${encodeURIComponent(this.state.prompt)}`, res => {  
+      
+      console.log("Réponse LLM2");
+      console.log(res); 
+      console.log(res.predictions);
+      
       console.log(res.predictions[0].candidates[0].content);
       this.setState({
-        promptresponse: res.predictions[0].candidates[0].content 
-     });      
-    };
-  });
+        promptchatbisonresponse: res.predictions[0].candidates[0].content 
+      });      
+
+    });
+
+  }
+
+  callTextBison(event) {
+
+    console.log(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper-text-bison/:Prompt=${encodeURIComponent(this.state.prompt)}`);
+    
+    window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper-text-bison/:${encodeURIComponent(this.state.prompt)}`, res => {  
+      
+      console.log("Réponse LLM2");
+      console.log(res); 
+      console.log(res.predictions);
+      
+      console.log(res.predictions[0].content);
+      this.setState({
+        prompttextbisonresponse: res.predictions[0].content
+      });
+
+
+    });
+    
   }
 
   render() {
@@ -130,7 +175,8 @@ class AskBard extends React.Component {
 
               <h3>Ask LLM</h3>
               
-              <Form className="create-form" onSubmit={this.handleSubmit} formErrors={this.state.formErrors}>
+              {/* <Form className="create-form" onSubmit={this.handleSubmit} formErrors={this.state.formErrors}>*/}
+              <Form className="create-form" formErrors={this.state.formErrors}>
                 <div className="panel panel-default">
                   <FormErrors formErrors={this.state.formErrors} />
                 </div>
@@ -141,10 +187,22 @@ class AskBard extends React.Component {
                     {/* <label name='response'> {this.state.promptresponse} </label> */}
                 </Form.Field>
                 <div id="characterCount">{this.state.characterCount}</div>
-                <Button type='submit' disabled={!this.state.formValid}>Submit</Button>
+                <Button type='submit' disabled={!this.state.formValid} onClick={this.handleSubmit}>Submit</Button>
                 <div id="formattedResponse">
                     <Text>
                       {this.state.promptresponse.replace(/\n/g,'\n')}
+                    </Text>
+                </div>
+                <Button type='submit' disabled={!this.state.formValid} onClick={this.callChatBison}>CallChatBison</Button>
+                <div id="formattedResponse">
+                    <Text>
+                      {this.state.promptchatbisonresponse.replace(/\n/g,'\n')}
+                    </Text>
+                </div>
+                <Button type='submit' disabled={!this.state.formValid} onClick={this.callTextBison}>CallTextBison</Button>
+                <div id="formattedResponse">
+                    <Text>
+                      {this.state.prompttextbisonresponse.replace(/\n/g,'\n')}
                     </Text>
                 </div>
               </Form>

@@ -134,18 +134,23 @@ func InsertWritersHandler(c *gin.Context) {
     wr.Writer = c.Params.ByName("Writer")    
 	wr.Color = c.Params.ByName("Color")
 
+	log.Println("writer to insert : ", wr.Writer)
+
 	_, err := dbPool.Query("SELECT * FROM writers where writer = $1",wr.Writer)
 	if err != nil {
 		log.Fatalf("DB.Query: %v", err)
+		log.Println("DB.Query: %v", err)
 	}
-	log.Println("get rows ")
+	log.Println("writer selected ")
 
 	log.Println("writer : inserting new writer : wr.Likes: ", wr.Likes, "wr.Writer: ", wr.Writer, "wr.Color: ", wr.Color)  
 	_, err = dbPool.Exec("INSERT INTO writers (likes, writer, color) VALUES  ($1, $2, $3)", wr.Likes, wr.Writer, wr.Color)
 	if err != nil {
 		log.Fatalf("unable to create new Writer: %s", err)
 	}	
-		
+	log.Println("writer inserted ")
+
+	
 	c.JSON(http.StatusOK, wr)
 }
 	
