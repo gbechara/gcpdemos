@@ -24,7 +24,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-
+	"bytes"
 	"os"
 	//	"log"
 	"strconv"
@@ -108,7 +108,7 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.GET("/citations", CitationsHandler)
-		api.POST("/citations/like/:CitationID", LikeCitation)
+		api.POST("/citations/like/:CitationID", LikeQuoteHandler)
 		api.GET("/writers", WritersHandler)
 		api.GET("/writers/insertwriter/:Writer/:Color", InsertWritersHandler)
 
@@ -151,6 +151,28 @@ func listQuotes() Citations {
 
 }
 
+func LikeQuoteHandler(c *gin.Context)  {
+	var likeQuotesURL = os.Getenv("QUOTES_URL")+"/like/"+c.Param("CitationID")
+ 
+	postBody, _ := json.Marshal(map[string]string{
+		"Like":  "1",
+	 })
+	 responseBody := bytes.NewBuffer(postBody)
+  
+
+	ret , err := http.Post(likeQuotesURL,"application/json", responseBody)
+    if err != nil {
+        log.Println("QuoteApp: unable to connect Quote")
+    }
+    defer ret.Body.Close()
+    log.Printf("Quote App: like quotes")
+	
+	citations := listQuotes()
+
+	c.JSON(http.StatusOK, &citations)
+}
+
+
 func listWriters() Writers {
 	var writersURL = os.Getenv("WRITERS_URL")
 	var writers Writers
@@ -190,12 +212,15 @@ func CitationsHandler(c *gin.Context) {
   
   func LikeCitation(c *gin.Context) {
 	// Check Citation ID is valid
+	log.Printf("app: c.Param CitationID %s:",c.Param("CitationID"))
 	if Citationid, err := strconv.Atoi(c.Param("CitationID")); err == nil {
 	  // find Citation and increment likes
 	  citations := listQuotes();
+	  log.Printf("app: Citationid : %d:",Citationid)
 	  for i := 0; i < len(citations); i++ {
 		if citations[i].ID == Citationid {
 			citations[i].Likes = citations[i].Likes + 1
+			log.Printf("app: Like i : %d, Citation.Likes:%d",i,citations[i].Likes)
 		}
 	  }
 	  c.JSON(http.StatusOK, &c)
@@ -251,3 +276,6 @@ func CitationsHandler(c *gin.Context) {
     c.JSON(200,  gin.H{"app: writer inserted": wr.Writer +","+wr.Color})
 
   }
+
+
+  

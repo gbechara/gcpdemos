@@ -25,12 +25,10 @@ function App() {
         </a>
       </header>
     </div>*/
-    <Router>
-
- 
+      <Router>
         <div className="container-fluid">
-          <div class="topnav" id="myTopnav">
-                <NavLink to='/' class="active" size='0'>List Quotes</NavLink>
+          <div className="topnav" id="myTopnav">
+                <NavLink to='/' className="active" size='0'>List Quotes</NavLink>
                 <NavLink to='/insertwriter' size='0'>Insert Writer</NavLink>
                 <NavLink to='/askllm' size='0'>Ask LLM</NavLink>                
                 <a onClick={refresh}>Refresh </a> 

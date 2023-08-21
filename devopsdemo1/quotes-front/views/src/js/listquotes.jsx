@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 //import Table from 'react-bootstrap/Table';
 
 
@@ -57,25 +58,43 @@ class LoggedIn extends React.Component {
       window.location.reload();
     }
 
-/*    addNewWriter() {
-      window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/Hugo/%234285F4`);
-      window.location.reload();   
-    } */   
 
     serverRequest() {
-    //     $.get("http://34.98.114.247/api/citations", res => {
-    //      $.get("https://app.dev.gabrielbechara.com/api/citations", res => {
-      //window.$.get('https://REACT_APP_BACK_URL/api/citations', res => {
-        window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/citations`, res => {
+          /*window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/citations`, res => {
             this.setState({
               citations: res
             });
+          });*/
+          /*fetch(`https://${process.env.REACT_APP_BACK_URL}/api/citations`)
+          .then((res) => res.json())
+          .then((json) => {
+            this.setState({
+              citations: json
+            });
+          });*/
+          axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/citations`)
+          .then(res => {
+            this.setState({
+              citations: res.data
+            });
           });  
-          //window.$.get("https://REACT_APP_BACK_URL/api/writers", res => {
-          window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers`, res => {  
+          /*window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers`, res => {  
             this.setState({
               citations: this.state.citations,
               writers: res
+            });
+          });*/
+          /*fetch(`https://${process.env.REACT_APP_BACK_URL}/api/writers`)
+          .then((res) => res.json())
+          .then((json) => {
+            this.setState({
+              writers: json
+            });
+          });*/
+          axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers`)
+          .then(res => {
+            this.setState({
+              writers: res.data
             });
           });  
         }
@@ -126,8 +145,9 @@ class Citation extends React.Component {
     };
     this.like = this.like.bind(this);
     this.serverRequest = this.serverRequest.bind(this);
+
   }
-    
+  
   like() {
     let citation = this.props.citation;
     this.serverRequest(citation);
@@ -138,23 +158,35 @@ class Citation extends React.Component {
   }
   
   serverRequest(citation) {
-    window.$.post(
- //     "http://34.98.114.247/api/citations/like/" + citation.id,
- //     "https://REACT_APP_BACK_URL/api/citations/like/" + citation.id,
+   /* window.$.post(
       `https://${process.env.REACT_APP_BACK_URL}/api/citations/like/` + citation.id,
-
       { like: 1 },
       res => {
         console.log("res... ", res);
         this.setState({ liked: "Liked!", citation: res });
         this.props.citation = res;
       }
-    );
-    this.refresh()
+    );*/
+    axios.post(`https://${process.env.REACT_APP_BACK_URL}/api/citations/like/` + citation.id, { like: 1 })
+      .then(res => {
+          //console.log("res of axios post... ", res.data);
+          this.setState({ liked: "Liked!", citations: res.data });
+          //console.log("res of axios this.state.liked-1... ", this.state.liked);
+          //console.log("res of axios this.props.citations-1... ", this.props.citation);
+          //console.log("res of axios this.props.liked-1... ", this.props.liked);
+          //this.props.citations = res.data;
+          //console.log("res of axios this.state.citations-2... ", this.props.citations);
+          //console.log("res of axios this.props.liked-2... ", this.props.liked);
+        }
+      )
+    ;
+    //this.refresh()
   }
 
   
   render() {
+    console.log("props citation in render... ", this.props.citation);
+    console.log("state citation in render... ", this.state.citations[this.props.citation.id-1]);
     return (
       <div className="col-xs-4">
         <div className="panel panel-default">
@@ -164,7 +196,7 @@ class Citation extends React.Component {
           </div>
           
           <div className="panel-footer" style={{backgroundColor: this.props.citation.color, color: '#ffffff', fontWeight: 'bold'}}>
-            {this.props.citation.likes} Likes &nbsp;
+            {(this.state.citations.length !== 0)?this.state.citations[this.props.citation.id-1].likes:this.props.citation.likes} Likes &nbsp;            
             <a onClick={this.like} className="btn btn-default">
               <span className="glyphicon glyphicon-thumbs-up"></span>
             </a>
