@@ -78,6 +78,7 @@ gcloud container clusters resize example-cluster --num-nodes=0 --region=us-centr
 gcloud container clusters resize example-cluster --num-nodes=1 --region=us-central1
 gcloud deploy delivery-pipelines delete canary --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID --force
 
+#npm cache clean --force 
 #npm install react
 #npm install webpack
 #npm i webpack webpack-dev-server webpack-cli --save-dev
