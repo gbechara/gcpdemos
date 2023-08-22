@@ -24,10 +24,39 @@
   text-align: center;
   padding: 8px 12px;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 17px;
 }
 
+.topnav p {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  margin-top: 10px;
+  padding: 3px 15px;
+  text-decoration: none;
+  font-size: 10px;
+}
 
+.topnav .login-container {
+  float: right;
+}
+
+.topnav .login-container button {
+  float: right;
+  padding: 6px 10px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background-color: #555;
+  color: white;
+  font-size: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.topnav .login-container button:hover {
+  background-color: #4285F4;
+}
 
 .active {
   background-color: #04AA6D;

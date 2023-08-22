@@ -86,6 +86,7 @@ npm install semantic-ui-react semantic-ui-css
 npm install react-bootstrap
 npm install react-native --save
 npm install react-native-web --save
+npm install @react-oauth/google@latest --save
 
 #gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo/quotes-back ./app
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
