@@ -28,6 +28,11 @@ import (
 
 //	 "cloud.google.com/go/alloydbconn"
 //   "cloud.google.com/go/alloydbconn/driver/pgxv4"
+
+//	"context"
+//	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
+//	"github.com/auth0/go-jwt-middleware/v2/validator"
+//	"encoding/json"
 	
 )
 
@@ -47,7 +52,50 @@ var Writers = []Writer{
 	Writer{3, 0, "Danton.","#545454"},
 }
 
+/*
+var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	log.Println("authMiddleware in Handler")
+
+	claims, ok := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+	if !ok {
+		log.Println("authMiddleware in Handler !ok")
+		http.Error(w, "failed to get validated claims", http.StatusInternalServerError)
+		return
+	}
+	
+	payload, err := json.Marshal(claims)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(payload)
+})
+*/
+
+
 func main() {
+/*
+	keyFunc := func(ctx context.Context) (interface{}, error) {
+		// Our token must be signed using this data.
+		return []byte("secret"), nil
+	}
+
+	// Set up the validator.
+	jwtValidator, err := validator.New(
+		keyFunc,
+		validator.HS256,
+		"https://gabrielbechara.com/",
+		[]string{"golang-gin"},
+	)
+	if err != nil {
+		log.Fatalf("failed to set up the validator: %v", err)
+	}
+
+	// Set up the middleware.
+	middleware := jwtmiddleware.New(jwtValidator.ValidateToken)*/
 
 	db, cleanup := getDB()
 	dbPool = db
@@ -75,12 +123,32 @@ func main() {
 	{
 		api.GET("/writers", WritersHandler)
 		api.GET("/writers/insertwriter/:Writer/:Color", InsertWritersHandler)
-
+		//api.GET("/writers/insertwriter/:Writer/:Color", authMiddleware(middleware), InsertWritersHandler)
+		//api.GET("/writers/insertwriter/:Writer/:Color", checkJWT(), InsertWritersHandler)
 	}
 
 	r.Run()
 	//
 }
+
+/*
+func authMiddleware(middleware *jwtmiddleware.JWTMiddleware) gin.HandlerFunc {
+	log.Println("authMiddleware ")
+	return func(c *gin.Context) {
+	  log.Println("authMiddleware funct")	
+	  // Get the client secret key
+	  err := middleware.CheckJWT(handler)
+	  log.Println("authMiddleware funct post err")
+	  if err != nil {
+		// Token not found
+		fmt.Println(err)
+		c.Abort()
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		c.Writer.Write([]byte("Unauthorized"))
+		return
+	  }
+	}
+}*/
 
 func indexHandler(c *gin.Context) {
 	c.HTML(200, "/public/index.html", nil)

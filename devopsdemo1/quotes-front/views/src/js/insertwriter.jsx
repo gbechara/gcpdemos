@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+
 import { Button, Checkbox, Form } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import { FormErrors } from './FormErrors';
+import axios from 'axios';
 
 export default function InsertWriter() {
   return (<NewWriter />);
@@ -79,8 +82,19 @@ class NewWriter extends React.Component {
 
   handleSubmit(event) {
  //   alert('Submitted: Writer :' + this.state.writer +' Color :'+this.state.color);
-    window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`);
-    window.location.assign("/");
+ //   window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`);
+    
+    axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`,
+    {
+      headers: {
+        'Authorization': localStorage.getItem("credential")&& localStorage.getItem("credential")!='undefined'? `Bearer ${localStorage.getItem("credential")}`:''
+      }
+
+    });
+
+    //window.location.assign("/");
+    //let navigate =  useNavigate();
+    //navigate('/');
   }
 
 
@@ -94,18 +108,18 @@ class NewWriter extends React.Component {
  
               <h3>Create new writer</h3>
               
-              <Form className="create-form" onSubmit={this.handleSubmit} formErrors={this.state.formErrors}>
+              <Form className="create-form" onSubmit={this.handleSubmit}>
                 <div className="panel panel-default">
                   <FormErrors formErrors={this.state.formErrors} />
                 </div>
-                <Form.Field required='true' fluid >
-                    <label aline>Writer </label> <br/>
+                <Form.Field >
+                    <label >Writer </label> <br/>
                     <input name='writer' placeholder='FirstName LastName' value={this.state.writer} onChange={this.handleChange} style={{width: '350px'}}/>
                 </Form.Field>
-                <Form.Field required='true' >
+                <Form.Field >
                     <label >Color  </label><br/>
                     <select name='color' placeholder='#4285F4' value={this.state.color} onChange={this.handleChange} style={{width: '350px'}}>
-                      <option selected></option>
+                      <option value="">--Please choose a color---</option>
                       <option value="#4285F4">Blue</option>
                       <option value="#DB4437">Red</option>
                       <option value="#F4B400">Yellow</option>
@@ -113,7 +127,7 @@ class NewWriter extends React.Component {
                       <option value="#545454">Grey</option>
                     </select>
                 </Form.Field><br/>
-                <Button type='submit' disabled={!this.state.formValid}>Submit</Button>
+                <Form.Button type='submit' disabled={!this.state.formValid}>Submit</Form.Button>
               </Form>
       </div>
 

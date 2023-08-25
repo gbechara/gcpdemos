@@ -104,3 +104,6 @@ ip link sh
 ethtool -S eth0
 brctl show
 ip -br addr sh
+
+go mod tidy
+go get github.com/auth0/go-jwt-middleware/v2

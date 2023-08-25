@@ -28,9 +28,13 @@ import (
 	"os"
 	//	"log"
 	"strconv"
+	"fmt"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
 
 	//   "github.com/go-resty/resty/v2"
 	"github.com/itsjamie/gin-cors"
@@ -110,7 +114,8 @@ func main() {
 		api.GET("/citations", CitationsHandler)
 		api.POST("/citations/like/:CitationID", LikeQuoteHandler)
 		api.GET("/writers", WritersHandler)
-		api.GET("/writers/insertwriter/:Writer/:Color", InsertWritersHandler)
+		//api.GET("/writers/insertwriter/:Writer/:Color", InsertWriterHandler)
+		api.GET("/writers/insertwriter/:Writer/:Color", checkJWT(), InsertWriterHandler)
 
 	}
 
@@ -235,8 +240,47 @@ func CitationsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, listWriters())
   }
 
-  func InsertWritersHandler(c *gin.Context) {
+  func InsertWriterHandler(c *gin.Context) {
 	
+	log.Printf("InsertWriterHandler1")
+
+	claims, ok := c.Request.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+	if !ok {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			map[string]string{"message": "Failed to get validated JWT claims."},
+		)
+		return
+	}
+
+	log.Printf("InsertWriterHandler2")
+
+	registeredClaims := claims.RegisteredClaims
+	log.Printf("InsertWriterHandler2 registeredClaims.Issuer : "+registeredClaims.Issuer)
+	log.Printf("InsertWriterHandler2 registeredClaims.ID : "+registeredClaims.ID)
+
+	customClaims, ok := claims.CustomClaims.(*CustomClaimsExample)
+	if !ok {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			map[string]string{"message": "Failed to cast custom JWT claims to specific type."},
+		)
+		return
+	}
+
+	log.Printf("InsertWriterHandler3")
+	log.Printf("InsertWriterHandler3 customClaims : " + fmt.Sprintf("%+v", customClaims))
+
+	if len(customClaims.azp) == 0 {
+	/*	c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			map[string]string{"message": "azp in JWT claims was empty."},
+		)
+		return*/
+	}
+
+	log.Printf("InsertWriterHandler4")
+
 	c.Header("Content-Type", "application/json")
 	var writersURL = os.Getenv("WRITERS_URL")
 	var wr Writer =  Writer{1, 0, "DEFAULT", "#4285F4"}

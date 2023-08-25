@@ -19,12 +19,12 @@
 
 FROM golang:1.19 as golangbuilder
 WORKDIR /code
-COPY main.go .
+COPY *.go .
 COPY go.mod .
 # `skaffold debug` sets SKAFFOLD_GO_GCFLAGS to disable compiler optimizations
 ARG SKAFFOLD_GO_GCFLAGS
 RUN go mod tidy
-RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -trimpath -o /app main.go
+RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -trimpath -o /app .
 
 #Alpine will not take in direc
 #FROM alpine:3.10

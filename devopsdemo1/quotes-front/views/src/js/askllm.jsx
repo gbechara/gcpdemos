@@ -3,6 +3,7 @@ import { Button, Form } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import { FormErrors } from './FormErrors';
 import { View, StyleSheet, Text } from 'react-native';
+import axios from 'axios';
 
 
 export default function AskLLM() {
@@ -101,17 +102,12 @@ class AskBard extends React.Component {
 
     console.log(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:Prompt=${encodeURIComponent(this.state.prompt)}`);
     
-    window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:${encodeURIComponent(this.state.prompt)}`, res => {  
+    /*window.$.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:${encodeURIComponent(this.state.prompt)}`, res => {  
       
       console.log("Réponse LLM2");
       console.log(res); 
       console.log(res.predictions);
       
-      /*this.setState({
-        //promptresponse: res.predictions[0].content
-        promptresponse: res.predictions[0].candidates[0].content
-      });*/
-
       if (res.predictions[0].content.length){
         console.log(res.predictions[0].content);
         this.setState({
@@ -125,7 +121,34 @@ class AskBard extends React.Component {
         });      
       };
 
-    });
+    });*/
+    axios.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:${encodeURIComponent(this.state.prompt)}`,
+      {
+        headers: {
+          'Authorization': localStorage.getItem("access_token")&& localStorage.getItem("access_token")!='undefined'? `Bearer ${localStorage.getItem("access_token")}`:''
+        }
+      }
+    )
+    .then(res => {    
+        
+        console.log("Réponse LLM2");
+        console.log(res.data); 
+        console.log(res.data.predictions);
+        
+        if (res.data.predictions[0].content.length){
+            console.log(res.data.predictions[0].content);
+            this.setState({
+              promptresponse: res.data.predictions[0].content
+            });
+          } else
+          {
+            console.log(res.data.predictions[0].candidates[0].content);
+            this.setState({
+              promptresponse: res.data.predictions[0].candidates[0].content 
+            });      
+          };
+
+      });
 
   }
 
@@ -175,15 +198,15 @@ class AskBard extends React.Component {
 
               <h3>Ask LLM</h3>
               
-              {/* <Form className="create-form" onSubmit={this.handleSubmit} formErrors={this.state.formErrors}>*/}
-              <Form className="create-form" formErrors={this.state.formErrors}>
+              {/* <Form className="create-form" onSubmit={this.handleSubmit} >*/}
+              <Form className="create-form">
                 <div className="panel panel-default">
                   <FormErrors formErrors={this.state.formErrors} />
                 </div>
-                <Form.Field required='true' fluid >
-                    <label aline>Hey Quotey who is the writer</label> <br/>
+                <Form.Field >
+                    <label>Hey Quotey who is the writer</label> <br/>
                     {/* <input name='prompt' placeholder='Enter the quote here' value={this.state.prompt} onChange={this.handleChange} style={{width: '350px'}}/><br/>*/}
-                    <textarea id="prompt" maxlength="350" rows="3" cols="100" placeholder='Enter the quote here' name="prompt"  value={this.state.prompt} onChange={this.handleChange}></textarea>
+                    <textarea id="prompt" maxLength="350" rows="3" cols="100" placeholder='Enter the quote here' name="prompt"  value={this.state.prompt} onChange={this.handleChange}></textarea>
                     {/* <label name='response'> {this.state.promptresponse} </label> */}
                 </Form.Field>
                 <div id="characterCount">{this.state.characterCount}</div>
