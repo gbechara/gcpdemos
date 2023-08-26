@@ -50,10 +50,12 @@ var (
 	signingKey = []byte("secret")
 
 	// The issuer of our token.
-	issuer = "https://accounts.google.com"
+	//issuer = "https://accounts.google.com"
+	issuer = "https://dev-5afb7uqxrrjxjcu2.us.auth0.com/"
 
 	// The audience of our token.
-	audience = []string{"248688270572-camos4ukonlfrlgnp84ksbbta667gqcu.apps.googleusercontent.com"}
+	//audience = []string{"248688270572-camos4ukonlfrlgnp84ksbbta667gqcu.apps.googleusercontent.com"}
+	audience = []string{"https://dev-5afb7uqxrrjxjcu2.us.auth0.com/api/v2/","https://dev-5afb7uqxrrjxjcu2.us.auth0.com/userinfo"}
 
 	// Our token must be signed using this data.
 	keyFunc = func(ctx context.Context) (interface{}, error) {

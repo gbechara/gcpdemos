@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import { FormErrors } from './FormErrors';
 import axios from 'axios';
+import { View, StyleSheet, Text } from 'react-native';
 
 export default function InsertWriter() {
   return (<NewWriter />);
@@ -21,7 +22,8 @@ class NewWriter extends React.Component {
         writerValid: false,
         colorValid: false,
         formErrors: {writer: '', color: ''},
-        formValid: false
+        formValid: false,
+        insertWriterResponse :''
       }
   
       this.handleChange = this.handleChange.bind(this);
@@ -90,11 +92,20 @@ class NewWriter extends React.Component {
         'Authorization': localStorage.getItem("credential")&& localStorage.getItem("credential")!='undefined'? `Bearer ${localStorage.getItem("credential")}`:''
       }
 
-    });
+    })
+    .then(res => {    
+        
+          this.setState({
+            insertWriterResponse: JSON.stringify(res.data) 
+          });      
+        }).catch((err) => 
+        {    
+          console.log(err)
+          this.setState({
+            insertWriterResponse: JSON.stringify(err) 
+          });
+        })
 
-    //window.location.assign("/");
-    //let navigate =  useNavigate();
-    //navigate('/');
   }
 
 
@@ -128,6 +139,11 @@ class NewWriter extends React.Component {
                     </select>
                 </Form.Field><br/>
                 <Form.Button type='submit' disabled={!this.state.formValid}>Submit</Form.Button>
+                <div id="formattedResponse">
+                    <Text>
+                      {this.state.insertWriterResponse.replace(/\n/g,'\n')}
+                    </Text>
+                </div>
               </Form>
       </div>
 

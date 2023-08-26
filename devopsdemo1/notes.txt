@@ -88,6 +88,8 @@ npm install react-bootstrap
 npm install react-native --save
 npm install react-native-web --save
 npm install @react-oauth/google@latest --save
+npm install @auth0/auth0-react --save
+
 
 #gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo/quotes-back ./app
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
