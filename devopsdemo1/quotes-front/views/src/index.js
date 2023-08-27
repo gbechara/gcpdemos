@@ -13,18 +13,19 @@ import { Auth0Provider } from '@auth0/auth0-react';
 const root = ReactDOM.createRoot(document.getElementById('monapp'));
 
 root.render(
-  <React.StrictMode>
+  //<React.StrictMode>
     <Auth0Provider 
         domain='dev-5afb7uqxrrjxjcu2.us.auth0.com'
         clientId='weNB7Bcw9g1jhHYP5P9o5wLXa5ZkcbG6'
         authorizationParams={{
           //redirect_uri: window.location.origin,
           audience: "https://dev-5afb7uqxrrjxjcu2.us.auth0.com/api/v2/",
-          scope: "openid email profile read:current_user update:current_user_metadata"
+          //scope: "openid email profile read:current_user update:current_user_metadata"
+          scope: "openid email profile writers:user_can_update"
         }}>
       <App />
     </Auth0Provider>
-  </React.StrictMode>
+  //</React.StrictMode>
 );
 
 

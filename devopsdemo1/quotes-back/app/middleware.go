@@ -7,6 +7,7 @@ import (
 	"time"
 	//"errors"
 	"net/url"
+	"strings"
 
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
@@ -17,24 +18,25 @@ import (
 
 // CustomClaimsExample contains custom data we want from the token.
 type CustomClaimsExample struct {
-	//iss           	string `json:"iss"`
+	iss           	string `json:"iss"`
 	azp           	string `json:"azp,omitempty"`
-	//aud           	string `json:"aud"`
-	//sub           	string `json:"sub"`
-	hd           	string  `json:"hd,omitempty"`
-	email       	string `json:"email,omitempty"`
-	email_verified 	bool `json:"email_verified,omitempty`
+	aud           	string `json:"aud"`
+	sub           	string `json:"sub"`
+	//hd           	string  `json:"hd,omitempty"`
+	//email       	string `json:"email,omitempty"`
+	//email_verified 	bool `json:"email_verified,omitempty`
 	//nbf				int64 `json:"nbf,omitempty"`
-	name         	string `json:"name,omitempty"`
-	picture         string `json:"picture,omitempty"`
-	given_name    	string `json:"given_name,omitempty"`
-	family_name   	string `json:"family_name,omitempty"`
-	locale     		string `json:"locale,omitempty"`
-	//iat         	int64  `json:"iat"`
+	//name         	string `json:"name,omitempty"`
+	//picture         string `json:"picture,omitempty"`
+	//given_name    	string `json:"given_name,omitempty"`
+	//family_name   	string `json:"family_name,omitempty"`
+	//locale     		string `json:"locale,omitempty"`
+	iat         	int64  `json:"iat"`
 	//exp         	int64  `json:"exp"`
 	//jti         	string `json:"jti"`
 
 	//ShouldReject bool   `json:"shouldReject,omitempty"`
+	Scope string `json:"scope"`
 }
 
 // Validate errors out if `ShouldReject` is true.
@@ -69,6 +71,18 @@ var (
 	}
 )
 
+func (c CustomClaimsExample) HasScope(expectedScope string) bool {
+    result := strings.Split(c.Scope, " ")	
+    log.Printf("HasScope strings : %v", result)
+	for i := range result {
+		log.Printf("HasScope(expectedScope string) : %v", expectedScope)
+        if result[i] == expectedScope {
+            return true
+        }
+    }
+
+    return false
+}
 // checkJWT is a gin.HandlerFunc middleware
 // that will check the validity of our JWT.
 

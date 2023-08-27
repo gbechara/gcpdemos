@@ -16,38 +16,38 @@ function App() {
 
   
   const { getAccessTokenSilently, isAuthenticated, error, user, loginWithPopup, logout, IdToken } = useAuth0();
-  const [userMetadata, setUserMetadata] = useState(null);
-  const [ profile, setProfile ] = useState(null);
+  //const [userMetadata, setUserMetadata] = useState(null);
+  //const [ profile, setProfile ] = useState(null);
 
   useEffect(() => {
     const getUserMetadata = async () => {
+      
       const domain = "dev-5afb7uqxrrjxjcu2.us.auth0.com";
-  
       try {
         const accessToken = await getAccessTokenSilently({
           authorizationParams: {
             audience: `https://${domain}/api/v2/`,
-            scope: "read:current_user",
+            //scope: "read:current_user",
           },
         });
   
+        /*
         const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`;
-  
         const metadataResponse = await fetch(userDetailsByIdUrl, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        });
+        });*/
   
-        const { user_metadata } = await metadataResponse.json();
-        
-        console.log(accessToken);
-        localStorage.setItem("credential", accessToken)
+        //const { user_metadata } = await metadataResponse.json();
+        //setUserMetadata(user_metadata);
 
+        console.log(accessToken);
         console.log(user);
+        //console.log(metadataResponse);
         //console.log(user_metadata);
 
-        setUserMetadata(user_metadata);
+        localStorage.setItem("credential", accessToken)
 
       } catch (e) {
         console.log(e.message);

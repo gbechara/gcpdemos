@@ -30,6 +30,7 @@ import (
 	"strconv"
 	"fmt"
 
+
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 
@@ -209,6 +210,8 @@ func prometheusHandler() gin.HandlerFunc {
 	}
 }
 
+
+
 // CitationHandler returns a list of Citations available (in memory)
 func CitationsHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
@@ -267,6 +270,14 @@ func CitationsHandler(c *gin.Context) {
 		)
 		return
 	}
+
+	if !customClaims.HasScope("read:messages") {
+		//w.WriteHeader(http.StatusForbidden)
+		//w.Write([]byte(`{"message":"Insufficient scope."}`))
+		//return
+		log.Printf("InsertWriterHandler1 !claims.HasScope(read:messages");
+	}
+
 
 	log.Printf("InsertWriterHandler3")
 	log.Printf("InsertWriterHandler3 customClaims : " + fmt.Sprintf("%+v", customClaims))
