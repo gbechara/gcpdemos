@@ -216,7 +216,7 @@ table ,tr td{
 
 tbody {
   display:block;
-  max-height:160px;
+  max-height:320px;
   overflow-y:scroll;
 }
 
