@@ -33,7 +33,7 @@ FROM golang:1.19
 # for `skaffold debug` (https://skaffold.dev/docs/workflows/debug/).
 ENV GOTRACEBACK=single
 CMD ["./app"]
-COPY --from=golangbuilder /app .
+COPY --from=golangbuilder /quotes .
 #COPY --from=builder /code/views/ ./views
 #COPY --from=builder /code/views/build ./views/public
 # copy optimised build of React.JS resulting from npm run build (npm start build could be used locally for tests)
