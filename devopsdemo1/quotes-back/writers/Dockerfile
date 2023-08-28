@@ -19,7 +19,7 @@
 
 FROM golang:1.19 as golangbuilder
 WORKDIR /code
-COPY *.go .
+COPY *.go ./
 COPY go.mod .
 # `skaffold debug` sets SKAFFOLD_GO_GCFLAGS to disable compiler optimizations
 ARG SKAFFOLD_GO_GCFLAGS
