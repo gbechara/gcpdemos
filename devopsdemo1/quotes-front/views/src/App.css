@@ -208,3 +208,26 @@
 textarea {
   max-width: 100%;
 }
+
+
+table ,tr td{
+  border:1px solid #000;
+}
+
+tbody {
+  display:block;
+  max-height:160px;
+  overflow-y:scroll;
+}
+
+thead, tbody tr {
+  display:table;
+  width:100%;
+  table-layout:fixed;
+}
+thead {
+  width:100%; 
+}
+table {
+  width:100%;
+}

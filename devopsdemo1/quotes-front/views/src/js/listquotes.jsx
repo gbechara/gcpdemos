@@ -125,6 +125,7 @@ class LoggedIn extends React.Component {
                   return (<Citation key={i} citation={citation} />);
                 })}
               </div>
+              <h3>You may want to add the missing writers !</h3>
               <div className="row">
                 {this.state.writers.map(function(writer, i){
                   return (<Writer key={i} writer={writer} />);

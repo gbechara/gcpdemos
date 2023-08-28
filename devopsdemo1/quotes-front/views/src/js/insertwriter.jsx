@@ -7,6 +7,9 @@ import Table from 'react-bootstrap/Table';
 import { FormErrors } from './FormErrors';
 import axios from 'axios';
 import { View, StyleSheet, Text } from 'react-native';
+import { ReactTableScroll } from 'react-table-scroll';
+
+
 
 export default function InsertWriter() {
   return (<NewWriter />);
@@ -23,11 +26,14 @@ class NewWriter extends React.Component {
         colorValid: false,
         formErrors: {writer: '', color: ''},
         formValid: false,
-        insertWriterResponse :''
+        insertWriterResponse :'',
+        writers: [],
       }
   
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
+
+      this.serverRequest = this.serverRequest.bind(this);
     }
 
 
@@ -36,6 +42,19 @@ class NewWriter extends React.Component {
     window.location.reload();
   }
   
+
+  serverRequest() {
+    axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers`)
+    .then(res => {
+      this.setState({
+        writers: res.data
+      });
+    });  
+  }
+
+  componentDidMount() {
+    this.serverRequest();
+  }
 
   handleChange(event) {
 //    this.setState({writer: event.target.writer});
@@ -48,7 +67,7 @@ class NewWriter extends React.Component {
       {[name]: value, }, () => { this.validateField(name, value)});
     };
   
-
+  
   validateField(fieldName, value) {
     let fieldValidationErrors = this.state.formErrors;
     let writerValid = this.state.writerValid;
@@ -97,7 +116,9 @@ class NewWriter extends React.Component {
         
           this.setState({
             insertWriterResponse: JSON.stringify(res.data) 
-          });      
+          });
+          this.serverRequest();
+
         }).catch((err) => 
         {    
           console.log(err)
@@ -145,6 +166,29 @@ class NewWriter extends React.Component {
                     </Text>
                 </div>
               </Form>
+              <p/>
+ 
+              <ReactTableScroll >
+                <table style={{width: '350px'}}  className="table table-bordered table-hover table-striped mb-0">
+                  <thead>
+                      <tr>
+                          <td>ID</td>
+                          <td>Writer</td>
+                          <td>Color</td>
+                      </tr>
+                  </thead>
+                  <tbody> 
+                    {this.state.writers.map((item, index) => (
+                          <tr key={index}>
+                              <td>{index}</td>
+                              <td>{item.writer}</td>
+                              <td>{item.color}</td>
+                          </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </ReactTableScroll>
+              
       </div>
 
     )
