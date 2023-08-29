@@ -271,16 +271,14 @@ func CitationsHandler(c *gin.Context) {
 		return
 	}
 
-	if !customClaims.HasScope("read:messages") {
-		//w.WriteHeader(http.StatusForbidden)
-		//w.Write([]byte(`{"message":"Insufficient scope."}`))
-		//return
-		log.Printf("InsertWriterHandler1 !claims.HasScope(read:messages");
-	}
-
-
 	log.Printf("InsertWriterHandler3")
 	log.Printf("InsertWriterHandler3 customClaims : " + fmt.Sprintf("%+v", customClaims))
+
+	if !customClaims.HasScope("write:writer") {
+		log.Printf("InsertWriterHandler1 !claims.HasScope(write:writer)");
+		c.Writer.WriteHeader(http.StatusForbidden)
+		c.Writer.Write([]byte(`{"message":"Insufficient scope."}`))
+	}
 
 	if len(customClaims.azp) == 0 {
 	/*	c.AbortWithStatusJSON(

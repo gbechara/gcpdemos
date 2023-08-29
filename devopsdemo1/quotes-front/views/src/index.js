@@ -19,9 +19,9 @@ root.render(
         clientId='weNB7Bcw9g1jhHYP5P9o5wLXa5ZkcbG6'
         authorizationParams={{
           //redirect_uri: window.location.origin,
+          //audience: "https://app.dev.gabrielbechara.com/api/",
           audience: "https://dev-5afb7uqxrrjxjcu2.us.auth0.com/api/v2/",
           scope: "openid email profile read:current_user update:current_user_metadata"
-          //scope: "openid email profile read:messages"
         }}>
       <App />
     </Auth0Provider>

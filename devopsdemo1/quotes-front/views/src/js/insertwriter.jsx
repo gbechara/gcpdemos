@@ -105,13 +105,21 @@ class NewWriter extends React.Component {
  //   alert('Submitted: Writer :' + this.state.writer +' Color :'+this.state.color);
  //   window.$.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`);
     
-    axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`,
+/*    axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`,
     {
       headers: {
         'Authorization': localStorage.getItem("credential")&& localStorage.getItem("credential")!='undefined'? `Bearer ${localStorage.getItem("credential")}`:''
       }
 
+    })*/
+    axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`,
+    {
+      headers: {
+        'Authorization': localStorage.getItem("apiAccessToken")&& localStorage.getItem("apiAccessToken")!='undefined'? `Bearer ${localStorage.getItem("apiAccessToken")}`:''
+      }
+
     })
+
     .then(res => {    
         
           this.setState({
@@ -123,7 +131,7 @@ class NewWriter extends React.Component {
         {    
           console.log(err)
           this.setState({
-            insertWriterResponse: JSON.stringify(err) 
+            insertWriterResponse: JSON.stringify(err.response) +"\n"+ JSON.stringify(err)
           });
         })
 

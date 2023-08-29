@@ -30,7 +30,14 @@ function App() {
             //scope: "read:current_user",
           },
         });
-  
+ 
+        const apiAccessToken = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: `https://app.dev.gabrielbechara.com/api/`,
+            scope: "write:writer read:writer update:writer",
+          },
+        });
+ 
         /*
         const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`;
         const metadataResponse = await fetch(userDetailsByIdUrl, {
@@ -44,10 +51,12 @@ function App() {
 
         console.log(accessToken);
         console.log(user);
+        console.log(apiAccessToken);
         //console.log(metadataResponse);
         //console.log(user_metadata);
 
         localStorage.setItem("credential", accessToken)
+        localStorage.setItem("apiAccessToken", apiAccessToken)
 
       } catch (e) {
         console.log(e.message);
@@ -63,7 +72,9 @@ function App() {
  
   function logOut() {
     localStorage.removeItem("credential");
-    logout({ logoutParams: { returnTo: window.location.origin } })
+    localStorage.removeItem("apiAccessToken");
+    //logout()
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
     
   function refresh() {
