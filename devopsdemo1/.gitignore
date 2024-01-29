@@ -7,4 +7,6 @@
 .env.test.local
 .env.production.local
 
+.terraform.lock.hcl
+
 artifact.json

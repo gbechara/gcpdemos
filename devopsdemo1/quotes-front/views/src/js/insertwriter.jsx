@@ -115,7 +115,8 @@ class NewWriter extends React.Component {
     axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers/insertwriter/${encodeURIComponent(this.state.writer)}/${encodeURIComponent(this.state.color)}`,
     {
       headers: {
-        'Authorization': localStorage.getItem("apiAccessToken")&& localStorage.getItem("apiAccessToken")!='undefined'? `Bearer ${localStorage.getItem("apiAccessToken")}`:''
+        //'Authorization': localStorage.getItem("apiAccessToken")&& localStorage.getItem("apiAccessToken")!='undefined'? `Bearer ${localStorage.getItem("apiAccessToken")}`:''
+        'Authorization': localStorage.getItem("credential")&& localStorage.getItem("credential")!='undefined'? `Bearer ${localStorage.getItem("credential")}`:''
       }
 
     })

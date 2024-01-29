@@ -27,16 +27,20 @@ function App() {
         const accessToken = await getAccessTokenSilently({
           authorizationParams: {
             audience: `https://${domain}/api/v2/`,
-            //scope: "read:current_user",
+            scope: "read:current_user",
           },
         });
- 
-        const apiAccessToken = await getAccessTokenSilently({
+
+        console.log("accessToken-1: "+accessToken);
+        console.log("user-1-2"+user);
+
+        
+        /*const apiAccessToken = await getAccessTokenSilently({
           authorizationParams: {
             audience: `https://app.dev.gabrielbechara.com/api/`,
             scope: "write:writer read:writer update:writer",
           },
-        });
+        });*/
  
         /*
         const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`;
@@ -49,14 +53,15 @@ function App() {
         //const { user_metadata } = await metadataResponse.json();
         //setUserMetadata(user_metadata);
 
-        console.log(accessToken);
-        console.log(user);
-        console.log(apiAccessToken);
+        console.log("accessToken-2: "+accessToken);
+        console.log("user-2"+user);
+
+        //console.log("apiAccessToken-2: " +apiAccessToken);
         //console.log(metadataResponse);
         //console.log(user_metadata);
 
         localStorage.setItem("credential", accessToken)
-        localStorage.setItem("apiAccessToken", apiAccessToken)
+        //localStorage.setItem("apiAccessToken", apiAccessToken)
 
       } catch (e) {
         console.log(e.message);

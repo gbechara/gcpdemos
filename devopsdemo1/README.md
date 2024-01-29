@@ -12,6 +12,14 @@ Set Env
 export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
 export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
+```
+Enable APIs  
+```
+gcloud services enable compute.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable container.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable clouddeploy.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable artifactregistry.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 Create Proxy-only subnet, needed for regionnal LB using gatewayClassName: gke-l7-rilb 
 
@@ -59,10 +67,21 @@ Create a GKE Cluster with HPA and Workload Identity preinstalled
 ```
 gcloud beta container clusters create "example-cluster" --cluster-version "1.24.5-gke.600" --region "$GOOGLE_CLOUD_REGION"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
 ```
+Or create a zonal GKE Cluster with HPA and Workload Identity preinstalled
+```
+gcloud container clusters create "example-cluster" --cluster-version "latest" --zone "$GOOGLE_CLOUD_REGION"-a  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
+
+```
 Connect to cluster
 ```
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_REGION
 ```
+Create namespaces 
+```
+kubectl create namespace dev
+kubectl create namespace prod
+```
+
 Bootstrap Flagger and the Gateway
 Install Flagger for Gateway API
 ```
@@ -91,7 +110,6 @@ gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.g
 ```
 
 Replace variables in files
-
 Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 
 ```
@@ -133,6 +151,8 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 kubectl annotate serviceaccount gmp \
     --namespace prod \
     iam.gke.io/gcp-service-account=gmp-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
+
+sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" gmp-frontend.yaml
 
 kubectl apply -n prod -f gmp-frontend.yaml
 ```
