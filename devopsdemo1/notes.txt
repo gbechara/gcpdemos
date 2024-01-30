@@ -1,5 +1,6 @@
 export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1 
 export GOOGLE_CLOUD_REGION=us-central1
+export GOOGLE_CLOUD_ZONE=us-central1-a
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 
 gcloud artifacts repositories create devopsdemo2repo --repository-format=docker \

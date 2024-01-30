@@ -5,6 +5,36 @@ provider "google" {
   region = var.region
 }
 
+resource "google_project_service" "project_googleapis_compute" {
+  project = var.project_id
+  service = "compute.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_container" {
+  project = var.project_id
+  service = "container.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_clouddeploy" {
+  project = var.project_id
+  service = "clouddeploy.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_artifactregistry" {
+  project = var.project_id
+  service = "artifactregistry.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_aiplatform" {
+  project = var.project_id
+  service = "aiplatform.googleapis.com"
+  disable_dependent_services = true
+}
+
 resource "google_compute_network" "default" {
   name = "default"
 }
@@ -51,10 +81,13 @@ resource "google_project_iam_member" "clouddeploy_developer" {
 }
 
 resource "google_container_cluster" "example_cluster" {
-  name             = "example-cluster"
-  location          = var.region
+  name = "example-cluster"
+  location  = var.region
+  network = google_compute_network.default.name
   initial_node_count       = 1
   remove_default_node_pool = true
+  networking_mode =  "VPC_NATIVE"
+  enable_shielded_nodes = true
   addons_config {
    horizontal_pod_autoscaling {
       disabled = false
@@ -65,16 +98,13 @@ resource "google_container_cluster" "example_cluster" {
     gce_persistent_disk_csi_driver_config {
       enabled = true
     }
-
   }
-
-    gateway_api_config {
-      channel = CHANNEL_STANDARD
-    } 
-
-  enable_shielded_nodes = true
-
-  enable_ip_alias   = true
+  gateway_api_config {
+    channel = "CHANNEL_STANDARD"
+  } 
+  workload_identity_config {
+    workload_pool = "${var.project_id}.svc.id.goog"
+  }
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
@@ -88,13 +118,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   }
 }
 
-resource "google_kubernetes_engine_cluster_gateway" "app_dev" {
-  name          = "app-dev"
-  namespace     = "dev"
-  location      = var.region
-  gateway_class = "gke-l7-gxlb"
-}
-
 resource "google_service_account" "flagger" {
   account_id = "flagger"
   display_name = "Flagger Service Account"
@@ -102,119 +125,25 @@ resource "google_service_account" "flagger" {
 
 resource "google_service_account_iam_binding" "flagger" {
   role    = "roles/iam.workloadIdentityUser"
-  member  = "serviceAccount:${var.project_id}.svc.id.goog[flagger-system/flagger]"
-  service_account = google_service_account.flagger.email
+  members  = ["serviceAccount:${var.project_id}.svc.id.goog[flagger-system/flagger]"]
+  service_account_id = google_service_account.flagger.name
 }
 
-resource "google_compute_ssl_certificate" "gab-dev-certificate" {
+resource "google_compute_managed_ssl_certificate" "gab-dev-certificate" {
   name        = "gab-dev-certificate"
-  private_key = file("certs/gab-dev-certificate.key")
-  certificate = file("certs/gab-dev-certificate.crt")
-  managed     = false
+  managed {
+    domains = ["app.dev.gabrielbechara.com"]
+  }
 }
 
-resource "google_compute_ssl_certificate" "gab-prod-certificate" {
+resource "google_compute_managed_ssl_certificate" "gab-prod-certificate" {
   name        = "gab-prod-certificate"
-  private_key = file("certs/gab-prod-certificate.key")
-  certificate = file("certs/gab-prod-certificate.crt")
-  managed     = false
-}
-
-resource "google_kubernetes_engine_service" "app" {
-  name        = "app"
-  namespace   = "dev"
-  port        = 80
-  target_port = 8080
-  selector    = "app=app"
-}
-
-resource "google_kubernetes_engine_deployment" "app" {
-  name        = "app"
-  namespace   = "dev"
-  replicas    = 1
-  selector    = "matchLabels:app=app"
-  template {
-    metadata {
-      labels = {
-        app = "app"
-      }
-    }
-    spec {
-      containers {
-        name  = "app"
-        image = "us-docker.pkg.dev/${var.project_id}/devopsdemo1repo/app:latest"
-        ports {
-          container_port = 8080
-        }
-      }
-    }
+  managed {
+    domains = ["app.prod.gabrielbechara.com"]
   }
 }
 
-resource "google_kubernetes_engine_ingress" "app" {
-  name        = "app"
-  namespace   = "dev"
-  rule {
-    http {
-      paths {
-        path    = "/"
-        path_type = "Exact"
-        backend {
-          service_name = google_kubernetes_engine_service.app.id
-          service_port = google_kubernetes_engine_service.app.port
-        }
-      }
-    }
-  }
-}
 
-resource "google_kubernetes_engine_service" "app_prod" {
-  name        = "app"
-  namespace   = "prod"
-  port        = 80
-  target_port = 8080
-  selector    = "app=app"
-}
-
-resource "google_kubernetes_engine_deployment" "app_prod" {
-  name        = "app"
-  namespace   = "prod"
-  replicas    = 1
-  selector    = "matchLabels:app=app"
-  template {
-    metadata {
-      labels = {
-        app = "app"
-      }
-    }
-    spec {
-      containers {
-        name  = "app"
-        image = "us-docker.pkg.dev/${var.project_id}/devopsdemo1repo/app:latest"
-        ports {
-          container_port = 8080
-        }
-      }
-    }
-  }
-}
-
-resource "google_kubernetes_engine_ingress" "app_prod" {
-  name        = "app"
-  namespace   = "prod"
-  rule {
-    http {
-      paths {
-        path    = "/"
-        path_type = "Exact"
-        backend {
-          service_name = google_kubernetes_engine_service.app_prod.id
-          service_port = google_kubernetes_engine_service.app_prod.port
-        }
-      }
-    }
-  }
-}
 
 resource "google_project_iam_member" "clouddeploy_jobrunner_prod" {
   project = var.project_id
@@ -262,8 +191,9 @@ resource "google_sql_database_instance" "devopsdemo-instance" {
   name             = "devopsdemo-instance"
   region           = "us-central1"
   database_version = "POSTGRES_14"
-  cpu              = 1
-  memory           = "4GB"
+  settings {
+    tier = "db-f1-micro"
+  }
 }
 
 resource "google_sql_database" "quotes-app-db" {
@@ -271,8 +201,13 @@ resource "google_sql_database" "quotes-app-db" {
   instance = google_sql_database_instance.devopsdemo-instance.name
 }
 
-resource "google_sql_user" "cloudsql-sa" {
-  name     = "cloudsql-sa"
+resource "google_service_account" "cloudsql-sa" {
+  account_id = "cloudsql-sa"
+  display_name = "Cloud SQL Service Account"
+}
+
+resource "google_sql_user" "iam_service_account_user" {
+  name     = trimsuffix(google_service_account.cloudsql-sa.email, ".gserviceaccount.com")
   instance = google_sql_database_instance.devopsdemo-instance.name
   type     = "CLOUD_IAM_SERVICE_ACCOUNT"
 }
@@ -306,24 +241,26 @@ resource "google_service_account" "llm_sa" {
   display_name = "LLM Service Account"
 }
 
-resource "google_service_account_iam_binding" "llm_sa" {
+
+resource "google_project_iam_member" "llm_sa" {
   role    = "roles/aiplatform.user"
-  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-  service_account = google_service_account.llm_sa.email
+  member  = "serviceAccount:${google_service_account.llm_sa.email}"
+  project = var.project_id
 }
 
-resource "google_compute_ssl_certificate" "llm_dev_certificate" {
+
+resource "google_compute_managed_ssl_certificate" "llm_dev_certificate" {
   name        = "llm-dev-certificate"
-  private_key = file("certs/llm-dev-certificate.key")
-  certificate = file("certs/llm-dev-certificate.crt")
-  managed     = false
+  managed {
+    domains = ["llm.dev.gabrielbechara.com"]
+  }
 }
 
-resource "google_compute_ssl_certificate" "llm_prod_certificate" {
+resource "google_compute_managed_ssl_certificate" "llm_prod_certificate" {
   name        = "llm-prod-certificate"
-  private_key = file("certs/llm-prod-certificate.key")
-  certificate = file("certs/llm-prod-certificate.crt")
-  managed     = false
+  managed {
+    domains = ["llm.prod.gabrielbechara.com"]
+  }
 }
 
 resource "google_project_iam_member" "alloydb_admin" {

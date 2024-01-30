@@ -11,6 +11,7 @@ Set Env
 ```
 export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
 export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
+export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
@@ -20,6 +21,7 @@ gcloud services enable compute.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable container.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable clouddeploy.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable artifactregistry.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable aiplatform.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 Create Proxy-only subnet, needed for regionnal LB using gatewayClassName: gke-l7-rilb 
 
@@ -72,9 +74,13 @@ Or create a zonal GKE Cluster with HPA and Workload Identity preinstalled
 gcloud container clusters create "example-cluster" --cluster-version "latest" --zone "$GOOGLE_CLOUD_REGION"-a  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
 
 ```
-Connect to cluster
+Connect to regional cluster
 ```
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_REGION
+```
+Connect to zonal cluster
+```
+gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_ZONE
 ```
 Create namespaces 
 ```
