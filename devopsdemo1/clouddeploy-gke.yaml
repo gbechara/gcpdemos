@@ -29,7 +29,7 @@ metadata:
  name: dev-gke
 description: development cluster
 gke:
- cluster: projects/gab-devops-1/locations/us-central1/clusters/example-cluster
+ cluster: projects/gab-devops-1/locations/us-central1-a/clusters/example-cluster
 ---
 apiVersion: deploy.cloud.google.com/v1
 kind: Target
@@ -37,4 +37,4 @@ metadata:
  name: prod-gke
 description: production cluster
 gke:
- cluster: projects/gab-devops-1/locations/us-central1/clusters/example-cluster
+ cluster: projects/gab-devops-1/locations/us-central1-a/clusters/example-cluster
