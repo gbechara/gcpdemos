@@ -8,5 +8,8 @@
 .env.production.local
 
 .terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+
 
 artifact.json

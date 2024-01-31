@@ -37,6 +37,7 @@ resource "google_project_service" "project_googleapis_aiplatform" {
 
 resource "google_compute_network" "default" {
   name = "default"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_compute_subnetwork" "proxy" {
@@ -45,7 +46,7 @@ resource "google_compute_subnetwork" "proxy" {
   region        = var.region
   purpose       = "REGIONAL_MANAGED_PROXY"
   role          = "ACTIVE"
-  network       = "default"
+  network       = google_compute_network.default.name
 }
 
 resource "google_artifact_registry_repository" "devopsdemo1repo" {
@@ -53,6 +54,7 @@ resource "google_artifact_registry_repository" "devopsdemo1repo" {
   repository_id = "devopsdemo1repo"
   description   = "Docker repository"
   format        = "DOCKER"
+  depends_on = [google_project_service.project_googleapis_container]
 }
 
 resource "google_artifact_registry_repository" "devopsdemo1npm" {
@@ -60,34 +62,40 @@ resource "google_artifact_registry_repository" "devopsdemo1npm" {
   repository_id = "devopsdemo1npm"
   description   = "Node repository"
   format        = "NPM"
+  depends_on = [google_project_service.project_googleapis_container]
 }
 
 resource "google_project_iam_member" "clouddeploy_jobrunner" {
   project = var.project_id
   role    = "roles/clouddeploy.jobRunner"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_releaser" {
   project = var.project_id
   role    = "roles/clouddeploy.releaser"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_developer" {
   project = var.project_id
   role    = "roles/container.developer"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_container_cluster" "example_cluster" {
   name = "example-cluster"
-  location  = var.region
+  location  = var.zone
+  min_master_version = "latest"
   network = google_compute_network.default.name
   initial_node_count       = 1
   remove_default_node_pool = true
   networking_mode =  "VPC_NATIVE"
   enable_shielded_nodes = true
+  default_max_pods_per_node = 30
   addons_config {
    horizontal_pod_autoscaling {
       disabled = false
@@ -99,17 +107,23 @@ resource "google_container_cluster" "example_cluster" {
       enabled = true
     }
   }
+  monitoring_config { 
+    managed_prometheus {
+      enabled = true
+    }
+  }
   gateway_api_config {
     channel = "CHANNEL_STANDARD"
   } 
   workload_identity_config {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
+  depends_on = [google_project_service.project_googleapis_container]
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = "my-node-pool"
-  location   = "us-central1"
+  location   = var.zone
   cluster    = google_container_cluster.example_cluster.name
   node_count = 1
 
@@ -127,6 +141,7 @@ resource "google_service_account_iam_binding" "flagger" {
   role    = "roles/iam.workloadIdentityUser"
   members  = ["serviceAccount:${var.project_id}.svc.id.goog[flagger-system/flagger]"]
   service_account_id = google_service_account.flagger.name
+  depends_on = [google_container_cluster.example_cluster]
 }
 
 resource "google_compute_managed_ssl_certificate" "gab-dev-certificate" {
@@ -134,6 +149,7 @@ resource "google_compute_managed_ssl_certificate" "gab-dev-certificate" {
   managed {
     domains = ["app.dev.gabrielbechara.com"]
   }
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_compute_managed_ssl_certificate" "gab-prod-certificate" {
@@ -141,50 +157,56 @@ resource "google_compute_managed_ssl_certificate" "gab-prod-certificate" {
   managed {
     domains = ["app.prod.gabrielbechara.com"]
   }
+  depends_on = [google_project_service.project_googleapis_compute]
 }
-
-
 
 resource "google_project_iam_member" "clouddeploy_jobrunner_prod" {
   project = var.project_id
   role    = "roles/clouddeploy.jobRunner"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_developer_prod" {
   project = var.project_id
   role    = "roles/container.developer"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_admin_prod" {
   project = var.project_id
   role    = "roles/clouddeploy.admin"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_serviceAgent_prod" {
   project = var.project_id
   role    = "roles/run.serviceAgent"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_artifactregistry_reader_prod" {
   project = var.project_id
   role    = "roles/artifactregistry.reader"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_artifactregistry_writer_prod" {
   project = var.project_id
   role    = "roles/artifactregistry.writer"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "clouddeploy_monitoring_metricWriter_prod" {
   project = var.project_id
   role    = "roles/monitoring.metricWriter"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_sql_database_instance" "devopsdemo-instance" {
@@ -201,39 +223,44 @@ resource "google_sql_database" "quotes-app-db" {
   instance = google_sql_database_instance.devopsdemo-instance.name
 }
 
-resource "google_service_account" "cloudsql-sa" {
+resource "google_service_account" "cloudsql_sa" {
   account_id = "cloudsql-sa"
   display_name = "Cloud SQL Service Account"
 }
 
 resource "google_sql_user" "iam_service_account_user" {
-  name     = trimsuffix(google_service_account.cloudsql-sa.email, ".gserviceaccount.com")
+  name     = trimsuffix(google_service_account.cloudsql_sa.email, ".gserviceaccount.com")
   instance = google_sql_database_instance.devopsdemo-instance.name
   type     = "CLOUD_IAM_SERVICE_ACCOUNT"
+  depends_on = [google_sql_database.quotes-app-db]
 }
 
 resource "google_project_iam_member" "cloudsql_admin" {
   project = var.project_id
   role    = "roles/cloudsql.admin"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_sql_database.quotes-app-db, google_sql_database_instance.devopsdemo-instance]
 }
 
 resource "google_project_iam_member" "cloudsql_client" {
   project = var.project_id
   role    = "roles/cloudsql.client"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "cloudsql_instanceUser" {
   project = var.project_id
   role    = "roles/cloudsql.instanceUser"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "cloudsql_logWriter" {
   project = var.project_id
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_service_account" "llm_sa" {
@@ -254,6 +281,7 @@ resource "google_compute_managed_ssl_certificate" "llm_dev_certificate" {
   managed {
     domains = ["llm.dev.gabrielbechara.com"]
   }
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_compute_managed_ssl_certificate" "llm_prod_certificate" {
@@ -261,10 +289,12 @@ resource "google_compute_managed_ssl_certificate" "llm_prod_certificate" {
   managed {
     domains = ["llm.prod.gabrielbechara.com"]
   }
+  depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "alloydb_admin" {
   project = var.project_id
   role    = "roles/alloydb.admin"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
 }
