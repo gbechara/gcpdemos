@@ -99,6 +99,7 @@ gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD
 ```
 GKE EE Fleets, add cluster to fleet and configure congig-synch
 ```
+sudo apt-get install google-cloud-sdk-nomos
 gcloud container clusters update example-cluster --enable-fleet --region $GOOGLE_CLOUD_ZONE
 gcloud beta container fleet config-management enable --project=$GOOGLE_CLOUD_PROJECT_ID
 gcloud beta container fleet config-management status --project=$GOOGLE_CLOUD_PROJECT_ID
