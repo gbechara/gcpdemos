@@ -6,6 +6,14 @@
 
 CloudBuild & Cloud Deploy for CI/CD  
 Flagger/GatewayAPI for Canary using GMP metrics 
+
+```
+@todo:
+Terraform for GCP ressources // in progress 
+Configsync for KRM ressources 
+Application related deployments KRM and Gcloud for Cloud Run are managed by cloud deploy (), clarify steps in readme.md 
+```
+
 # 
 Set Env  
 ```
@@ -22,6 +30,16 @@ gcloud services enable container.googleapis.com --project $GOOGLE_CLOUD_PROJECT_
 gcloud services enable clouddeploy.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable artifactregistry.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable aiplatform.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable anthosconfigmanagement.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+```
+GKE EE  
+```
+#gcloud services enable anthos.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable gkehub.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable gkeconnect.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable cloudresourcemanager.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable iam.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud alpha container fleet create --display-name=my-gke-fleet-1 --project=$GOOGLE_CLOUD_PROJECT_ID
 ```
 Create Proxy-only subnet, needed for regionnal LB using gatewayClassName: gke-l7-rilb 
 
@@ -60,9 +78,6 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
 --role="roles/container.developer"
 
-@todo:
-#add IAM for GMP
-#add IAM of Cloud Build
 
 ```
 Create a GKE Cluster with HPA and Workload Identity preinstalled
@@ -81,6 +96,14 @@ gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD
 Connect to zonal cluster
 ```
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_ZONE
+```
+GKE EE Fleets, add cluster to fleet and configure congig-synch
+```
+gcloud container clusters update example-cluster --enable-fleet --region $GOOGLE_CLOUD_ZONE
+gcloud beta container fleet config-management enable --project=$GOOGLE_CLOUD_PROJECT_ID
+gcloud beta container fleet config-management status --project=$GOOGLE_CLOUD_PROJECT_ID
+
+gcloud beta container fleet config-management apply --membership=example-cluster --config=gke-conf/apply-spec.yaml --project=$GOOGLE_CLOUD_PROJECT_ID
 ```
 Create namespaces 
 ```

@@ -1,0 +1,15 @@
+# apply-spec.yaml
+
+applySpecVersion: 1
+spec:
+  configSync:
+    # Set to true to install and enable Config Sync
+    enabled: true
+    # If you don't have a source of truth yet, omit the
+    # following fields. You can configure them later.
+    sourceType: git
+    sourceFormat: unstructured
+    syncRepo: https://github.com/gbechara/gcpdemos
+    syncBranch: main
+    secretType: none
+    policyDir: devopsdemo1/gke-conf/my-fleet-conf
