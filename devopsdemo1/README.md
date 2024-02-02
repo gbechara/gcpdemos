@@ -103,6 +103,8 @@ gcloud container clusters update example-cluster --enable-fleet --region $GOOGLE
 gcloud beta container fleet config-management enable --project=$GOOGLE_CLOUD_PROJECT_ID
 gcloud beta container fleet config-management status --project=$GOOGLE_CLOUD_PROJECT_ID
 
+gcloud beta container fleet policycontroller enable --project=$GOOGLE_CLOUD_PROJECT_ID --memberships=example-cluster
+
 gcloud beta container fleet config-management apply --membership=example-cluster --config=gke-conf/apply-spec.yaml --project=$GOOGLE_CLOUD_PROJECT_ID
 ```
 Create namespaces 

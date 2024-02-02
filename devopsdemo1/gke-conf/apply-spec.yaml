@@ -12,4 +12,4 @@ spec:
     syncRepo: https://github.com/gbechara/gcpdemos
     syncBranch: main
     secretType: none
-    policyDir: devopsdemo1/gke-conf/my-fleet-conf
+    policyDir: ./devopsdemo1/gke-conf/my-fleet-conf
