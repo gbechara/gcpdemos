@@ -15,9 +15,9 @@ kind: Gateway
 apiVersion: gateway.networking.k8s.io/v1beta1
 metadata:
   name: app
-  namespace: dev
+  namespace: test
   labels:
-    env: dev
+    env: test
 spec:
   gatewayClassName: gke-l7-global-external-managed
 #  gatewayClassName: gke-l7-rilb
