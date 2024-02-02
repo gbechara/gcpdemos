@@ -61,3 +61,9 @@ spec:
   ports:
   - name: web
     port: 9090
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gmp
+  namespace: test
