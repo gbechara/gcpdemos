@@ -13,8 +13,7 @@ Flagger/GatewayAPI for Canary using GMP metrics
 @todo:
 Terraform for GCP ressources (GKE, IAM, CloudSQL) // done  
 Configsync for KRM ressources // done 
-Terraform for cloud 
-Application related deployments KRM and Gcloud for Cloud Run are managed by cloud deploy (), clarify steps in readme.md 
+Terraform for cloud deploy and cloud run ressources  
 ```
 
 # 
