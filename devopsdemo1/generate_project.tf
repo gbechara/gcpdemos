@@ -140,6 +140,10 @@ resource "google_container_cluster" "example_cluster" {
   networking_mode =  "VPC_NATIVE"
   enable_shielded_nodes = true
   default_max_pods_per_node = 30
+  cluster_autoscaling {
+    enabled = true
+  }
+
 #  fleet = google_gke_hub_fleet.gke_fleet.name
 #  fleet {
 #       project = var.project_id
@@ -174,11 +178,16 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = "my-node-pool"
   location   = var.zone
   cluster    = google_container_cluster.example_cluster.name
-  node_count = 1
-
+  initial_node_count = 0
   node_config {
+    # preemptible  = true
     machine_type = "e2-medium"
   }
+  autoscaling{
+    min_node_count = 0
+    max_node_count = 3
+  }
+
 }
 
 # GKE EE related : add cluster to fleet
@@ -193,20 +202,35 @@ resource "google_gke_hub_fleet" "gke_fleet" {
 }
 
 resource "google_gke_hub_membership" "gke_fleet_membership" {
-  membership_id = "membership-to-my-gke-fleet-1"
+  membership_id = google_container_cluster.example_cluster.name
+  project = var.project_id
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/${google_container_cluster.example_cluster.id}"
+      resource_link = google_container_cluster.example_cluster.id
     }
+  }
+  authority {
+    issuer = "https://container.googleapis.com/v1/${google_container_cluster.example_cluster.id}"
   }
   depends_on = [google_project_service.project_googleapis_container,google_project_service.project_googleapis_gkehub]
 }
 
 resource "google_gke_hub_feature" "google_gke_hub_feature_configmanagement" {
   name = "configmanagement"
+  project = var.project_id
   location = "global"
-  fleet_default_member_config {
-    configmanagement {
+  depends_on = [google_project_service.project_googleapis_container, 
+                google_project_service.project_googleapis_anthos,
+                google_project_service.project_googleapis_anthosconfigmanagement,
+                google_project_service.project_googleapis_gkehub]
+}
+
+
+resource "google_gke_hub_feature_membership" "google_gke_hub_feature_membership_feature_member_configmanagement" {
+  location = "global"
+  feature = google_gke_hub_feature.google_gke_hub_feature_configmanagement.name
+  membership = google_gke_hub_membership.gke_fleet_membership.membership_id
+  configmanagement {
       config_sync {
         source_format = "unstructured"
         git {
@@ -217,39 +241,27 @@ resource "google_gke_hub_feature" "google_gke_hub_feature_configmanagement" {
         }
       }
     }
-  }    
-  depends_on = [google_project_service.project_googleapis_container, 
-                google_project_service.project_googleapis_anthos,
-                google_project_service.project_googleapis_anthosconfigmanagement,
-                google_project_service.project_googleapis_gkehub]
 }
 
 resource "google_gke_hub_feature" "google_gke_hub_feature_policycontroller" {
   name = "policycontroller"
+  project = var.project_id
   location = "global"
-  fleet_default_member_config {
-    policycontroller {
-      policy_controller_hub_config {
-        install_spec = "INSTALL_SPEC_ENABLED"
-        exemptable_namespaces = ["foo"]
-        policy_content {
-          bundles {
-            bundle = "policy-essentials-v2022"
-            exempted_namespaces = ["foo", "bar"]
-          }
-          template_library {
-            installation = "ALL"
-          }
-        }
-        audit_interval_seconds = 30
-        referential_rules_enabled = true
-      }
-    }
-  }
   depends_on = [google_project_service.project_googleapis_container, 
                 google_project_service.project_googleapis_anthos,
                 google_project_service.project_googleapis_anthospolicycontroller,
                 google_project_service.project_googleapis_gkehub]
+}
+
+resource "google_gke_hub_feature_membership" "google_gke_hub_feature_membership_feature_member_policycontroller" {
+  location = "global"
+  feature = google_gke_hub_feature.google_gke_hub_feature_policycontroller.name
+  membership = google_gke_hub_membership.gke_fleet_membership.membership_id
+  policycontroller {
+    policy_controller_hub_config {
+      install_spec = "INSTALL_SPEC_ENABLED"
+    }
+  }
 }
 
 resource "google_service_account" "flagger" {
@@ -329,7 +341,7 @@ resource "google_project_iam_member" "clouddeploy_monitoring_metricWriter_prod" 
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
-resource "google_sql_database_instance" "devopsdemo-instance" {
+resource "google_sql_database_instance" "devopsdemo_instance" {
   name             = "devopsdemo-instance"
   region           = "us-central1"
   database_version = "POSTGRES_14"
@@ -340,7 +352,7 @@ resource "google_sql_database_instance" "devopsdemo-instance" {
 
 resource "google_sql_database" "quotes-app-db" {
   name     = "quotes-app-db"
-  instance = google_sql_database_instance.devopsdemo-instance.name
+  instance = google_sql_database_instance.devopsdemo_instance.name
 }
 
 resource "google_service_account" "cloudsql_sa" {
@@ -348,18 +360,29 @@ resource "google_service_account" "cloudsql_sa" {
   display_name = "Cloud SQL Service Account"
 }
 
+resource "time_sleep" "wait_300_seconds" {
+  depends_on = [google_sql_database_instance.devopsdemo_instance]
+  create_duration = "300s"
+}
+
 resource "google_sql_user" "iam_service_account_user" {
   name     = trimsuffix(google_service_account.cloudsql_sa.email, ".gserviceaccount.com")
-  instance = google_sql_database_instance.devopsdemo-instance.name
+  instance = google_sql_database_instance.devopsdemo_instance.name
   type     = "CLOUD_IAM_SERVICE_ACCOUNT"
-  depends_on = [google_sql_database.quotes-app-db]
+#  depends_on = [google_service_account.cloudsql_sa,
+#                google_sql_database.quotes-app-db, 
+#                google_sql_database_instance.devopsdemo_instance]
+# https://github.com/hashicorp/terraform-provider-google/issues/14233
+depends_on = [
+    time_sleep.wait_300_seconds
+  ]
 }
 
 resource "google_project_iam_member" "cloudsql_admin" {
   project = var.project_id
   role    = "roles/cloudsql.admin"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-  depends_on = [google_sql_database.quotes-app-db, google_sql_database_instance.devopsdemo-instance]
+  depends_on = [google_sql_database.quotes-app-db, google_sql_database_instance.devopsdemo_instance]
 }
 
 resource "google_project_iam_member" "cloudsql_client" {
