@@ -11,8 +11,9 @@ Flagger/GatewayAPI for Canary using GMP metrics
 
 ```
 @todo:
-Terraform for GCP ressources // in progress 
-Configsync for KRM ressources 
+Terraform for GCP ressources (GKE, IAM, CloudSQL) // done  
+Configsync for KRM ressources // done 
+Terraform for cloud 
 Application related deployments KRM and Gcloud for Cloud Run are managed by cloud deploy (), clarify steps in readme.md 
 ```
 
@@ -36,7 +37,7 @@ gcloud services enable anthosconfigmanagement.googleapis.com --project $GOOGLE_C
 ```
 GKE EE  
 ```
-#gcloud services enable anthos.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable anthos.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable gkehub.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable gkeconnect.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable cloudresourcemanager.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
@@ -101,10 +102,10 @@ gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD
 ```
 GKE EE Fleets, add cluster to fleet and configure congig-synch
 ```
-sudo apt-get install google-cloud-sdk-nomos
+#sudo apt-get install google-cloud-sdk-nomos
 gcloud container clusters update example-cluster --enable-fleet --region $GOOGLE_CLOUD_ZONE
 gcloud beta container fleet config-management enable --project=$GOOGLE_CLOUD_PROJECT_ID
-gcloud beta container fleet config-management status --project=$GOOGLE_CLOUD_PROJECT_ID
+#gcloud beta container fleet config-management status --project=$GOOGLE_CLOUD_PROJECT_ID
 
 gcloud beta container fleet policycontroller enable --project=$GOOGLE_CLOUD_PROJECT_ID --memberships=example-cluster
 

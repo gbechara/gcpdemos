@@ -35,6 +35,50 @@ resource "google_project_service" "project_googleapis_aiplatform" {
   disable_dependent_services = true
 }
 
+#GKE EE realated API 
+
+resource "google_project_service" "project_googleapis_anthos" {
+  project = var.project_id
+  service = "anthos.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_anthosconfigmanagement" {
+  project = var.project_id
+  service = "anthosconfigmanagement.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_anthospolicycontroller" {
+  project = var.project_id
+  service = "anthospolicycontroller.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_gkehub" {
+  project = var.project_id
+  service = "gkehub.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_gkeconnect" {
+  project = var.project_id
+  service = "gkeconnect.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_cloudresourcemanager" {
+  project = var.project_id
+  service = "cloudresourcemanager.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_iam" {
+  project = var.project_id
+  service = "iam.googleapis.com"
+  disable_dependent_services = true
+}
+
 resource "google_compute_network" "default" {
   name = "default"
   depends_on = [google_project_service.project_googleapis_compute]
@@ -96,6 +140,11 @@ resource "google_container_cluster" "example_cluster" {
   networking_mode =  "VPC_NATIVE"
   enable_shielded_nodes = true
   default_max_pods_per_node = 30
+#  fleet = google_gke_hub_fleet.gke_fleet.name
+#  fleet {
+#       project = var.project_id
+#     }
+
   addons_config {
    horizontal_pod_autoscaling {
       disabled = false
@@ -130,6 +179,77 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   node_config {
     machine_type = "e2-medium"
   }
+}
+
+# GKE EE related : add cluster to fleet
+# gcloud alpha container fleet create --display-name=my-gke-fleet-1 --project=$GOOGLE_CLOUD_PROJECT_ID
+# gcloud container clusters update example-cluster --enable-fleet --region $GOOGLE_CLOUD_ZONE
+# gcloud beta container fleet config-management enable --project=$GOOGLE_CLOUD_PROJECT_ID
+
+resource "google_gke_hub_fleet" "gke_fleet" {
+  display_name = "my-gke-fleet-1"
+  project = var.project_id
+  depends_on = [google_project_service.project_googleapis_container, google_project_service.project_googleapis_gkehub]
+}
+
+resource "google_gke_hub_membership" "gke_fleet_membership" {
+  membership_id = "membership-to-my-gke-fleet-1"
+  endpoint {
+    gke_cluster {
+      resource_link = "//container.googleapis.com/${google_container_cluster.example_cluster.id}"
+    }
+  }
+  depends_on = [google_project_service.project_googleapis_container,google_project_service.project_googleapis_gkehub]
+}
+
+resource "google_gke_hub_feature" "google_gke_hub_feature_configmanagement" {
+  name = "configmanagement"
+  location = "global"
+  fleet_default_member_config {
+    configmanagement {
+      config_sync {
+        source_format = "unstructured"
+        git {
+          sync_repo = "https://github.com/gbechara/gcpdemos/"
+          sync_branch =  "main"
+          secret_type =  "none"
+          policy_dir =  "./devopsdemo1/gke-conf/my-fleet-conf"             
+        }
+      }
+    }
+  }    
+  depends_on = [google_project_service.project_googleapis_container, 
+                google_project_service.project_googleapis_anthos,
+                google_project_service.project_googleapis_anthosconfigmanagement,
+                google_project_service.project_googleapis_gkehub]
+}
+
+resource "google_gke_hub_feature" "google_gke_hub_feature_policycontroller" {
+  name = "policycontroller"
+  location = "global"
+  fleet_default_member_config {
+    policycontroller {
+      policy_controller_hub_config {
+        install_spec = "INSTALL_SPEC_ENABLED"
+        exemptable_namespaces = ["foo"]
+        policy_content {
+          bundles {
+            bundle = "policy-essentials-v2022"
+            exempted_namespaces = ["foo", "bar"]
+          }
+          template_library {
+            installation = "ALL"
+          }
+        }
+        audit_interval_seconds = 30
+        referential_rules_enabled = true
+      }
+    }
+  }
+  depends_on = [google_project_service.project_googleapis_container, 
+                google_project_service.project_googleapis_anthos,
+                google_project_service.project_googleapis_anthospolicycontroller,
+                google_project_service.project_googleapis_gkehub]
 }
 
 resource "google_service_account" "flagger" {

@@ -1,7 +1,7 @@
 variable "project_id" {
-  description = "inner-melody-412916"
+  description = "gab-devops-4-413415"
   type        = string
-  default = "inner-melody-412916"
+  default = "gab-devops-4-413415"
 }
 
 variable "region" {
@@ -17,7 +17,7 @@ variable "zone" {
 }
 
 variable "project_number" {
-  description = "136872847930"
+  description = "958730664902"
   type        = string
-  default = "136872847930"
+  default = "958730664902"
 }
