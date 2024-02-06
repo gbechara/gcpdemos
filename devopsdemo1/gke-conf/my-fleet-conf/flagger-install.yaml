@@ -2,8 +2,7 @@
 apiVersion: configsync.gke.io/v1beta1
 kind: RepoSync
 metadata:
-  name: flaggger
-  namespace: flagger-system
+  name: flagger
 spec:
   sourceType: git
   # Since this is for a namespace repository, the format is unstructured
