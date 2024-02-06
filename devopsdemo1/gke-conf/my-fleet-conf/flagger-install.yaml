@@ -6,7 +6,7 @@ metadata:
 spec:
   sourceType: git
   # Since this is for a namespace repository, the format is unstructured
-  sourceFormat: formatted
+  sourceFormat: hierarchy
   git:
     repo: https://github.com/fluxcd/flagger
     revision: main
