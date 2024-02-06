@@ -145,9 +145,10 @@ resource "google_container_cluster" "example_cluster" {
   }
 
 #  fleet = google_gke_hub_fleet.gke_fleet.name
+#  the created separately
 #  fleet {
 #       project = var.project_id
-#     }
+#  }
 
   addons_config {
    horizontal_pod_autoscaling {
