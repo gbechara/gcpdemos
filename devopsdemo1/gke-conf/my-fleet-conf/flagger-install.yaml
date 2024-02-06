@@ -12,3 +12,4 @@ spec:
     repo: https://github.com/fluxcd/flagger
     revision: main
     dir: kustomize/gatewayapi
+    auth: none
