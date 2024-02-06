@@ -1,5 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: test
-# [END anthosconfig_config_sync_quickstart_multirepo_root_namespace_gamestore] 
