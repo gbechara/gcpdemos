@@ -187,6 +187,7 @@ kubectl annotate serviceaccount gmp \
     iam.gke.io/gcp-service-account=gmp-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" gmp-frontend.yaml
+sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" devopsdemo1/gke-conf/my-fleet-conf/serviceaccounts.yaml
 
 kubectl apply -n prod -f gmp-frontend.yaml
 ```
