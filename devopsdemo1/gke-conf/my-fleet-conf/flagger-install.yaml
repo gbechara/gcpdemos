@@ -3,6 +3,7 @@ apiVersion: configsync.gke.io/v1beta1
 kind: RootSync
 metadata:
   name: flagger
+  namespace: config-management-system
 spec:
   sourceType: git
   sourceFormat: unstructured
