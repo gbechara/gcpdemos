@@ -23,9 +23,12 @@ sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
 Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 
 # Step 1 - Terraform set up of the project
-Prepare your Google Workstation using ../workstationdemo2/Dockerfile
-Create a new project and in . change project_id and project_number in variable.tf
-Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com then launch and wait (about 15 min) 
+Prepare your Google Workstation using ../workstationdemo2/Dockerfile. <br/> 
+Create a gihub connection in your project (automation is not yes provided in this demo).<br/> 
+Create a new project and:<br/>
+- Change project_id and project_number in variable.tf<br/> 
+- Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com</br>
+- Then launch and wait (about 15 min)<br/>
 ```
 terraform init
 terraform plan
@@ -348,6 +351,19 @@ Deploy Pipelines for GKE (application back end) and CloudRun (other components)
 gcloud deploy apply --file clouddeploy-run.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
 gcloud deploy apply --file clouddeploy-gke.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
 ```
+# Step 17 - GitHub Trigger
+Create a cloud build trigger for both front-end on run and back-end microservices assembly on gke
+Note : The github cloudcloudbuild (cloudbuild-github.yaml) is needed for this foder structure (all building blocks under the same directory)
+```
+
+gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\
+    --region=us-central1 \
+    --repo-name=gcpdemos \
+    --repo-owner=gbechara \
+    --branch-pattern=^main$ \
+    --build-config=devopsdemo1/cloudbuild-github.yaml \
+    --include-logs-with-status
+```
 # Step APP - Deploy the App
 Application related Inner Loop and OuterLoop 
 ```
@@ -410,18 +426,6 @@ After the release is deploy to dev, promote it to production
 
 gcloud deploy releases promote  --release=release-001 --delivery-pipeline=canary --region=$GOOGLE_CLOUD_REGION --to-target=prod
 
-```
-## Create a cloud build trigger for both front-end on run and back-end microservices assembly on gke
-Note : The github cloudcloudbuild (cloudbuild-github.yaml) is needed for this foder structure (all building blocks under the same directory)
-```
-
-gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\
-    --region=us-central1 \
-    --repo-name=gcpdemos \
-    --repo-owner=gbechara \
-    --branch-pattern=^main$ \
-    --build-config=devopsdemo1/cloudbuild-github.yaml \
-    --include-logs-with-status
 ```
 ## Observe the pipeline
 ```

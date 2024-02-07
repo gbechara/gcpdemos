@@ -17,6 +17,12 @@ resource "google_project_service" "project_googleapis_container" {
   disable_dependent_services = true
 }
 
+resource "google_project_service" "project_googleapis_cloudbuild" {
+  project = var.project_id
+  service = "cloudbuild.googleapis.com"
+  disable_dependent_services = true
+}
+
 resource "google_project_service" "project_googleapis_clouddeploy" {
   project = var.project_id
   service = "clouddeploy.googleapis.com"
@@ -557,4 +563,31 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_gke_production" 
     cluster = "projects/gab-devops-1/locations/${var.zone}/clusters/example-cluster"
   }
   depends_on = [google_project_service.project_googleapis_clouddeploy]
+}
+
+#https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github#terraform_1
+# 
+#resource "google_cloudbuildv2_repository" "google_cloudbuildv2_repository_gbechara" {
+#    project  = var.project_id
+#    location   = var.region
+#    name = "gbechara"
+#    parent_connection = google_cloudbuildv2_connection.my_connection.name
+#    remote_uri = "https://github.com/gbechara/gcpdemos"
+#    depends_on = [google_project_service.project_googleapis_cloudbuild]
+#  }
+
+resource "google_cloudbuild_trigger" "google_cloudbuild_trigger_devopsdemo1_tigger1" {
+  name     = "google_cloudbuild_trigger"
+  project  = var.project_id
+  location   = var.region
+  filename = "devopsdemo1/cloudbuild-github.yaml"
+  github {
+    owner = "gbechara"
+    name  = "gcpdemos"
+    push {
+      branch = "^main$"
+    }
+  }
+  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
+  depends_on = [google_project_service.project_googleapis_cloudbuild]
 }
