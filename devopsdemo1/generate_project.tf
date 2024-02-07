@@ -567,14 +567,15 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_gke_production" 
 
 #https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github#terraform_1
 # 
-#resource "google_cloudbuildv2_repository" "google_cloudbuildv2_repository_gbechara" {
-#    project  = var.project_id
-#    location   = var.region
-#    name = "gbechara"
+resource "google_cloudbuildv2_repository" "google_cloudbuildv2_repository_gbechara" {
+    project  = var.project_id
+    location   = var.region
+    name = "gbechara"
 #    parent_connection = google_cloudbuildv2_connection.my_connection.name
-#    remote_uri = "https://github.com/gbechara/gcpdemos"
-#    depends_on = [google_project_service.project_googleapis_cloudbuild]
-#  }
+    parent_connection = "gbechara"
+    remote_uri = "https://github.com/gbechara/gcpdemos"
+    depends_on = [google_project_service.project_googleapis_cloudbuild]
+}
 
 resource "google_cloudbuild_trigger" "google_cloudbuild_trigger_devopsdemo1_tigger1" {
   name     = "google_cloudbuild_trigger"

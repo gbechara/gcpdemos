@@ -24,7 +24,7 @@ Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 
 # Step 1 - Terraform set up of the project
 Prepare your Google Workstation using ../workstationdemo2/Dockerfile. <br/> 
-Create a gihub connection in your project (automation is not yes provided in this demo).<br/> 
+Create a gihub connection in your project (automation is not yet provided in this demo).<br/> 
 Create a new project and:<br/>
 - Change project_id and project_number in variable.tf<br/> 
 - Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com</br>
@@ -35,7 +35,12 @@ terraform plan
 terraform apply
 ```
 You can now Jump to **Step App - Deploy the App** .
-The intermadiary steps Step 2 to App are already executed using Terraform for GCP ressouces and ConfigSync for KRM ressouces.
+
+The intermadiary steps **Step 2** to **Step 17** are already executed using 
+- Terraform for GCP ressouces 
+- ConfigSync for KRM ressouces.
+
+**Step App** is either done during the dev inner loop (skaffold) or trigger cloudbuild thru the git push to the main branch (for this demo). Cloudbuild will then build the images and create a new deploy release
 
 # Step 2 
 Set Env  
@@ -374,13 +379,17 @@ Fetch IP for DNS setup
 ```
 kubectl get gateways.gateway.networking.k8s.io app-dev  -n dev -o=jsonpath="{.status.addresses[0].value}"
 ```
-Trigger Pipelines
+Trigger Pipelines : inner loop in workstation
 ```
 Create new release for deployment
  skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID -p prod
 
 skaffold build --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID 
 
+```
+Outer loop start after pushing to main for this demo
+```
+# This is done in cloudbuild cloudbuild-github.yaml 
 #in quotes-front (CloudRun)
 gcloud deploy releases create release-109 \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
