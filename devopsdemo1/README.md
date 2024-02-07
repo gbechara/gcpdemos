@@ -14,16 +14,14 @@ Flagger/GatewayAPI for Canary using GMP metrics
 Terraform for GCP ressources (GKE, IAM, CloudSQL) // done  
 Configsync for KRM ressources // done 
 Terraform for cloud deploy  // done
-
+``````
 To replace variables in files you can use sed example :
-
 ```
 sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
 sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
 ```
 Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 
-```
 # Step 1 - Terraform set up of the project
 Prepare your Google Workstation using ../workstationdemo2/Dockerfile
 Create a new project and in . change project_id and project_number in variable.tf
@@ -32,7 +30,6 @@ Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJEC
 terraform init
 terraform plan
 terraform apply
-
 ```
 You can now Jump to **Step App - Deploy the App** .
 The intermadiary steps Step 2 to App are already executed using Terraform for GCP ressouces and ConfigSync for KRM ressouces.
@@ -163,18 +160,16 @@ kubectl annotate serviceaccount flagger \
     --namespace flagger-system \
     iam.gke.io/gcp-service-account=flagger@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 ```
-# Step 10
 Create certificate for Gateways
 ```
 gcloud compute ssl-certificates create gab-dev-certificate --domains app.dev.gabrielbechara.com --global
 gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.gabrielbechara.com --global
 ```
-# Step 11 - Gateways and Flagger
 Create Gateways and Flaggers Setting for canary deployment on GKE prod namespace
 ```
 kubectl apply -f bootstrap.yaml
 ```
-# Step 12 - Managed Prometheus
+# Step 10 - Managed Prometheus
 Deploy GMP Query Interface
 ```
 kubectl create serviceaccount gmp -n prod
@@ -197,7 +192,7 @@ sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" devopsdemo1/gke-co
 
 kubectl apply -n prod -f gmp-frontend.yaml
 ```
-# Step 13 : Additional policy binding 
+# Step 11 : Additional policy binding 
 Create Cloud Deploy Pipelines & Set permissions for Cloud Deploy and apply pipeline
 ```
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
@@ -242,7 +237,7 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --role="roles/monitoring.metricWriter"
 
 ```
-# Step 14 : Cloud SQL SA and policy bindings
+# Step 12 : Cloud SQL SA and policy bindings
 Service accounts roles for cloud sql database (split later dev and prod)
 ```
 gcloud iam service-accounts create cloudsql-sa \
@@ -271,7 +266,7 @@ gcloud iam service-accounts add-iam-policy-binding \
   cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 ```
-# Step 15 - Annotate Kubernete SA to related to Cloud SQL SA
+# Step 13 - Annotate Kubernete SA to related to Cloud SQL SA
 This step need to be done after deploying the application in Step App
 Service accounts roles for cloud sql database (split later dev and prod)
 ```
@@ -286,7 +281,7 @@ kubectl annotate serviceaccount \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 ```
-# Step 16 - Optional - For the LLM tab going thru IAP 
+# Step 14 - Optional - For the LLM tab going through IAP 
 Service accounts roles for LLM (split later dev and prod) and IAP SA
 ```
 gcloud iam service-accounts create llm-sa \
@@ -316,7 +311,7 @@ Service accounts roles for alloydb test (split later dev and prod)
 
 
 ```
-# Step 17 - Cloud SQL
+# Step 15 - Cloud SQL
 Create a cloud sql database (split later dev and prod)
 ```
 gcloud sql instances create devopsdemo-instance \
@@ -346,14 +341,12 @@ https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine
 https://codelabs.developers.google.com/codelabs/cloud-sql-go-connector#4  
 
 ```
-# Step 18 
-Deploy Pipelines
+# Step 16 - Cloud Deploy Pipelines
+Deploy Pipelines for GKE (application back end) and CloudRun (other components)
 ```
 #gcloud deploy apply --file clouddeploy.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
 gcloud deploy apply --file clouddeploy-run.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
 gcloud deploy apply --file clouddeploy-gke.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
-
-
 ```
 # Step APP - Deploy the App
 Application related Inner Loop and OuterLoop 
@@ -386,16 +379,14 @@ gcloud deploy releases create release-106 \
  --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 ```
-Use Cloudbuild for new releases
+# Deploy Certificates for binary auth
 ```
-
+# Permission cloudkms.cryptoKeyVersions.viewPublicKey
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
     --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
     --role="roles/binaryauthorization.attestorsViewer"
 
-
-# Permission cloudkms.cryptoKeyVersions.viewPublicKey
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --member=serviceAccount:$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
     --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
@@ -406,9 +397,11 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --format="value(projectNumber)")@cloudbuild.gserviceaccount.com \
     --role="roles/containeranalysis.notes.attacher"
 
+```
+Use Cloudbuild for new releases
+```
 
 gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
-
 
 curl --header 'Host: app.dev.gabrielbechara.com' http://10.132.0.48
 curl --header 'Host: app.prod.gabrielbechara.com' http://10.132.0.48
@@ -421,7 +414,6 @@ gcloud deploy releases promote  --release=release-001 --delivery-pipeline=canary
 ## Create a cloud build trigger for both front-end on run and back-end microservices assembly on gke
 Note : The github cloudcloudbuild (cloudbuild-github.yaml) is needed for this foder structure (all building blocks under the same directory)
 ```
-
 
 gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\
     --region=us-central1 \
