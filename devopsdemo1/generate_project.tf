@@ -142,6 +142,16 @@ resource "google_container_cluster" "example_cluster" {
   default_max_pods_per_node = 30
   cluster_autoscaling {
     enabled = true
+    resource_limits {
+      resource_type = "cpu"
+      minimum       = "1"
+      maximum       = "6"
+    }
+    resource_limits {
+      resource_type = "memory"
+      minimum       = "1"
+      maximum = "12"
+    }
   }
 
 #  fleet = google_gke_hub_fleet.gke_fleet.name
@@ -441,4 +451,110 @@ resource "google_project_iam_member" "alloydb_admin" {
   role    = "roles/alloydb.admin"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
   depends_on = [google_project_service.project_googleapis_compute]
+}
+
+resource "google_clouddeploy_delivery_pipeline" "google_clouddeploy_delivery_pipeline_run" {
+  provider = google-beta
+  project = var.project_id
+  name     = "devopsdemo1-run"
+  description = "devopsdemo1-run"
+  location = var.region
+  serial_pipeline {
+    stages {
+      target_id = "dev-run"
+      profiles = ["dev"]
+      strategy {
+        standard {
+          predeploy {
+            actions = ["predeploy-action"]
+          }
+          postdeploy {
+            actions = ["postdeploy-action"]
+          }
+        }
+      }
+    }
+    stages {
+      target_id = "prod-run"
+      profiles = ["prod"]
+      strategy {
+        standard {
+          predeploy {
+            actions = ["predeploy-action"]
+          }
+          postdeploy {
+            actions = ["postdeploy-action"]
+          }
+        }
+      }
+    }
+  }
+  depends_on = [google_project_service.project_googleapis_clouddeploy]
+}
+
+resource "google_clouddeploy_target" "google_clouddeploy_target_run_development" {
+  provider = google-beta
+  project = var.project_id
+  name     = "dev-run"
+  location = var.region
+  description = "development"
+  run {
+    location = "projects/gab-devops-1/locations/${var.region}"
+  }
+  depends_on = [google_project_service.project_googleapis_clouddeploy]
+}
+
+resource "google_clouddeploy_target" "google_clouddeploy_target_run_production" {
+  provider = google-beta
+  project = var.project_id
+  name     = "prod-run"
+  location = var.region
+  description = "production"
+  run {
+    location = "projects/gab-devops-1/locations/${var.region}"
+  }
+  depends_on = [google_project_service.project_googleapis_clouddeploy]
+}
+
+resource "google_clouddeploy_delivery_pipeline" "google_clouddeploy_delivery_pipeline_gke" {
+  provider = google-beta
+  project = var.project_id
+  name     = "devopsdemo1-gke"
+  description = "devopsdemo1-gke"
+  location = var.region
+  serial_pipeline {
+    stages {
+      target_id = "dev-gke"
+      profiles = ["dev"]
+    }
+    stages {
+      target_id = "prod-gke"
+      profiles = ["prod"]
+    }
+  }
+  depends_on = [google_project_service.project_googleapis_clouddeploy]
+}
+
+resource "google_clouddeploy_target" "google_clouddeploy_target_gke_development" {
+  provider = google-beta
+  project = var.project_id
+  name     = "dev-gke"
+  location = var.region
+  description = "development-cluster"
+  gke {
+    cluster = "projects/gab-devops-1/locations/${var.zone}/clusters/example-cluster"
+  }
+  depends_on = [google_project_service.project_googleapis_clouddeploy]
+}
+
+resource "google_clouddeploy_target" "google_clouddeploy_target_gke_production" {
+  provider = google-beta
+  project = var.project_id
+  name     = "prod-gke"
+  location = var.region
+  description = "production-cluster"
+  gke {
+    cluster = "projects/gab-devops-1/locations/${var.zone}/clusters/example-cluster"
+  }
+  depends_on = [google_project_service.project_googleapis_clouddeploy]
 }

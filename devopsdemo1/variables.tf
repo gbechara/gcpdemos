@@ -1,7 +1,7 @@
 variable "project_id" {
-  description = "gab-devops-4-413420"
+  description = "gab-devops-4-413615"
   type        = string
-  default = "gab-devops-4-413420"
+  default = "gab-devops-4-413615"
 }
 
 variable "region" {
@@ -17,7 +17,7 @@ variable "zone" {
 }
 
 variable "project_number" {
-  description = "302475333656"
+  description = "1066937776479"
   type        = string
-  default = "302475333656"
+  default = "1066937776479"
 }

@@ -13,10 +13,31 @@ Flagger/GatewayAPI for Canary using GMP metrics
 @todo:
 Terraform for GCP ressources (GKE, IAM, CloudSQL) // done  
 Configsync for KRM ressources // done 
-Terraform for cloud deploy and cloud run ressources 
-```
+Terraform for cloud deploy  // done
 
-# 
+To replace variables in files you can use sed example :
+
+```
+sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
+sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
+```
+Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
+
+```
+# Step 1 - Terraform set up of the project
+Prepare your Google Workstation using ../workstationdemo2/Dockerfile
+Create a new project and in . change project_id and project_number in variable.tf
+Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com then launch and wait (about 15 min) 
+```
+terraform init
+terraform plan
+terraform apply
+
+```
+You can now Jump to **Step App - Deploy the App** .
+The intermadiary steps Step 2 to App are already executed using Terraform for GCP ressouces and ConfigSync for KRM ressouces.
+
+# Step 2 
 Set Env  
 ```
 export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
@@ -25,6 +46,7 @@ export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
+# Step 3 
 Enable APIs  
 ```
 gcloud services enable compute.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
@@ -43,6 +65,8 @@ gcloud services enable cloudresourcemanager.googleapis.com --project $GOOGLE_CLO
 gcloud services enable iam.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud alpha container fleet create --display-name=my-gke-fleet-1 --project=$GOOGLE_CLOUD_PROJECT_ID
 ```
+
+# Step 4 - Optional
 Create Proxy-only subnet, needed for regionnal LB using gatewayClassName: gke-l7-rilb 
 
 Note : The Proxy-only subnet is not used with gatewayClassName: gke-l7-global-external-managed  
@@ -54,6 +78,7 @@ Note : The Proxy-only subnet is not used with gatewayClassName: gke-l7-global-ex
 #    --network=default \
 #    --range=10.103.0.0/23
 ```
+# Step 5
 Create an artefact repo and configure docker and skaffold to relate to it
 ```
 gcloud artifacts repositories create devopsdemo1repo --repository-format=docker \
@@ -82,6 +107,7 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 
 
 ```
+# Step 6
 Create a GKE Cluster with HPA and Workload Identity preinstalled
 ```
 gcloud beta container clusters create "example-cluster" --cluster-version "1.24.5-gke.600" --region "$GOOGLE_CLOUD_REGION"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
@@ -91,6 +117,7 @@ Or create a zonal GKE Cluster with HPA and Workload Identity preinstalled
 gcloud container clusters create "example-cluster" --cluster-version "latest" --zone "$GOOGLE_CLOUD_ZONE"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
 
 ```
+Keep those instruction to use on workstation to connect to the cluster. 
 Connect to regional cluster
 ```
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_REGION
@@ -99,6 +126,7 @@ Connect to zonal cluster
 ```
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_ZONE
 ```
+# Step 7 - Enables fleets and add the GKE cluster to the fleet
 GKE EE Fleets, add cluster to fleet and configure congig-synch
 ```
 #sudo apt-get install google-cloud-sdk-nomos
@@ -110,12 +138,13 @@ gcloud beta container fleet policycontroller enable --project=$GOOGLE_CLOUD_PROJ
 
 gcloud beta container fleet config-management apply --membership=example-cluster --config=gke-conf/apply-spec.yaml --project=$GOOGLE_CLOUD_PROJECT_ID
 ```
+# Step 8
 Create namespaces 
 ```
 kubectl create namespace dev
 kubectl create namespace prod
 ```
-
+# Step 9 
 Bootstrap Flagger and the Gateway
 Install Flagger for Gateway API
 ```
@@ -134,41 +163,18 @@ kubectl annotate serviceaccount flagger \
     --namespace flagger-system \
     iam.gke.io/gcp-service-account=flagger@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 ```
+# Step 10
 Create certificate for Gateways
 ```
-
 gcloud compute ssl-certificates create gab-dev-certificate --domains app.dev.gabrielbechara.com --global
 gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.gabrielbechara.com --global
-
-
 ```
-
-Replace variables in files
-Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
-
-```
-
-sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
-#on mac : sed -i "" "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" clouddeploy.yaml
-
-sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
-
-@todo:
-#other file to adapt 
-#add IAM of Cloud Build
-```
-Deploy App 
-```
-# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
-skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
-```
-Fetch IP for DNS setup
-```
-kubectl get gateways.gateway.networking.k8s.io app-dev  -n dev -o=jsonpath="{.status.addresses[0].value}"
-```
+# Step 11 - Gateways and Flagger
+Create Gateways and Flaggers Setting for canary deployment on GKE prod namespace
 ```
 kubectl apply -f bootstrap.yaml
 ```
+# Step 12 - Managed Prometheus
 Deploy GMP Query Interface
 ```
 kubectl create serviceaccount gmp -n prod
@@ -191,6 +197,7 @@ sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" devopsdemo1/gke-co
 
 kubectl apply -n prod -f gmp-frontend.yaml
 ```
+# Step 13 : Additional policy binding 
 Create Cloud Deploy Pipelines & Set permissions for Cloud Deploy and apply pipeline
 ```
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
@@ -235,6 +242,7 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --role="roles/monitoring.metricWriter"
 
 ```
+# Step 14 : Cloud SQL SA and policy bindings
 Service accounts roles for cloud sql database (split later dev and prod)
 ```
 gcloud iam service-accounts create cloudsql-sa \
@@ -262,6 +270,11 @@ gcloud iam service-accounts add-iam-policy-binding \
   --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[prod/ksa-cloud-sql-prod]" \
   cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
+```
+# Step 15 - Annotate Kubernete SA to related to Cloud SQL SA
+This step need to be done after deploying the application in Step App
+Service accounts roles for cloud sql database (split later dev and prod)
+```
 kubectl annotate serviceaccount \
   ksa-cloud-sql-dev  \
   --namespace dev \
@@ -273,6 +286,7 @@ kubectl annotate serviceaccount \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 ```
+# Step 16 - Optional - For the LLM tab going thru IAP 
 Service accounts roles for LLM (split later dev and prod) and IAP SA
 ```
 gcloud iam service-accounts create llm-sa \
@@ -302,6 +316,7 @@ Service accounts roles for alloydb test (split later dev and prod)
 
 
 ```
+# Step 17 - Cloud SQL
 Create a cloud sql database (split later dev and prod)
 ```
 gcloud sql instances create devopsdemo-instance \
@@ -331,11 +346,24 @@ https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine
 https://codelabs.developers.google.com/codelabs/cloud-sql-go-connector#4  
 
 ```
+# Step 18 
 Deploy Pipelines
 ```
 #gcloud deploy apply --file clouddeploy.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
 gcloud deploy apply --file clouddeploy-run.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
 gcloud deploy apply --file clouddeploy-gke.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
+
+
+```
+# Step APP - Deploy the App
+Application related Inner Loop and OuterLoop 
+```
+# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
+skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
+```
+Fetch IP for DNS setup
+```
+kubectl get gateways.gateway.networking.k8s.io app-dev  -n dev -o=jsonpath="{.status.addresses[0].value}"
 ```
 Trigger Pipelines
 ```
