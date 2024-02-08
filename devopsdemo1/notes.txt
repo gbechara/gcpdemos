@@ -80,15 +80,15 @@ gcloud container clusters resize example-cluster --num-nodes=1 --region=us-centr
 gcloud deploy delivery-pipelines delete canary --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID --force
 
 #npm cache clean --force 
-#npm install react
-#npm install webpack
+npm install react --save
+npm install webpack --save
 #npm i webpack webpack-dev-server webpack-cli --save-dev
-#npm install process
-npm install semantic-ui-react semantic-ui-css
-npm install react-bootstrap
+npm install process
+npm install semantic-ui-react semantic-ui-css --save
+npm install react-bootstrap --save
 npm install react-native --save
 npm install react-native-web --save
-npm install @react-oauth/google@latest --save
+# npm install @react-oauth/google@latest --save
 npm install @auth0/auth0-react --save
 
 
