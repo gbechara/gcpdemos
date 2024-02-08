@@ -88,6 +88,10 @@ npm install semantic-ui-react semantic-ui-css --save
 npm install react-bootstrap --save
 npm install react-native --save
 npm install react-native-web --save
+##### npm uninstall react-refresh --save
+##### if problem after installing react-refresh nees to delete package-lock.json and node_modules afterwards and reinstall
+npm install react-scripts --save
+npm install react-table-scroll --save
 # npm install @react-oauth/google@latest --save
 npm install @auth0/auth0-react --save
 

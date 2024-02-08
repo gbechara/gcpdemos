@@ -16,8 +16,8 @@
     "react-native": "^0.72.10",
     "react-native-web": "^0.19.10",
     "react-router-dom": "^6.10.0",
-    "react-scripts": "5.0.1",
-    "react-table-scroll": "0.0.16-b",
+    "react-scripts": "^5.0.1",
+    "react-table-scroll": "^0.0.16-b",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
     "web-vitals": "^2.1.4"

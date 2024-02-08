@@ -566,25 +566,71 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_gke_production" 
 }
 
 #https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github#terraform_1
-# 
+#
+# Create a secret containing the personal access token and grant permissions to the Service Agent
+#resource "google_secret_manager_secret" "github_token_secret" {
+#    project =  var.project_id
+#    secret_id = "my-github-secret"
+#    replication {
+#        automatic = true
+#    }
+#}
+
+#resource "google_secret_manager_secret_version" "github_token_secret_version" {
+#    secret = google_secret_manager_secret.github_token_secret.id
+#    secret_data = "my-github-pat"
+#}
+#data "google_iam_policy" "serviceagent_secretAccessor" {
+#    binding {
+#        role = "roles/secretmanager.secretAccessor"
+#        members = ["serviceAccount:service-${var.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
+#    }
+#}
+
+resource "google_project_iam_member" "serviceagent_secretAccessor" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:service-${var.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
+}
+#resource "google_secret_manager_secret_iam_policy" "policy" {
+#  project = google_secret_manager_secret.github_token_secret.project
+#  secret_id = google_secret_manager_secret.github_token_secret.secret_id
+#  policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
+#}
+
+// Create the GitHub connection
+resource "google_cloudbuildv2_connection" "my_connection" {
+    project = var.project_id
+    location = var.region
+    name = "my-github-connection"
+    github_config {
+        app_installation_id = 12345678
+        authorizer_credential {
+            oauth_token_secret_version = "projects/${var.project_number}/secrets/my-github-secret/versions/1"
+        }
+    }
+    depends_on = [google_project_iam_member.serviceagent_secretAccessor,
+#                 google_secret_manager_secret_iam_policy.policy,
+                 google_project_service.project_googleapis_cloudbuild]
+}
+
 resource "google_cloudbuildv2_repository" "google_cloudbuildv2_repository_gbechara" {
     project  = var.project_id
     location   = var.region
     name = "gbechara"
-#    parent_connection = google_cloudbuildv2_connection.my_connection.name
-    parent_connection = "gbechara"
+    parent_connection = google_cloudbuildv2_connection.my_connection.name
     remote_uri = "https://github.com/gbechara/gcpdemos.git"
     depends_on = [google_project_service.project_googleapis_cloudbuild]
 }
 
 resource "google_cloudbuild_trigger" "google_cloudbuild_trigger_devopsdemo1_tigger1" {
-  name     = "google_cloudbuild_trigger"
+  name     = "devopsdemo1-tigger1"
   project  = var.project_id
   location   = var.region
   filename = "devopsdemo1/cloudbuild-github.yaml"
-  github {
-    owner = "gbechara"
-    name  = "gcpdemos"
+  repository_event_config {
+    repository = google_cloudbuildv2_repository.google_cloudbuildv2_repository_gbechara.id
     push {
       branch = "^main$"
     }

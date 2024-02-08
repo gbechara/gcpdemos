@@ -25,12 +25,19 @@ Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 # Step 1 - Terraform set up of the project
 Prepare your Google Workstation using ../workstationdemo2/Dockerfile. <br/> 
 Create a gihub connection in your project (automation is not yet provided in this demo).<br/> 
-Create a new project and:<br/>
+On your github repo 
+- Install the Cloud Build GitHub App on your GitHub account or in an organization you own.
+- Create a PAT
+- Make sure to set your token to have no expiration date and select the following permissions when prompted in GitHub: repo and read:user. If your app is installed in an organization, make sure to also select the read:org permission.
+Create a new project and:
 - Clone this repo 
 - Change configSync/syncRepo in devopsdemo ./gke-conf/apply-spec.yaml
+- Correction github_config { app_installation_id = 12345678, you get this from https://github.com/settings/installations/
 - Change project_id and project_number in ./variable.tf<br/> 
 - Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com</br>
+- Create a secret to store github PAT in my-github-secret 
 - Then launch and wait (about 15 min)<br/>
+
 ```
 terraform init
 terraform plan
