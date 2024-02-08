@@ -26,7 +26,9 @@ Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 Prepare your Google Workstation using ../workstationdemo2/Dockerfile. <br/> 
 Create a gihub connection in your project (automation is not yet provided in this demo).<br/> 
 Create a new project and:<br/>
-- Change project_id and project_number in variable.tf<br/> 
+- Clone this repo 
+- Change configSync/syncRepo in devopsdemo ./gke-conf/apply-spec.yaml
+- Change project_id and project_number in ./variable.tf<br/> 
 - Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com</br>
 - Then launch and wait (about 15 min)<br/>
 ```
