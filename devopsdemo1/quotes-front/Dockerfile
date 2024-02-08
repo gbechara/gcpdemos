@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM node:14-alpine as nodebuilder
+FROM node:16-alpine as nodebuilder
 WORKDIR /code
 COPY views/ ./views/ 
 WORKDIR /code/views
