@@ -567,7 +567,8 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_gke_production" 
 
 #https://cloud.google.com/build/docs/automating-builds/github/connect-repo-github#terraform_1
 #
-# Create a secret containing the personal access token and grant permissions to the Service Agent
+#Create a secret containing the personal access token and grant permissions to the Service Agent
+#Documented in readme.md, done manually in the console  
 #resource "google_secret_manager_secret" "github_token_secret" {
 #    project =  var.project_id
 #    secret_id = "my-github-secret"
@@ -575,7 +576,7 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_gke_production" 
 #        automatic = true
 #    }
 #}
-
+#
 #resource "google_secret_manager_secret_version" "github_token_secret_version" {
 #    secret = google_secret_manager_secret.github_token_secret.id
 #    secret_data = "my-github-pat"
