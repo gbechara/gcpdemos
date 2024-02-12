@@ -15,7 +15,7 @@ Terraform for GCP ressources (GKE, IAM, CloudSQL) // done
 Configsync for KRM ressources // done 
 Terraform for cloud deploy  // done
 Terraform cloudbuildv2 connection to Git Hub// done
-Terraform BinAUth related aspects (deployment to prod in the outerloop)
+Terraform BinAUth related aspects (deployment to prod in the outerloop)// 
 ``````
 To replace variables in files you can use sed example :
 ```
@@ -416,7 +416,12 @@ gcloud deploy releases create release-106 \
  --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 ```
-# Deploy Certificates for binary auth
+# Give access for cloudbuild to attestor for binary auth
+Binautz assets are assumed to be created before this step
+You can either  
+ - Use the <a href="https://cloud.google.com/binary-authorization/docs/creating-attestors-console" target="_blank">console</a> 
+ - Use this <a href="https://cloud.google.com/architecture/binary-auth-with-cloud-build-and-gke" target="_blank">tutorial</a> in relation with cloudbuid
+ - Use this <a href="https://cloud.google.com/binary-authorization/docs/multi-project-setup-cli" target="_blank">muti-project</a> practice, this might be a best practice you will want to enforce  
 ```
 # Permission cloudkms.cryptoKeyVersions.viewPublicKey
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
