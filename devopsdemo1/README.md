@@ -15,7 +15,7 @@ Terraform for GCP ressources (GKE, IAM, CloudSQL) // done
 Configsync for KRM ressources // done 
 Terraform for cloud deploy  // done
 Terraform cloudbuildv2 connection to Git Hub// done
-Terraform BinAUth related aspects (deployment to prod in the outerloop)// 
+Terraform Binautz related aspects (deployment to prod in the outerloop)// 
 ``````
 To replace variables in files you can use sed example :
 ```
@@ -382,41 +382,82 @@ gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\
     --include-logs-with-status
 ```
 # Step APP - Deploy the App
-Application related Inner Loop and OuterLoop 
+Application related Inner Loop and OuterLoop
+
+Set Env on workstation  
 ```
 # skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
-skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
+# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
+export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
+export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
+export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
-Fetch IP for DNS setup
+Frontend innerloop: you can do local tests for react page
 ```
-kubectl get gateways.gateway.networking.k8s.io app-dev  -n dev -o=jsonpath="{.status.addresses[0].value}"
+cd ./devopsdemo1/quotes-front/views
+npm run start
 ```
-Trigger Pipelines : inner loop in workstation
+Frontend innerloop: you can deploy frontend on cloudrun using the skaffold file, deployed to dev profile
 ```
-Create new release for deployment
- skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID -p prod
+cd ./devopsdemo1/quotes-front/
+skaffold run
+```
+Backend innerloop: you can use skaddold to deploy composite backend on on GKE, deployed to dev profile
+```
+cd ./devopsdemo1/quotes-back/
+skaffold run
+kubectl get pod -n dev
 
-skaffold build --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID 
+```
+Start outerloop, this is done using the github trigger (on the main branch for this demo). cloudbuild-github.yaml will be triggered
+```
+cd ./devopsdemo1
+git add .
+git commit -m "a commit message"
+git push
 
 ```
-Outer loop start after pushing to main for this demo
+# Additional steps 
+To test releases without pushing the code upstream 
+quotes-front (CloudRun)
 ```
-# This is done in cloudbuild cloudbuild-github.yaml 
-#in quotes-front (CloudRun)
-gcloud deploy releases create release-109 \
+gcloud deploy releases create release-xxx \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
  --skaffold-version=skaffold_preview \
  --delivery-pipeline=devopsdemo1-run \
  --images=quotes-front=$(skaffold build -q | jq -r ".builds[].tag")
-
-#in quotes-back (GKE)
-gcloud deploy releases create release-106 \
+```
+quotes-back (GKE)
+```
+gcloud deploy releases create release-xxx \
  --project=$GOOGLE_CLOUD_PROJECT_ID --region=$GOOGLE_CLOUD_REGION \
  --delivery-pipeline=devopsdemo1-gke --to-target=dev \
  --images=quotes-back=$(skaffold build -q | jq -r ".builds[].tag")
 
 ```
-# Give access for cloudbuild to attestor for binary auth
+Use Cloudbuild for new releases
+```
+
+gcloud builds submit --region=us-central1 --config cloudbuild-github.yaml ./
+
+curl --header 'Host: app.dev.gabrielbechara.com' http://10.132.0.48
+curl --header 'Host: app.prod.gabrielbechara.com' http://10.132.0.48
+
+After the release is deploy to dev, promote it to production
+
+gcloud deploy releases promote  --release=release-xxx --delivery-pipeline=canary --region=$GOOGLE_CLOUD_REGION --to-target=prod
+
+```
+Flagger canary testing
+```
+kubectl -n prod describe canary/app
+gcloud compute url-maps export gkegw1-ll1w-prod-app-4bpekl57o1qy --region=$GOOGLE_CLOUD_REGION
+
+```
+# Using Binautz for the production ns on example_cluster
+Give access for cloudbuild to attestor for binary auth 
 Binautz assets are assumed to be created before this step
 You can either  
  - Use the <a href="https://cloud.google.com/binary-authorization/docs/creating-attestors-console" target="_blank">console</a> 
@@ -440,21 +481,12 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --role="roles/containeranalysis.notes.attacher"
 
 ```
-Use Cloudbuild for new releases
+Fetch IP for DNS setup
 ```
-
-gcloud builds submit --region=us-central1 --config cloudbuild.yaml ./
-
-curl --header 'Host: app.dev.gabrielbechara.com' http://10.132.0.48
-curl --header 'Host: app.prod.gabrielbechara.com' http://10.132.0.48
-
-After the release is deploy to dev, promote it to production
-
-gcloud deploy releases promote  --release=release-001 --delivery-pipeline=canary --region=$GOOGLE_CLOUD_REGION --to-target=prod
-
+kubectl get gateways.gateway.networking.k8s.io app-dev  -n dev -o=jsonpath="{.status.addresses[0].value}"
 ```
-## Observe the pipeline
+Trigger Pipelines : inner loop in workstation
 ```
-kubectl -n prod describe canary/app
-gcloud compute url-maps export gkegw1-ll1w-prod-app-4bpekl57o1qy --region=$GOOGLE_CLOUD_REGION
-
+Create new release for deployment
+skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID -p prod
+skaffold build --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID 
