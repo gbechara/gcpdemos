@@ -1,13 +1,35 @@
 # CI/CD Demo on GCP 
 
+
+## Introduction 
+
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide1.png?raw=true)
+The objective of this demo is to show, in terms of approach and best practices, some aspects to consider when deploying a containerized application to GCP.
+
+This is just a demo, and views expressed here are my own. A broader coverage of best practices can be found in the  <a href="https://cloud.google.com/architecture/" target="_blank">Cloud Architecture Center</a><br/>
+<br/>
+In this demo we will cover:
+- The application foundations needed to host an application on the top (and in extention) of (to) a landing zone. The application foundations being created for a GCP project using Terraform for GCP services and ConfigSync for Kube related configurations
+- The Cloud Build and Cloud Deploy configuration used for the outer-loop of application
+
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide2.png?raw=true)
+
+The application has 
+- the front end written in reactJS and deployed to CloudRun
+- the back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
+- the "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
+- kustomize, using configmaps, will changes setting of the applications between environnements
+
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide3.png?raw=true)
+
+InnerLoop, for Dev, is done on Workstation and OuterLoop will start when pushing the code to github.
+- Skaffold is used to deploy the frontend to cloudrun, the default profile being dev
+- Skaffold is used to deploy to backend to gke, the default profile being dev
+- CloudBuild "cloudbuild-github.yaml" is being triggered when pushing the code to github on the main branch (this being a demo) 
+
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide4.png?raw=true)
 
-
-CloudBuild & Cloud Deploy for CI/CD  
-Flagger/GatewayAPI for Canary using GMP metrics 
+Flagger combined with Kubernetes GatewayAPI is used for Canary on prod, based on GMP metrics. 
 
 ```
 @todo:
@@ -24,7 +46,9 @@ sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
 ```
 Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 
-# Step 1 - Terraform set up of the project
+# Intalling the demo 
+
+## Step 1 - Terraform set up of the project
 Prepare your Google Workstation using ../workstationdemo2/Dockerfile. <br/> 
 
 On your github repo 
@@ -54,7 +78,7 @@ The intermadiary steps **Step 2** to **Step 17** are already executed using
 
 **Step App** is either done during the dev inner loop (skaffold) or trigger cloudbuild thru the git push to the main branch (for this demo). Cloudbuild will then build the images and create a new deploy release
 
-# Step 2 
+## Step 2 
 Set Env  
 ```
 export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
@@ -63,7 +87,7 @@ export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
-# Step 3 
+## Step 3 
 Enable APIs  
 ```
 gcloud services enable compute.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
@@ -83,7 +107,7 @@ gcloud services enable iam.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud alpha container fleet create --display-name=my-gke-fleet-1 --project=$GOOGLE_CLOUD_PROJECT_ID
 ```
 
-# Step 4 - Optional
+## Step 4 - Optional
 Create Proxy-only subnet, needed for regionnal LB using gatewayClassName: gke-l7-rilb 
 
 Note : The Proxy-only subnet is not used with gatewayClassName: gke-l7-global-external-managed  
@@ -95,7 +119,7 @@ Note : The Proxy-only subnet is not used with gatewayClassName: gke-l7-global-ex
 #    --network=default \
 #    --range=10.103.0.0/23
 ```
-# Step 5
+## Step 5
 Create an artefact repo and configure docker and skaffold to relate to it
 ```
 gcloud artifacts repositories create devopsdemo1repo --repository-format=docker \
@@ -124,7 +148,7 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 
 
 ```
-# Step 6
+## Step 6
 Create a GKE Cluster with HPA and Workload Identity preinstalled
 ```
 gcloud beta container clusters create "example-cluster" --cluster-version "1.24.5-gke.600" --region "$GOOGLE_CLOUD_REGION"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
@@ -143,7 +167,7 @@ Connect to zonal cluster
 ```
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_ZONE
 ```
-# Step 7 - Enables fleets and add the GKE cluster to the fleet
+## Step 7 - Enables fleets and add the GKE cluster to the fleet
 GKE EE Fleets, add cluster to fleet and configure congig-synch
 ```
 #sudo apt-get install google-cloud-sdk-nomos
@@ -155,13 +179,13 @@ gcloud beta container fleet policycontroller enable --project=$GOOGLE_CLOUD_PROJ
 
 gcloud beta container fleet config-management apply --membership=example-cluster --config=gke-conf/apply-spec.yaml --project=$GOOGLE_CLOUD_PROJECT_ID
 ```
-# Step 8
+## Step 8
 Create namespaces 
 ```
 kubectl create namespace dev
 kubectl create namespace prod
 ```
-# Step 9 
+## Step 9 
 Bootstrap Flagger and the Gateway
 Install Flagger for Gateway API
 ```
@@ -189,7 +213,7 @@ Create Gateways and Flaggers Setting for canary deployment on GKE prod namespace
 ```
 kubectl apply -f bootstrap.yaml
 ```
-# Step 10 - Managed Prometheus
+## Step 10 - Managed Prometheus
 Deploy GMP Query Interface
 ```
 kubectl create serviceaccount gmp -n prod
@@ -212,7 +236,7 @@ sed -i "s/GOOGLE_CLOUD_PROJECT_ID/$GOOGLE_CLOUD_PROJECT_ID/g" devopsdemo1/gke-co
 
 kubectl apply -n prod -f gmp-frontend.yaml
 ```
-# Step 11 : Additional policy binding 
+## Step 11 : Additional policy binding 
 Create Cloud Deploy Pipelines & Set permissions for Cloud Deploy and apply pipeline
 ```
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
@@ -257,7 +281,7 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --role="roles/monitoring.metricWriter"
 
 ```
-# Step 12 : Cloud SQL SA and policy bindings
+## Step 12 : Cloud SQL SA and policy bindings
 Service accounts roles for cloud sql database (split later dev and prod)
 ```
 gcloud iam service-accounts create cloudsql-sa \
@@ -286,7 +310,7 @@ gcloud iam service-accounts add-iam-policy-binding \
   cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 ```
-# Step 13 - Annotate Kubernete SA to related to Cloud SQL SA
+## Step 13 - Annotate Kubernete SA to related to Cloud SQL SA
 This step need to be done after deploying the application in Step App
 Service accounts roles for cloud sql database (split later dev and prod)
 ```
@@ -301,7 +325,7 @@ kubectl annotate serviceaccount \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 ```
-# Step 14 - Optional - For the LLM tab going through IAP 
+## Step 14 - Optional - For the LLM tab going through IAP 
 Service accounts roles for LLM (split later dev and prod) and IAP SA
 ```
 gcloud iam service-accounts create llm-sa \
@@ -331,7 +355,7 @@ Service accounts roles for alloydb test (split later dev and prod)
 
 
 ```
-# Step 15 - Cloud SQL
+## Step 15 - Cloud SQL
 Create a cloud sql database (split later dev and prod)
 ```
 gcloud sql instances create devopsdemo-instance \
@@ -361,7 +385,7 @@ https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine
 https://codelabs.developers.google.com/codelabs/cloud-sql-go-connector#4  
 
 ```
-# Step 16 - Cloud Deploy Pipelines
+## Step 16 - Cloud Deploy Pipelines
 Deploy Pipelines for GKE (application back end) and CloudRun (other components)
 ```
 #gcloud deploy apply --file clouddeploy.yaml --region=$GOOGLE_CLOUD_REGION --project=$GOOGLE_CLOUD_PROJECT_ID 
@@ -381,7 +405,7 @@ gcloud beta builds triggers create github --name="devopsdemo1-tigger1"\
     --build-config=devopsdemo1/cloudbuild-github.yaml \
     --include-logs-with-status
 ```
-# Step APP - Deploy the App
+## Step APP - Deploy the App
 Application related Inner Loop and OuterLoop
 
 Set Env on workstation  
@@ -419,7 +443,7 @@ git commit -m "a commit message"
 git push
 
 ```
-# Additional steps 
+## Additional steps 
 To test releases without pushing the code upstream 
 quotes-front (CloudRun)
 ```
