@@ -4,10 +4,11 @@
 ## Introduction 
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide1.png?raw=true)
+<br/><br/>
 The objective of this demo is to show, in terms of approach and best practices, some aspects to consider when deploying a containerized application to GCP.
 
-This is just a demo, and views expressed here are my own. A broader coverage of best practices can be found in the  <a href="https://cloud.google.com/architecture/" target="_blank">Cloud Architecture Center</a><br/>
-<br/>
+This is just a demo, and views expressed here are my own. A broader coverage of best practices can be found in the  <a href="https://cloud.google.com/architecture/" target="_blank">Cloud Architecture Center</a>.
+<br/><br/>
 In this demo we will cover:
 - The application foundations needed to host an application on the top (and in extention) of (to) a landing zone. The application foundations being created for a GCP project using Terraform for GCP services and ConfigSync for Kube related configurations
 - The Cloud Build and Cloud Deploy configuration used for the outer-loop of application
@@ -19,6 +20,7 @@ The application has
 - the back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
 - the "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
 - kustomize, using configmaps, will changes setting of the applications between environnements
+<br/><br/>
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide3.png?raw=true)
 
@@ -26,7 +28,7 @@ InnerLoop, for Dev, is done on Workstation and OuterLoop will start when pushing
 - Skaffold is used to deploy the frontend to cloudrun, the default profile being dev
 - Skaffold is used to deploy to backend to gke, the default profile being dev
 - CloudBuild "cloudbuild-github.yaml" is being triggered when pushing the code to github on the main branch (this being a demo) 
-
+<br/><br/>
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide4.png?raw=true)
 
 Flagger combined with Kubernetes GatewayAPI is used for Canary on prod, based on GMP metrics. 
@@ -97,7 +99,7 @@ gcloud services enable artifactregistry.googleapis.com --project $GOOGLE_CLOUD_P
 gcloud services enable aiplatform.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable anthosconfigmanagement.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 ```
-GKE EE  
+GKE E  
 ```
 gcloud services enable anthos.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable gkehub.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
@@ -168,7 +170,7 @@ Connect to zonal cluster
 gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD_ZONE
 ```
 ## Step 7 - Enables fleets and add the GKE cluster to the fleet
-GKE EE Fleets, add cluster to fleet and configure congig-synch
+GKE E Fleets, add cluster to fleet and configure congig-synch
 ```
 #sudo apt-get install google-cloud-sdk-nomos
 gcloud container clusters update example-cluster --enable-fleet --region $GOOGLE_CLOUD_ZONE
@@ -310,7 +312,7 @@ gcloud iam service-accounts add-iam-policy-binding \
   cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 
 ```
-## Step 13 - Annotate Kubernete SA to related to Cloud SQL SA
+## Step 13 - Annotate Kubernete SA to related them Cloud SQL SA
 This step need to be done after deploying the application in Step App
 Service accounts roles for cloud sql database (split later dev and prod)
 ```
