@@ -126,3 +126,5 @@ steps:
       --build-artifacts=devopsdemo1/quotes-back/artifacts.json
 #      --images=quotes-back=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-back:$BUILD_ID 
     # [END trigger cloud deploy]
+options:
+  logging: CLOUD_LOGGING_ONLY
