@@ -85,8 +85,8 @@ resource "google_project_service" "project_googleapis_iam" {
   disable_dependent_services = true
 }
 
-resource "google_compute_network" "default" {
-  name = "default"
+resource "google_compute_network" "project_vpc_devops" {
+  name = "vpc-devops"
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
@@ -96,7 +96,7 @@ resource "google_compute_subnetwork" "proxy" {
   region        = var.region
   purpose       = "REGIONAL_MANAGED_PROXY"
   role          = "ACTIVE"
-  network       = google_compute_network.default.name
+  network       = google_compute_network.project_vpc_devops.name
 }
 
 resource "google_artifact_registry_repository" "devopsdemo1repo" {
@@ -140,7 +140,7 @@ resource "google_container_cluster" "example_cluster" {
   name = "example-cluster"
   location  = var.zone
   min_master_version = "latest"
-  network = google_compute_network.default.name
+  network = google_compute_network.project_vpc_devops.name
   initial_node_count       = 1
   remove_default_node_pool = true
   networking_mode =  "VPC_NATIVE"
