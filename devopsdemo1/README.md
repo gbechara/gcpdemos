@@ -96,6 +96,7 @@ gcloud services enable compute.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable container.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable clouddeploy.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable artifactregistry.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable binaryauthorization.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable aiplatform.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable anthosconfigmanagement.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 ```

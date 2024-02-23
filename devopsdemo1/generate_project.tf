@@ -35,9 +35,21 @@ resource "google_project_service" "project_googleapis_artifactregistry" {
   disable_dependent_services = true
 }
 
+resource "google_project_service" "project_googleapis_binaryauthorization" {
+  project = var.project_id
+  service = "binaryauthorization.googleapis.com"
+  disable_dependent_services = true
+}
+
 resource "google_project_service" "project_googleapis_aiplatform" {
   project = var.project_id
   service = "aiplatform.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_run" {
+  project = var.project_id
+  service = "run.googleapis.com"
   disable_dependent_services = true
 }
 
@@ -309,6 +321,26 @@ resource "google_compute_managed_ssl_certificate" "gab-prod-certificate" {
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
+# You may want to set cloud run services here istead of having skaffold create them 
+#
+#resource "google_cloud_run_service" "google_cloud_run_service_quotes_front_dev" {
+#  name     = "quotes-front-dev"
+#  location = var.region
+#  template {
+#    spec {
+#      containers {
+#        image = "us-docker.pkg.dev/cloudrun/container/hello"
+#      }
+#    }
+#    metadata {
+#      annotations = {
+#        "autoscaling.knative.dev/maxScale"      = "1"
+#      }
+#    }
+#  }
+#  depends_on = [google_project_service.project_googleapis_run]
+#}
+
 resource "google_project_iam_member" "clouddeploy_jobrunner_prod" {
   project = var.project_id
   role    = "roles/clouddeploy.jobRunner"
@@ -336,6 +368,20 @@ resource "google_project_iam_member" "clouddeploy_serviceAgent_prod" {
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
   depends_on = [google_project_service.project_googleapis_compute]
 }
+
+#resource "google_project_iam_member" "clouddeploy_run_developer" {
+#  project = var.project_id
+#  role    = "roles/run.developer"
+#  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+#  depends_on = [google_project_service.project_googleapis_compute]
+#}
+
+#resource "google_project_iam_member" "clouddeploy_run_admin" {
+#  project = var.project_id
+#  role    = "roles/run.admin"
+#  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+#  depends_on = [google_project_service.project_googleapis_compute]
+#}
 
 resource "google_project_iam_member" "clouddeploy_artifactregistry_reader_prod" {
   project = var.project_id
@@ -505,7 +551,7 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_run_development"
   location = var.region
   description = "development"
   run {
-    location = "projects/gab-devops-1/locations/${var.region}"
+    location = "projects/${var.project_id}/locations/${var.region}"
   }
   depends_on = [google_project_service.project_googleapis_clouddeploy]
 }
@@ -517,7 +563,7 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_run_production" 
   location = var.region
   description = "production"
   run {
-    location = "projects/gab-devops-1/locations/${var.region}"
+    location = "projects/${var.project_id}/locations/${var.region}"
   }
   depends_on = [google_project_service.project_googleapis_clouddeploy]
 }
@@ -548,7 +594,7 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_gke_development"
   location = var.region
   description = "development-cluster"
   gke {
-    cluster = "projects/gab-devops-1/locations/${var.zone}/clusters/example-cluster"
+    cluster = "projects/${var.project_id}/locations/${var.zone}/clusters/example-cluster"
   }
   depends_on = [google_project_service.project_googleapis_clouddeploy]
 }
@@ -560,7 +606,7 @@ resource "google_clouddeploy_target" "google_clouddeploy_target_gke_production" 
   location = var.region
   description = "production-cluster"
   gke {
-    cluster = "projects/gab-devops-1/locations/${var.zone}/clusters/example-cluster"
+    cluster = "projects/${var.project_id}/locations/${var.zone}/clusters/example-cluster"
   }
   depends_on = [google_project_service.project_googleapis_clouddeploy]
 }
@@ -629,6 +675,7 @@ resource "google_cloudbuild_trigger" "google_cloudbuild_trigger_devopsdemo1_tigg
   name     = "devopsdemo1-tigger1"
   project  = var.project_id
   location   = var.region
+  service_account = "projects/${var.project_id}/serviceAccounts/${var.project_number}-compute@developer.gserviceaccount.com"
   filename = "devopsdemo1/cloudbuild-github.yaml"
   repository_event_config {
     repository = google_cloudbuildv2_repository.google_cloudbuildv2_repository_gbechara.id

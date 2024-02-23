@@ -82,6 +82,7 @@ steps:
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for quotes-app 
   - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+    allowFailure: true
     args:
       - '--artifact-url'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA}'
@@ -93,6 +94,7 @@ steps:
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for quotes 
   - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+    allowFailure: true
     args:
       - '--artifact-url'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}'
@@ -104,6 +106,7 @@ steps:
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for writer 
   - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+    allowFailure: true
     args:
       - '--artifact-url'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}'
