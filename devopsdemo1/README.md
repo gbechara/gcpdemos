@@ -447,8 +447,11 @@ git push
 
 ```
 Use Cloudbuild for new releases (this also can be done using the trigger in the region), before doing that you need either to comment the binauthz attestations steps in cloudbuild-github.yaml or create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring** .
+Added to this you need to give to the gcloud user the Service Account Token Creator role. 
 ```
-gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./
+gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./ \
+--impersonate-service-account=$(gcloud projects describe $GOOGLE_CLOUD_PROJECT_ID \
+--format="value(projectNumber)")-compute@developer.gserviceaccount.com
 ```
 ## Additional steps 
 To test releases without pushing the code upstream 
