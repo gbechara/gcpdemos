@@ -127,10 +127,14 @@ steps:
     entrypoint: 'bash'
     args:
     - '-c'
-    - > 
+    - >
+      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@sha256:${COMMIT_SHA}"
+      &&
+      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
+      &&
       gcloud beta container binauthz attestations sign-and-create  
       --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
-      --artifact-url=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@sha256:${COMMIT_SHA} 
+      --artifact-url=$IMAGE_AND_DIGEST 
       --keyversion=1 
       --keyversion-project=${PROJECT_ID} 
       --keyversion-location=global 
@@ -143,10 +147,14 @@ steps:
     entrypoint: 'bash'
     args:
     - '-c'
-    - > 
+    - >
+      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes@sha256:${COMMIT_SHA}"
+      &&
+      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
+      && 
       gcloud beta container binauthz attestations sign-and-create  
       --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
-      --artifact-url=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes@sha256:${COMMIT_SHA} 
+      --artifact-url=$IMAGE_AND_DIGEST 
       --keyversion=1 
       --keyversion-project=${PROJECT_ID} 
       --keyversion-location=global 
@@ -159,10 +167,14 @@ steps:
     entrypoint: 'bash'
     args:
     - '-c'
-    - > 
+    - >
+      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers@sha256:${COMMIT_SHA}"
+      &&
+      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
+      &&  
       gcloud beta container binauthz attestations sign-and-create  
       --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
-      --artifact-url=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers@sha256:${COMMIT_SHA} 
+      --artifact-url=$IMAGE_AND_DIGEST 
       --keyversion=1 
       --keyversion-project=${PROJECT_ID} 
       --keyversion-location=global 
