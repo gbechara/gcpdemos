@@ -168,7 +168,7 @@ steps:
       &&  
       gcloud beta container binauthz attestations sign-and-create  
       --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
-      --artifact-url=$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}') 
+      --artifact-url=$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}') 
       --keyversion=1 
       --keyversion-project=${PROJECT_ID} 
       --keyversion-location=global 
