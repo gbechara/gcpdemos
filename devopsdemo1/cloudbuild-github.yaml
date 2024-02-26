@@ -79,44 +79,82 @@ steps:
     - > 
       cd devopsdemo1/quotes-back/ && skaffold build --file-output artifacts.json --default-repo $LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo
 
+# You can eventually use a custom build step based on 
+# https://github.com/GoogleCloudPlatform/cloud-builders-community.git
+# cloud-builders-community/binauthz-attestation
+# as described here https://cloud.google.com/binary-authorization/docs/cloud-build
+#
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for quotes-app 
-  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
-    args:
-      - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA}'
-      - '--attestor'
-      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
-      - '--keyversion'
-      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
-    allowExitCodes: [1]
+#  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+#    args:
+#      - '--artifact-url'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA}'
+#      - '--attestor'
+#      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
+#      - '--keyversion'
+#      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
+#    allowExitCodes: [1]
     #allowFailure: true
 
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for quotes 
-  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
-    args:
-      - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}'
-      - '--attestor'
-      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
-      - '--keyversion'
-      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
-    allowExitCodes: [1]
+#  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+#    args:
+#      - '--artifact-url'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}'
+#      - '--attestor'
+#      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
+#      - '--keyversion'
+#      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
+#    allowExitCodes: [1]
     #allowFailure: true
 
 # Create attestation to deploy only images built by Cloud Build
 #  - id: Create attestation for writer 
-  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
-    args:
-      - '--artifact-url'
-      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}'
-      - '--attestor'
-      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
-      - '--keyversion'
-      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
-    allowExitCodes: [1]
+#  - name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+#    args:
+#      - '--artifact-url'
+#      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}'
+#      - '--attestor'
+#      - 'projects/${PROJECT_ID}/attestors/built-by-cloud-build'
+#      - '--keyversion'
+#      - 'projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1'
+#    allowExitCodes: [1]
     #allowFailure: true
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - > 
+      gcloud beta container binauthz attestations sign-and-create  
+      --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
+      --artifact-url=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA} 
+       --keyversion=projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1
+    allowExitCodes: [1]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - > 
+      gcloud beta container binauthz attestations sign-and-create  
+      --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
+      --artifact-url=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA} 
+       --keyversion=projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1
+    allowExitCodes: [1]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - > 
+      gcloud beta container binauthz attestations sign-and-create  
+      --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
+      --artifact-url=$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA} 
+       --keyversion=projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1
+    allowExitCodes: [1]
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
