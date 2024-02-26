@@ -57,14 +57,14 @@ On your github repo
 - Install the Cloud Build GitHub App on your GitHub account or in an organization you own.
 - Create a PAT
 - Make sure to set your token to have no expiration date and select the following permissions when prompted in GitHub: repo and read:user. If your app is installed in an organization, make sure to also select the read:org permission.
+- Create a GCP secret to store github PAT in **my-github-secret** 
 
 Create a new project and:
 - Fork this repo in github then clone it locally in you dev env,  
-- In your local dev env Change configSync/syncRepo in devopsdemo ./gke-conf/apply-spec.yaml then push this to your github repo
-- Change github_config_app_installation_id = 12345678, you get this from https://github.com/settings/installations/
-- Change project_id and project_number in ./variable.tf<br/> 
-- Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com</br>
-- Create a secret to store github PAT in **my-github-secret** 
+- In your local dev env change configSync/syncRepo in devopsdemo ./gke-conf/apply-spec.yaml then push this to your github repo
+- In your local dev env change github_config_app_installation_id = 12345678, you get this from https://github.com/settings/installations/
+- In your local dev env change project_id and project_number in ./variable.tf<br/> 
+- In your local dev env change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com</br>
 - Then launch and wait (about 15 min)<br/>
 
 ```
@@ -446,6 +446,11 @@ git commit -m "a commit message"
 git push
 
 ```
+Use Cloudbuild for new releases (this also can be done using the trigger in the region)
+```
+gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./
+
+```
 ## Additional steps 
 To test releases without pushing the code upstream 
 quotes-front (CloudRun)
@@ -466,8 +471,7 @@ gcloud deploy releases create release-xxx \
 ```
 Use Cloudbuild for new releases
 ```
-
-gcloud builds submit --region=us-central1 --config cloudbuild-github.yaml ./
+gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./
 
 curl --header 'Host: app.dev.gabrielbechara.com' http://10.132.0.48
 curl --header 'Host: app.prod.gabrielbechara.com' http://10.132.0.48
@@ -492,7 +496,10 @@ You can either
  - Use this <a href="https://cloud.google.com/binary-authorization/docs/multi-project-setup-cli" target="_blank">multi-project</a> practice, this might be a best practice you will want to enforce
  - Use this <a href="https://cloud.google.com/binary-authorization/docs/cloud-build" target="_blank">tutorial</a>  
 
-The easiest way for this demo is to use the console to create a binauthz attestors named **built-by-cloud-build** in **binauthz-attestors** using a **global** keyversion-location and a keyversion key named **binauthz-signing-key**.
+The easiest way for this demo is to use the console:
+- create a keyring named **binauthz-attestors** and a key named **binauthz-signing-key** of type multi-region, location **global**, protection level software, purpose **asymmetric-signing**, keys algorith **ec-sign-p256-sha256** . 
+- create a binauthz attestors named **built-by-cloud-build** with a PKIX Key imported form KMS. The ressource ID of the Key previously created using KMS is projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1
+ 
 
 Then you need to create the adequate permissions for the SA used by cloudbuild :
 ```
