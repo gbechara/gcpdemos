@@ -21,3 +21,9 @@ variable "project_number" {
   type        = string
   default = "284559639714"
 }
+
+variable "github_config_app_installation_id" {
+  description = "12345678"
+  type        = string
+  default = "12345678"
+}

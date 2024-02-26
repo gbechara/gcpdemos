@@ -652,7 +652,7 @@ resource "google_cloudbuildv2_connection" "my_connection" {
     location = var.region
     name = "my-github-connection"
     github_config {
-        app_installation_id = 12345678
+        app_installation_id = var.github_config_app_installation_id
         authorizer_credential {
             oauth_token_secret_version = "projects/${var.project_number}/secrets/my-github-secret/versions/1"
         }

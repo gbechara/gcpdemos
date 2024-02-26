@@ -59,9 +59,9 @@ On your github repo
 - Make sure to set your token to have no expiration date and select the following permissions when prompted in GitHub: repo and read:user. If your app is installed in an organization, make sure to also select the read:org permission.
 
 Create a new project and:
-- Clone this repo 
-- Change configSync/syncRepo in devopsdemo ./gke-conf/apply-spec.yaml
-- Correct github_config { app_installation_id = 12345678, you get this from https://github.com/settings/installations/
+- Fork this repo in github then clone it locally in you dev env,  
+- In your local dev env Change configSync/syncRepo in devopsdemo ./gke-conf/apply-spec.yaml then push this to your github repo
+- Change github_config_app_installation_id = 12345678, you get this from https://github.com/settings/installations/
 - Change project_id and project_number in ./variable.tf<br/> 
 - Change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID1-413615.iam.gserviceaccount.com</br>
 - Create a secret to store github PAT in **my-github-secret** 
@@ -489,7 +489,12 @@ Binautz assets are assumed to be created before this step
 You can either  
  - Use the <a href="https://cloud.google.com/binary-authorization/docs/creating-attestors-console" target="_blank">console</a> 
  - Use this <a href="https://cloud.google.com/architecture/binary-auth-with-cloud-build-and-gke" target="_blank">tutorial</a> in relation with cloudbuid
- - Use this <a href="https://cloud.google.com/binary-authorization/docs/multi-project-setup-cli" target="_blank">muti-project</a> practice, this might be a best practice you will want to enforce 
+ - Use this <a href="https://cloud.google.com/binary-authorization/docs/multi-project-setup-cli" target="_blank">multi-project</a> practice, this might be a best practice you will want to enforce
+ - Use this <a href="https://cloud.google.com/binary-authorization/docs/cloud-build" target="_blank">tutorial</a>  
+
+The easiest way for this demo is to use the console to create a binauthz attestors named **built-by-cloud-build** in **binauthz-attestors** using a **global** keyversion-location and a keyversion key named **binauthz-signing-key**.
+
+Then you need to create the adequate permissions for the SA used by cloudbuild :
 ```
 # Permission cloudkms.cryptoKeyVersions.viewPublicKey
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
@@ -508,7 +513,11 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
     --role="roles/containeranalysis.notes.attacher"
 
 ```
-Fetch IP for DNS setup
+Then after you can create a policy that "Allow all images" to be deployed Kubernetes cluster and namespace-specific rules on the dev and prod namespaces defaulted to "Allow all images". During the demo The one for the prod namespace will be switched to requires the attestations you created in the previous step.
+
+-----
+
+Fetch IP for DNS setup (used to test the application back end rest services)
 ```
 kubectl get gateways.gateway.networking.k8s.io app-dev  -n dev -o=jsonpath="{.status.addresses[0].value}"
 ```
