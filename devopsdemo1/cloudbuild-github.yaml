@@ -130,7 +130,7 @@ steps:
     - >
       docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@:${COMMIT_SHA}"
       &&
-      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
+      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
       &&
       gcloud beta container binauthz attestations sign-and-create  
       --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
@@ -150,7 +150,7 @@ steps:
     - >
       docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}"
       &&
-      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
+      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
       && 
       gcloud beta container binauthz attestations sign-and-create  
       --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
@@ -170,7 +170,7 @@ steps:
     - >
       docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}"
       &&
-      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
+      IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
       &&  
       gcloud beta container binauthz attestations sign-and-create  
       --attestor=projects/${PROJECT_ID}/attestors/built-by-cloud-build
