@@ -128,7 +128,7 @@ steps:
     args:
     - '-c'
     - >
-      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@sha256:${COMMIT_SHA}"
+      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@:${COMMIT_SHA}"
       &&
       IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes-app@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
       &&
@@ -148,7 +148,7 @@ steps:
     args:
     - '-c'
     - >
-      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes@sha256:${COMMIT_SHA}"
+      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes:${COMMIT_SHA}"
       &&
       IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/quotes@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
       && 
@@ -168,7 +168,7 @@ steps:
     args:
     - '-c'
     - >
-      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers@sha256:${COMMIT_SHA}"
+      docker pull "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers:${COMMIT_SHA}"
       &&
       IMAGE_AND_DIGEST="$(docker inspect "$LOCATION-docker.pkg.dev/$PROJECT_ID/devopsdemo1repo/writers@sha256:${COMMIT_SHA}" --format='{{index .RepoDigests 0}}')" 
       &&  
