@@ -446,10 +446,9 @@ git commit -m "a commit message"
 git push
 
 ```
-Use Cloudbuild for new releases (this also can be done using the trigger in the region)
+Use Cloudbuild for new releases (this also can be done using the trigger in the region), before doing that you need either to comment the binauthz attestations steps in cloudbuild-github.yaml or create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring** .
 ```
 gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./
-
 ```
 ## Additional steps 
 To test releases without pushing the code upstream 
