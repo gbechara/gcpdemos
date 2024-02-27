@@ -53,6 +53,12 @@ resource "google_project_service" "project_googleapis_run" {
   disable_dependent_services = true
 }
 
+resource "google_project_service" "project_googleapis_certificatemanager" {
+  project = var.project_id
+  service = "certificatemanager.googleapis.com"
+  disable_dependent_services = true
+}
+
 #GKE EE realated API 
 
 resource "google_project_service" "project_googleapis_anthos" {

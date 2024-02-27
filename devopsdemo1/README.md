@@ -91,6 +91,8 @@ gcloud services enable artifactregistry.googleapis.com --project $GOOGLE_CLOUD_P
 gcloud services enable binaryauthorization.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable aiplatform.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable anthosconfigmanagement.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable run.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable certificatemanager.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 
 GKE E  
@@ -447,6 +449,7 @@ export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
 export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
+gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 
 Frontend innerloop: you can do local tests for react page

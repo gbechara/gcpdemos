@@ -67,6 +67,7 @@ export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
 export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
+gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 ### Deploy the App
 Application related Inner Loop and OuterLoop
