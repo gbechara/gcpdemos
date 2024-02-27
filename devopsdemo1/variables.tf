@@ -27,3 +27,10 @@ variable "github_config_app_installation_id" {
   type        = string
   default = "12345678"
 }
+
+variable "google_cloudbuildv2_repository_remote_uri" {
+  description = "https://github.com/gbechara/gcpdemos.git"
+  type        = string
+  default = "https://github.com/gbechara/gcpdemos.git"
+}
+

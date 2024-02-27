@@ -667,7 +667,7 @@ resource "google_cloudbuildv2_repository" "google_cloudbuildv2_repository_gbecha
     location   = var.region
     name = "gbechara"
     parent_connection = google_cloudbuildv2_connection.my_connection.name
-    remote_uri = "https://github.com/gbechara/gcpdemos.git"
+    remote_uri = var.google_cloudbuildv2_repository_remote_uri
     depends_on = [google_project_service.project_googleapis_cloudbuild]
 }
 
