@@ -27,7 +27,7 @@ spec:
         image: writers
         env:
         - name: INSTANCE_CONNECTION_NAME
-          value: gab-devops-1:us-central1:devopsdemo-instance
+          value: qwiklabs-gcp-01-faf0be20cbeb:us-central1:devopsdemo-instance
         - name: DB_PORT
           value: "3306"
         - name: DB_IAM_USER

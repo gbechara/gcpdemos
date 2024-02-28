@@ -3,6 +3,20 @@ export GOOGLE_CLOUD_REGION=us-central1
 export GOOGLE_CLOUD_ZONE=us-central1-a
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 
+# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
+# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
+BAC9-83CC
+
+
+# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
+# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
+export GOOGLE_CLOUD_PROJECT_ID=qwiklabs-gcp-01-faf0be20cbeb
+export GOOGLE_CLOUD_REGION=us-central1
+export GOOGLE_CLOUD_ZONE=us-central1-a
+export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
+gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
+gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
+
 gcloud artifacts repositories create devopsdemo2repo --repository-format=docker \
 --location=$GOOGLE_CLOUD_REGION --project $GOOGLE_CLOUD_PROJECT_ID --description="Docker repository for devopsdemo1" 
 gcloud auth configure-docker $GOOGLE_CLOUD_REGION-docker.pkg.dev
