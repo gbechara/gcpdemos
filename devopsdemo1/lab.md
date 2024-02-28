@@ -40,6 +40,7 @@ Create a new project and:
 - In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml 
 - In your local dev env change the 3 occurences of projectid in ./devopsdemo1/quote-front/skaffold.yaml
 - In your local dev env change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID.iam.gserviceaccount.com
+- In your local dev env change INSTANCE_CONNECTION_NAME in your writers deployement.yaml of your base and overlays to have it connect to the Cloud SQL instance of your project
 - Push this to your github repo
 - In your local dev env change github_config_app_installation_id = 12345678 (you get this from https://github.com/settings/installations/) and google_cloudbuildv2_repository_remote_uri in ./devopsdemo1/variables.tf
 - In your local dev env change project_id and project_number in ./devopsdemo1/variables.tf 
@@ -67,6 +68,7 @@ export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
 export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
+gcloud auth application-default login
 gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 ### Deploy the App
@@ -89,6 +91,7 @@ skaffold run
 ```
 
 Backend innerloop: you can use skaddold to deploy composite backend on on GKE, deployed to dev profile
+For database connection thru WorloadIndentity you will need to give to the gcloud user the Service Account Token Creator role.
 
 ```
 cd ./devopsdemo1/quotes-back/

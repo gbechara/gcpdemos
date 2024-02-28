@@ -269,7 +269,7 @@ resource "google_gke_hub_feature_membership" "google_gke_hub_feature_membership_
       config_sync {
         source_format = "unstructured"
         git {
-          sync_repo = "https://github.com/gbechara/gcpdemos/"
+          sync_repo = var.google_configmanagement_sync_repo
           sync_branch =  "main"
           secret_type =  "none"
           policy_dir =  "./devopsdemo1/gke-conf/my-fleet-conf"             

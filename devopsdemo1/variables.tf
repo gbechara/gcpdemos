@@ -34,3 +34,9 @@ variable "google_cloudbuildv2_repository_remote_uri" {
   default = "https://github.com/gbechara/gcpdemos.git"
 }
 
+variable "google_configmanagement_sync_repo" {
+  description = "https://github.com/gbechara/gcpdemos/"
+  type        = string
+  default = "https://github.com/gbechara/gcpdemos/"
+}
+
