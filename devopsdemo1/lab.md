@@ -36,13 +36,13 @@ On your github repo
 - Create a GCP secret to store github PAT in **my-github-secret** 
 
 Create a new project and:
-- Fork this repo in github then clone it locally in you dev env,  
+- Fork this repo in github then clone it locally in you dev env  
 - In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml 
 - In your local dev env change the 3 occurences of projectid in ./devopsdemo1/quote-front/skaffold.yaml
-then push this to your github repo
+- In your local dev env change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID.iam.gserviceaccount.com
+- Push this to your github repo
 - In your local dev env change github_config_app_installation_id = 12345678 (you get this from https://github.com/settings/installations/) and google_cloudbuildv2_repository_remote_uri in ./devopsdemo1/variables.tf
 - In your local dev env change project_id and project_number in ./devopsdemo1/variables.tf 
-- In your local dev env change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID.iam.gserviceaccount.com
 - Then launch and wait (about 15 min)
 
 When using this content in your own GCP env you can eventually create a Google Workstation using ../workstationdemo2/Dockerfile and look at the complete insctructions in https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1. This will give a better experience of the inner loop. The cloud shell editor is just to have a shorter lab.
@@ -72,10 +72,12 @@ gcloud container clusters get-credentials example-cluster --zone us-central1-a -
 ### Deploy the App
 Application related Inner Loop and OuterLoop
 
-Frontend innerloop: you can do local tests for react page
+Frontend innerloop: you can do local tests for react page, you may need to install the npm packages 
 
 ```
+# RUN curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs
 cd ./devopsdemo1/quotes-front/views
+# npm install
 npm run start
 ```
 
