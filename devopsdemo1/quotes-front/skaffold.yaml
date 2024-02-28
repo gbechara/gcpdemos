@@ -42,7 +42,7 @@ build:
         REACT_APP_ENV: prod
 deploy:
   cloudrun:
-    projectid: gab-devops-1
+    projectid: qwiklabs-gcp-01-faf0be20cbeb
     region: us-central1
     hooks:
 #      before:
@@ -59,7 +59,7 @@ profiles:
         - overlays/dev
   deploy:
     cloudrun:
-      projectid: gab-devops-1
+      projectid: qwiklabs-gcp-01-faf0be20cbeb
       region: us-central1
       hooks:
         after:
@@ -129,7 +129,7 @@ profiles:
         - overlays/prod
   deploy:
     cloudrun:
-      projectid: gab-devops-1
+      projectid: qwiklabs-gcp-01-faf0be20cbeb
       region: us-central1
       hooks:
         after:

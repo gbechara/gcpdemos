@@ -9,7 +9,7 @@ spec:
     # following fields. You can configure them later.
     sourceType: git
     sourceFormat: unstructured
-    syncRepo: https://github.com/gbechara/gcpdemos
+    syncRepo: https://github.com/gbecharatest/gcpdemos
     syncBranch: main
     secretType: none
     policyDir: ./devopsdemo1/gke-conf/my-fleet-conf
