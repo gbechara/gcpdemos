@@ -31,14 +31,14 @@ build:
     docker:
       dockerfile: Dockerfile
       buildArgs:
-        REACT_APP_BACK_URL: app.dev.gabrielbechara.com
+        REACT_APP_BACK_URL: app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com
         REACT_APP_ENV: dev
   - image: quotes-front-prod
     context: .
     docker:
       dockerfile: Dockerfile
       buildArgs:
-        REACT_APP_BACK_URL: app.prod.gabrielbechara.com
+        REACT_APP_BACK_URL: app.prod.gab-devops-1.gabrielbechara.demo.altostrat.com
         REACT_APP_ENV: prod
 deploy:
   cloudrun:

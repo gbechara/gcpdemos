@@ -5,12 +5,14 @@
 The objective of this lab is to show, in terms of approach and best practices, some aspects to consider when deploying a containerized application to GCP. A broader coverage of best practices can be found in the  <a href="https://cloud.google.com/architecture/" target="_blank">Cloud Architecture Center</a>.
 
 In this lab we will cover:
+
 - The application foundations needed to host an application on the top (and in extention) of (to) a landing zone. The application foundations being created for a GCP project using Terraform for GCP services and ConfigSync for Kube related configurations
 - The Cloud Build and Cloud Deploy configuration used for the outer-loop of application
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide2.png?raw=true)
 
-The application has 
+The application has:
+
 - the front end written in reactJS and deployed to CloudRun
 - the back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
 - the "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
@@ -19,6 +21,7 @@ The application has
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide3.png?raw=true)
 
 InnerLoop, for Dev, is done on Workstation (or in the cloud shell editor) and OuterLoop will start when pushing the code to github.
+
 - Skaffold is used to deploy the frontend to cloudrun, the default profile being dev
 - Skaffold is used to deploy to backend to gke, the default profile being dev
 - CloudBuild "cloudbuild-github.yaml" is being triggered when pushing the code to github on the main branch  
@@ -29,13 +32,15 @@ Flagger combined with Kubernetes GatewayAPI is used for Canary on prod, based on
 
 ### Terraform the project
 
-On your github repo 
+On your github repo:
+
 - Install the Cloud Build GitHub App on your GitHub account or in an organization you own.
 - Create a PAT
 - Make sure to set your token to have no expiration date and select the following permissions when prompted in GitHub: repo and read:user. If your app is installed in an organization, make sure to also select the read:org permission.
 - Create a GCP secret to store github PAT in **my-github-secret** 
 
 Create a new project and:
+
 - Fork this repo in github then clone it locally in you dev env  
 - In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml 
 - In your local dev env change the 3 occurences of projectid in ./devopsdemo1/quote-front/skaffold.yaml
@@ -117,6 +122,29 @@ gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github
 --format="value(projectNumber)")-compute@developer.gserviceaccount.com
 ```
 
+### Challenge
+The back end will not be accessible and you need to:
+
+- create a new certificate using a domain that you own. This is an example using a project name and gabrielbechara.demo 
+
+```
+gcloud compute ssl-certificates create gab-dev-devops-1-certificate --domains app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com --global
+gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains app.prod.gab-devops-1.gabrielbechara.demo.altostrat.com --global
+```
+
+- Create record set, for both dev and prod of type A in DNS with the external IP of your loadbalancer created by the gateway api (or have your instructor create an DNS entry using your IP and hostname for Dev and Prod)
+- Change the certificate of the gke gateway in bootstrap.yaml in gke-conf/my-fleet-conf/bootstrap.yaml then push the code upstream to have condigsync update the cluster
+- Change the routing rule in quotes-back/app/overlays/dev/gateway.yaml and in quotes-back/app/overlays/prod/gateway.yaml 
+- Redeploy the backend on dev using skaffold
+- Test the access to you back end on https://app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com/api/citations
+
+The front end is accessing another backend, to adjust this you need to:
+
+- Change the files .env, .env.dev, .env.prod in quotes-front/view
+- Change the REACT_APP_BACK_URL in quotes-front/skaffold.yaml   
+- Redeploy the frontend on dev using skaffold
+- Test the frontend on the cloudrun url of the GCP console 
+
 ### Additional steps 
 To test releases without pushing the code upstream 
 quotes-front (CloudRun)
@@ -161,13 +189,15 @@ gcloud compute url-maps export gkegw1-ll1w-prod-app-4bpekl57o1qy --region=$GOOGL
 ### Using Binautz for the production ns on example_cluster
 Give access for cloudbuild to attestor for binary auth 
 Binautz assets are assumed to be created before this step
-You can either  
+You can either:
+
  - Use the <a href="https://cloud.google.com/binary-authorization/docs/creating-attestors-console" target="_blank">console</a> 
  - Use this <a href="https://cloud.google.com/architecture/binary-auth-with-cloud-build-and-gke" target="_blank">tutorial</a> in relation with cloudbuid
  - Use this <a href="https://cloud.google.com/binary-authorization/docs/multi-project-setup-cli" target="_blank">multi-project</a> practice, this might be a best practice you will want to enforce
  - Use this <a href="https://cloud.google.com/binary-authorization/docs/cloud-build" target="_blank">tutorial</a>  
 
 The easiest way for this demo is to use the console:
+
 - create a keyring named **binauthz-attestors** and a key named **binauthz-signing-key** of type multi-region, location **global**, protection level software, purpose **asymmetric-signing**, keys algorith **ec-sign-p256-sha256** . 
 - create a binauthz attestors named **built-by-cloud-build** with a PKIX Key imported form KMS. The ressource ID of the Key previously created using KMS is projects/${PROJECT_ID}/locations/global/keyRings/binauthz-attestors/cryptoKeys/binauthz-signing-key/cryptoKeyVersions/1
  

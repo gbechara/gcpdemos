@@ -20,7 +20,8 @@ metadata:
     gateway: app
 spec:
   hostnames:
-  - "app.prod.gabrielbechara.com"
+#  - "app.prod.gabrielbechara.com"
+  - "app.prod.gab-devops-1.gabrielbechara.demo.altostrat.com"
   parentRefs:
   - name: app
   rules:
