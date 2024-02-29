@@ -228,6 +228,11 @@ Create certificate for Gateways
 gcloud compute ssl-certificates create gab-dev-certificate --domains app.dev.gabrielbechara.com --global
 gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.gabrielbechara.com --global
 ```
+or 
+```
+gcloud compute ssl-certificates create gab-dev-devops-1-certificate --domains app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com --global
+gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com --global
+```
 Create Gateways and Flaggers Setting for canary deployment on GKE prod namespace
 
 ```

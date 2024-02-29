@@ -28,7 +28,7 @@ spec:
     tls:
       mode: Terminate
       options:
-        networking.gke.io/pre-shared-certs: gab-dev-certificate
+        networking.gke.io/pre-shared-certs: gab-dev-devops-1-certificate
 ---
 kind: Gateway
 apiVersion: gateway.networking.k8s.io/v1beta1
@@ -47,7 +47,7 @@ spec:
     tls:
       mode: Terminate
       options:
-        networking.gke.io/pre-shared-certs: gab-prod-certificate
+        networking.gke.io/pre-shared-certs: gab-dev-devops-1-certificate
 ---
 apiVersion: flagger.app/v1beta1
 kind: MetricTemplate
