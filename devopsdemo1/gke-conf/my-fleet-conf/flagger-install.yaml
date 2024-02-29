@@ -9,6 +9,6 @@ spec:
   sourceFormat: unstructured
   git:
     repo: https://github.com/fluxcd/flagger
-    revision: main
+    branch: main
     dir: kustomize/gatewayapi
     auth: none
