@@ -1,0 +1,6 @@
+#This is created in configsych root repo serviceaccounts.yaml , removing it to avoid conflicts
+#apiVersion: v1
+#kind: ServiceAccount
+#metadata:
+#  name: flagger
+#  namespace: flagger-system

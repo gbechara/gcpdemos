@@ -8,7 +8,9 @@ spec:
   sourceType: git
   sourceFormat: unstructured
   git:
-    repo: https://github.com/fluxcd/flagger
+#    repo: https://github.com/fluxcd/flagger
+    repo: https://github.com/gbechara/gcpdemos
     branch: main
-    dir: kustomize/gatewayapi
+#    dir: kustomize/gatewayapi
+    dir: devopsdemo1/gke-conf/my-fleet-conf/flagger/kustomize/gatewayapi 
     auth: none
