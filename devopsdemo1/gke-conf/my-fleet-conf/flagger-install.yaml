@@ -12,5 +12,5 @@ spec:
     repo: https://github.com/gbechara/gcpdemos
     branch: main
 #    dir: kustomize/gatewayapi
-    dir: devopsdemo1/gke-conf/flagger/kustomize/gatewayapi 
+    dir: devopsdemo1/gke-conf/flagger/gatewayapi 
     auth: none
