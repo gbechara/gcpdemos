@@ -2,7 +2,7 @@
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide1.png?raw=true)
 
-This lab/demo automates essential DevOps steps to support both inner loop for developers and outer loop for DevOps/SRE. It provides an example that platform engineering teams can use to boost developer productivity and streamline the inner to outer loop process. We will cover essential aspects, some best practices and a automated end-to-end approach for deploying containerized applications to GCP. Platform engineering teams can then provide this in a self-service tool to developers and ops. With pre-configured environments, developers can focus on coding and innovation, accelerating the delivery of high-quality software.
+This lab/demo automates essential DevOps steps to support both inner loop for developers and outer loop for DevOps/SRE. It provides an example that platform engineering teams can use to boost developer productivity and streamline the inner to outer loop process. We will cover essential aspects, some best practices and an automated end-to-end approach for deploying containerized applications to GCP. Platform engineering teams can then provide this in a self-service tool to developers and ops. With pre-configured environments, developers can focus on coding and innovation, accelerating the delivery of high-quality software.
 
 This is just a lab/demo, and views expressed here are my own. A broader coverage of best practices can be found in the  <a href="https://cloud.google.com/architecture/" target="_blank">Cloud Architecture Center</a>.
 
