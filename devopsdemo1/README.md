@@ -16,11 +16,10 @@ In this demo we will cover:
 
 The application has:
 
-- the front end written in reactJS and deployed to CloudRun
-- the back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
-- the "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
+- The front end written in ReactJS and deployed to CloudRun. GCS could have been as a target. CloudRun have been chosen for it's versatility when mooving to Server Side rendering frameworks such as NextJS 
+- The back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
+- The "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
 - kustomize, using configmaps, will changes setting of the applications between environnements
-<br/><br/>
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide3.png?raw=true)
 
@@ -69,9 +68,11 @@ terraform init
 terraform plan
 terraform apply
 ```
+
 You can now Jump to **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#step-app---deploy-the-app" target="_blank">Step APP</a> - Deploy the App** .
 
-The intermadiary steps **Step 2** to **Step 17** are already executed using 
+The intermadiary steps **Step 2** to **Step 17** are already executed using: 
+
 - Terraform for GCP ressouces 
 - ConfigSync for KRM ressouces.
 
@@ -85,6 +86,7 @@ export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
 export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 ```
+
 ### Step 3 
 Enable APIs  
 
@@ -100,7 +102,7 @@ gcloud services enable run.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable certificatemanager.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 
-GKE E  
+GKEE  
 
 ```
 gcloud services enable anthos.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
@@ -183,7 +185,7 @@ gcloud container clusters get-credentials example-cluster --region $GOOGLE_CLOUD
 ```
 
 ### Step 7 - Enables fleets and add the GKE cluster to the fleet
-GKE E Fleets, add cluster to fleet and configure congig-synch
+GKEE Fleets, add cluster to fleet and configure congig-synch
 
 ```
 #sudo apt-get install google-cloud-sdk-nomos
@@ -358,7 +360,6 @@ kubectl annotate serviceaccount \
   ksa-cloud-sql-prod  \
   --namespace prod \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
-
 ```
 
 ### Step 14 - Optional - For the LLM tab going through IAP 
@@ -373,7 +374,6 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
   --role="roles/aiplatform.user"
 
 gcloud beta services identity create --service=iap.googleapis.com --project=gab-devops-1  
-
 ```
 
 Create certificate for HPPT LB used by IAP

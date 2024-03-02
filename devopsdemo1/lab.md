@@ -15,9 +15,9 @@ In this lab we will cover:
 
 The application has:
 
-- the front end written in reactJS and deployed to CloudRun
-- the back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
-- the "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
+- The front end written in ReactJS and deployed to CloudRun. GCS could have been as a target. CloudRun have been chosen for it's versatility when mooving to Server Side rendering frameworks such as NextJS 
+- The back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
+- The "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
 - kustomize, using configmaps, will changes setting of the applications between environnements
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide3.png?raw=true)
