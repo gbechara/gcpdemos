@@ -3,7 +3,9 @@
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide1.png?raw=true)
 <br/><br/>
-The objective of this lab is to show, in terms of approach and best practices, some aspects to consider when deploying a containerized application to GCP.
+This lab/demo automates essential DevOps steps to support both inner and outer developer loops. It provides an example for platform engineering teams to boost developer productivity. With self-service tools and pre-configured environments, developers can then focus on coding and innovation, accelerating the delivery of high-quality software.
+
+The objective of this lab/demo is to show, in terms of approach and best practices, some aspects to consider when deploying a containerized application to GCP.
 
 This is just a lab/demo, and views expressed here are my own. A broader coverage of best practices can be found in the  <a href="https://cloud.google.com/architecture/" target="_blank">Cloud Architecture Center</a>.
 
@@ -56,7 +58,7 @@ Create a new project and:
 - Fork this repo in github then clone it locally in you dev env 
 - In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml 
 - In your local dev env change the 3 occurences of projectid in ./devopsdemo1/quote-front/skaffold.yaml
-- In your local dev env change project ids in related serviceaccounts.yaml example : cloudsql-sa@$PROJECT_ID.iam.gserviceaccount.com
+- In your local dev env change project ids in related serviceaccounts.yaml example : cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 - In your local dev env change INSTANCE_CONNECTION_NAME in your writers deployement.yaml of your base and overlays to have it connect to the Cloud SQL instance of your project
 - Push this to your github repo
 - In your local dev env change github_config_app_installation_id = 12345678 (you get this from https://github.com/settings/installations/) and google_cloudbuildv2_repository_remote_uri in ./devopsdemo1/variables.tf
@@ -234,8 +236,8 @@ gcloud compute ssl-certificates create gab-prod-certificate --domains app.prod.g
 ```
 or 
 ```
-gcloud compute ssl-certificates create gab-dev-devops-1-certificate --domains app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com --global
-gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com --global
+gcloud compute ssl-certificates create gab-dev-devops-1-certificate --domains app.dev.$GOOGLE_CLOUD_PROJECT_ID.gabrielbechara.demo.altostrat.com --global
+gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains app.dev.$GOOGLE_CLOUD_PROJECT_ID.gabrielbechara.demo.altostrat.com --global
 ```
 Create Gateways and Flaggers Setting for canary deployment on GKE prod namespace
 
@@ -513,15 +515,15 @@ The back end will not be accessible and you need to:
 - create a new certificate using a domain that you own. This is an example using a project name and gabrielbechara.demo 
 
 ```
-gcloud compute ssl-certificates create gab-dev-devops-1-certificate --domains app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com --global
-gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains app.prod.gab-devops-1.gabrielbechara.demo.altostrat.com --global
+gcloud compute ssl-certificates create gab-dev-devops-1-certificate --domains app.dev.$GOOGLE_CLOUD_PROJECT_ID.gabrielbechara.demo.altostrat.com --global
+gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains app.prod.$GOOGLE_CLOUD_PROJECT_ID.gabrielbechara.demo.altostrat.com --global
 ```
 
 - Create record set, for both dev and prod of type A in DNS with the external IP of your loadbalancer created by the gateway api (or have your instructor create an DNS entry using your IP and hostname for Dev and Prod)
 - Change the certificate of the gke gateway in bootstrap.yaml in gke-conf/my-fleet-conf/bootstrap.yaml then push the code upstream to have configsync update the cluster
 - Change the routing rule in quotes-back/app/overlays/dev/gateway.yaml and in quotes-back/app/overlays/prod/gateway.yaml 
 - Redeploy the backend on dev using skaffold
-- Test the access to you back end on https://app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com/api/citations
+- Test the access to you back end on https://app.dev.$GOOGLE_CLOUD_PROJECT_ID.gabrielbechara.demo.altostrat.com/api/citations
 
 The front end is accessing another backend, to adjust this you need to:
 

@@ -314,7 +314,8 @@ resource "google_service_account_iam_binding" "flagger" {
 resource "google_compute_managed_ssl_certificate" "gab-dev-certificate" {
   name        = "gab-dev-certificate"
   managed {
-    domains = ["app.dev.gabrielbechara.com"]
+#    domains = ["app.dev.gabrielbechara.com"]
+    domains = ["app.dev.${var.project_id}.gabrielbechara.demo.altostrat.com"]
   }
   depends_on = [google_project_service.project_googleapis_compute]
 }
@@ -322,7 +323,8 @@ resource "google_compute_managed_ssl_certificate" "gab-dev-certificate" {
 resource "google_compute_managed_ssl_certificate" "gab-prod-certificate" {
   name        = "gab-prod-certificate"
   managed {
-    domains = ["app.prod.gabrielbechara.com"]
+#    domains = ["app.prod.gabrielbechara.com"]
+    domains = ["app.prod.${var.project_id}.gabrielbechara.demo.altostrat.com"]
   }
   depends_on = [google_project_service.project_googleapis_compute]
 }
