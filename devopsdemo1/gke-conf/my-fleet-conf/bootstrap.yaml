@@ -21,6 +21,8 @@ metadata:
 spec:
   gatewayClassName: gke-l7-global-external-managed
 #  gatewayClassName: gke-l7-rilb
+# use for ASM as documented here https://cloud.google.com/service-mesh/docs/managed/service-mesh-cloud-gateway
+#  gatewayClassName: asm-l7-gxlb
   listeners:
   - name: https
     protocol: HTTPS
@@ -40,6 +42,8 @@ metadata:
 spec:
   gatewayClassName: gke-l7-global-external-managed
 #  gatewayClassName: gke-l7-rilb
+# use for ASM as documented here https://cloud.google.com/service-mesh/docs/managed/service-mesh-cloud-gateway
+#  gatewayClassName: asm-l7-gxlb
   listeners:
   - name: https
     protocol: HTTPS

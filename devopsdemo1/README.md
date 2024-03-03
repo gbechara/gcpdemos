@@ -108,6 +108,8 @@ GKEE
 gcloud services enable anthos.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable gkehub.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable gkeconnect.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable serviceusage.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud services enable mesh.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable cloudresourcemanager.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud services enable iam.googleapis.com --project $GOOGLE_CLOUD_PROJECT_ID
 gcloud alpha container fleet create --display-name=my-gke-fleet-1 --project=$GOOGLE_CLOUD_PROJECT_ID
@@ -162,13 +164,13 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 Create a GKE Cluster with HPA and Workload Identity preinstalled
 
 ```
-gcloud beta container clusters create "example-cluster" --cluster-version "1.24.5-gke.600" --region "$GOOGLE_CLOUD_REGION"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
+gcloud beta container clusters create "example-cluster" --cluster-version "1.24.5-gke.600" --region "$GOOGLE_CLOUD_REGION"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "4" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
 ```
 
 Or create a zonal GKE Cluster with HPA and Workload Identity preinstalled
 
 ```
-gcloud container clusters create "example-cluster" --cluster-version "latest" --zone "$GOOGLE_CLOUD_ZONE"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "3" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
+gcloud container clusters create "example-cluster" --cluster-version "latest" --zone "$GOOGLE_CLOUD_ZONE"  --machine-type "e2-medium" --max-pods-per-node "30" --num-nodes "1" --enable-autoscaling --min-nodes "0" --max-nodes "4" --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-managed-prometheus --workload-pool "$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog" --enable-shielded-nodes --gateway-api=standard --enable-ip-alias
 ```
 
 Keep those instruction to use on workstation to connect to the cluster. 
@@ -196,6 +198,18 @@ gcloud beta container fleet config-management enable --project=$GOOGLE_CLOUD_PRO
 gcloud beta container fleet policycontroller enable --project=$GOOGLE_CLOUD_PROJECT_ID --memberships=example-cluster
 
 gcloud beta container fleet config-management apply --membership=example-cluster --config=gke-conf/apply-spec.yaml --project=$GOOGLE_CLOUD_PROJECT_ID
+
+gcloud beta container fleet mesh enable --project=$GOOGLE_CLOUD_PROJECT_ID --fleet-default-member-config=gke-conf/mesh.yaml
+gcloud container fleet mesh update --management=automatic --project=$GOOGLE_CLOUD_PROJECT_ID --memberships=example-cluster --location=$GOOGLE_CLOUD_REGION
+#gcloud container fleet mesh update --management=automatic --project=$GOOGLE_CLOUD_PROJECT_ID --memberships=example-cluster --location=global
+
+gcloud container fleet mesh describe --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud container fleet memberships list --project $GOOGLE_CLOUD_PROJECT_ID
+kubectl apply -f gke-conf/my-fleet-conf/l7-gateway-class.yaml
+kubectl get gatewayclasses.gateway.networking.k8s.io
+kubectl get gateways.gateway.networking.k8s.io -n dev
+kubectl label namespace dev istio-injection=enabled --overwrite
+kubectl label namespace dev istio-injection=disabled --overwrite
 ```
 
 ### Step 8
@@ -530,6 +544,24 @@ The front end is accessing another backend, to adjust this you need to:
 - Redeploy the frontend on dev using skaffold
 - Test the frontend on the cloudrun url of the GCP console 
 
+### One more thing
+The better feature kept until last ... well we have a backend that could use a servicemesh. The app is composing the quotes and writers. We may think that this is one of the purposes of this demo? Well yes, and this has become mandatory since microservices has become the default architecture. This will add :
+
+- robust tracing, monitoring 
+- logging features insights into how your services are performing. 
+- authentication, authorization and encryption between services 
+
+What if we can do this in fully managed way ?
+
+Well if you look into the terraform you used in the beginning of this lab you will see the activation of the mesh api and the addition of the cluster example_cluster as to the membership. This means that a **managed servicemesh** is activated for you cluster and you can activate the mesh for your namespace using :  
+
+```
+kubectl label namespace dev istio-injection=enabled --overwrite
+```
+
+and then go to the servicemesh feature of your gkee cluster console, and the mesh will show up after activating some traffic in your application.
+
+Added to this we have been using the gateway api as an ingress to the applications, and you can combine service mesh with the gateway api as described here : https://cloud.google.com/service-mesh/docs/managed/service-mesh-cloud-gateway. If you look into the repository used by gke-conf/my-fleet-conf you will notice that there is file **l7-gateway-class.yaml** that describe a GatewayClass that should have also been deployed by now. Meaning that you can replace in gke-conf/my-fleet-conf/bootstrap.yaml the **gatewayClassName** by the one of servicemesh. You may also notice that flagger have been used in the prod namespace to do canary deployment and this is done on the app level, not per service. Doing canary per service, for example the writers service comes with a new version will imply configuring a destination rule and a virtual service as described here https://cloud.google.com/service-mesh/docs/by-example/canary-deployment.
 
 ### Additional steps 
 To test releases without pushing the code upstream 

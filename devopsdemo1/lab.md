@@ -147,6 +147,25 @@ The front end is accessing another backend, to adjust this you need to:
 - Redeploy the frontend on dev using skaffold
 - Test the frontend on the cloudrun url of the GCP console 
 
+### One more thing
+The better feature kept until last ... well we have a backend that could use a servicemesh. The app is composing the quotes and writers. We may think that this is one of the purposes of this demo? Well yes, and this has become mandatory since microservices has become the default architecture. This will add :
+
+- robust tracing, monitoring 
+- logging features insights into how your services are performing. 
+- authentication, authorization and encryption between services 
+
+What if we can do this in fully managed way ?
+
+Well if you look into the terraform you used in the beginning of this lab you will see the activation of the mesh api and the addition of the cluster example_cluster as to the membership. This means that a **managed servicemesh** is activated for you cluster and you can activate the mesh for your namespace using :  
+
+```
+kubectl label namespace dev istio-injection=enabled --overwrite
+```
+
+and then go to the servicemesh feature of your gkee cluster console, and the mesh will show up after activating some traffic in your application.
+
+Added to this we have been using the gateway api as an ingress to the applications, and you can combine service mesh with the gateway api as described here : https://cloud.google.com/service-mesh/docs/managed/service-mesh-cloud-gateway. If you look into the repository used by gke-conf/my-fleet-conf you will notice that there is file **l7-gateway-class.yaml** that describe a GatewayClass that should have also been deployed by now. Meaning that you can replace in gke-conf/my-fleet-conf/bootstrap.yaml the **gatewayClassName** by the one of servicemesh. You may also notice that flagger have been used in the prod namespace to do canary deployment and this is done on the app level, not per service. Doing canary per service, for example the writers service comes with a new version will imply configuring a destination rule and a virtual service as described here https://cloud.google.com/service-mesh/docs/by-example/canary-deployment.
+
 ### Additional steps 
 To test releases without pushing the code upstream 
 quotes-front (CloudRun)

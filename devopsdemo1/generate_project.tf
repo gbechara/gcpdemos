@@ -91,6 +91,18 @@ resource "google_project_service" "project_googleapis_gkeconnect" {
   disable_dependent_services = true
 }
 
+resource "google_project_service" "project_googleapis_serviceusage" {
+  project = var.project_id
+  service = "serviceusage.googleapis.com"
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "project_googleapis_mesh" {
+  project = var.project_id
+  service = "mesh.googleapis.com"
+  disable_dependent_services = true
+}
+
 resource "google_project_service" "project_googleapis_cloudresourcemanager" {
   project = var.project_id
   service = "cloudresourcemanager.googleapis.com"
@@ -169,12 +181,12 @@ resource "google_container_cluster" "example_cluster" {
     resource_limits {
       resource_type = "cpu"
       minimum       = "1"
-      maximum       = "6"
+      maximum       = "8"
     }
     resource_limits {
       resource_type = "memory"
       minimum       = "1"
-      maximum = "12"
+      maximum = "16"
     }
   }
 
@@ -296,6 +308,25 @@ resource "google_gke_hub_feature_membership" "google_gke_hub_feature_membership_
     policy_controller_hub_config {
       install_spec = "INSTALL_SPEC_ENABLED"
     }
+  }
+}
+
+resource "google_gke_hub_feature" "google_gke_hub_feature_mesh" {
+  name = "mesh"
+  project = var.project_id
+  location = "global"
+  depends_on = [google_project_service.project_googleapis_container, 
+                google_project_service.project_googleapis_anthos,
+                google_project_service.project_googleapis_mesh,
+                google_project_service.project_googleapis_gkehub]
+}
+
+resource "google_gke_hub_feature_membership" "google_gke_hub_feature_membership_feature_member_mesh" {
+  location = "global"
+  feature = google_gke_hub_feature.google_gke_hub_feature_mesh.name
+  membership = google_gke_hub_membership.gke_fleet_membership.membership_id
+  mesh {
+     management = "MANAGEMENT_AUTOMATIC"
   }
 }
 
