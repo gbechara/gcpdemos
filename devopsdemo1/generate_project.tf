@@ -181,12 +181,12 @@ resource "google_container_cluster" "example_cluster" {
     resource_limits {
       resource_type = "cpu"
       minimum       = "1"
-      maximum       = "8"
+      maximum       = "10"
     }
     resource_limits {
       resource_type = "memory"
       minimum       = "1"
-      maximum = "16"
+      maximum       = "20"
     }
   }
 
@@ -312,7 +312,7 @@ resource "google_gke_hub_feature_membership" "google_gke_hub_feature_membership_
 }
 
 resource "google_gke_hub_feature" "google_gke_hub_feature_mesh" {
-  name = "mesh"
+  name = "servicemesh"
   project = var.project_id
   location = "global"
   depends_on = [google_project_service.project_googleapis_container, 

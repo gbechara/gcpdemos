@@ -16,7 +16,11 @@ In this demo we will cover:
 
 The application has:
 
-- The front end written in ReactJS and deployed to CloudRun. GCS could have been as a target. CloudRun have been chosen for it's versatility when mooving to Server Side rendering frameworks such as NextJS 
+- The front end written in ReactJS and deployed to CloudRun. GCS could have been as a target. CloudRun have been chosen for it's versatility when mooving to Server Side rendering ithub
+
+
+
+frameworks such as NextJS 
 - The back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
 - The "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
 - kustomize, using configmaps, will changes setting of the applications between environnements
@@ -53,12 +57,14 @@ On your github repo:
 Create a new project and:
 
 - Fork this repo in github then clone it locally in you dev env 
-- In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml 
+- In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml
+- In your local dev env change project ids in related ./devopsdemo1/gke-conf/my-fleet-conf/serviceaccounts.yaml example : cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 - In your local dev env change the 3 occurences of projectid in ./devopsdemo1/quote-front/skaffold.yaml
-- In your local dev env change project ids in related serviceaccounts.yaml example : cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
-- In your local dev env change INSTANCE_CONNECTION_NAME in your writers deployement.yaml of your base and overlays to have it connect to the Cloud SQL instance of your project
+- In your local dev env change INSTANCE_CONNECTION_NAME and DB_IAM_USER in your writers in base and overlays to have it connect to the Cloud SQL instance of your project. The files being ./devopsdemo1/quote-back/writers/base/deployment.yaml, ./devopsdemo1/quote-back/writers/overlays/dev/deployment.yaml and ./devopsdemo1/quote-back/writers/overlays/prod/deployment.yaml.  
 - Push this to your github repo
-- In your local dev env change github_config_app_installation_id = 12345678 (you get this from https://github.com/settings/installations/) and google_cloudbuildv2_repository_remote_uri in ./devopsdemo1/variables.tf
+- In your local dev env change github_config_app_installation_id = 12345678 (you get this from https://github.com/settings/installations/) 
+- In your local dev env change google_cloudbuildv2_repository_remote_uri in ./devopsdemo1/variables.tf
+- In your local dev env google_configmanagement_sync_repo ./devopsdemo1/variables.tf
 - In your local dev env change project_id and project_number in ./devopsdemo1/variables.tf 
 - Then launch and wait (about 15 min)
 
@@ -477,12 +483,15 @@ gcloud auth application-default login
 gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 
-Frontend innerloop: you can do local tests for react page, you may need to install the npm packages 
+Frontend innerloop: you can do local tests for react page, you may need to install the npm packages. Note that the npm experience in cloudshell is not dev ready. So unless you install workstation skip this step and deploy frontend on cloudrun using the skaffold file.  
 
 ```
+# In workstation if you followed the instruction you should have node installed
+# You may want to install it yourself temporarly until you add it the the docker image serving as template for your workstation 
 # RUN curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs
+# or on cloud shell nvm install stable 
 cd ./devopsdemo1/quotes-front/views
-# npm install
+# npm install 
 ##### you may need to delete package-lock.json and node_modules and reinstall
 npm run start
 ```
@@ -503,7 +512,7 @@ skaffold run
 kubectl get pod -n dev
 ```
 
-Start outerloop, this is done using the github trigger (on the main branch for this demo). cloudbuild-github.yaml will be triggered
+Start outerloop, this is done using the github trigger (on the main branch for this demo). cloudbuild-github.yaml will be triggered. You can also use the console using the trigger in the region.
 
 ```
 cd ./devopsdemo1
@@ -545,21 +554,21 @@ The front end is accessing another backend, to adjust this you need to:
 - Test the frontend on the cloudrun url of the GCP console 
 
 ### One more thing
-The better feature kept until last ... well we have a backend that could use a servicemesh. The app is composing the quotes and writers. We may think that this is one of the purposes of this demo? Well yes, and this has become mandatory since microservices has become the default architecture. This will add :
+The better feature kept until last ... well we have a backend that could use a servicemesh. The app is composing the quotes and writers. We may think that this is done for the purposes of this demo? Well yes, and this has become mandatory since microservices has become the default architecture. This will add :
 
-- robust tracing, monitoring 
-- logging features insights into how your services are performing. 
-- authentication, authorization and encryption between services 
+- Robust tracing, monitoring 
+- Logging features insights into how your services are performing 
+- Authentication, authorization and encryption between services 
 
 What if we can do this in fully managed way ?
 
-Well if you look into the terraform you used in the beginning of this lab you will see the activation of the mesh api and the addition of the cluster example_cluster as to the membership. This means that a **managed servicemesh** is activated for you cluster and you can activate the mesh for your namespace using :  
+Well if you look into the terraform you used in the beginning of this lab you will see the activation of the mesh api and the addition of the cluster example-cluster as to the membership. This means that a **managed servicemesh** is activated for you cluster and you can activate the mesh for your namespace using :  
 
 ```
 kubectl label namespace dev istio-injection=enabled --overwrite
 ```
 
-and then go to the servicemesh feature of your gkee cluster console, and the mesh will show up after activating some traffic in your application.
+and then go to the servicemesh feature of your gkee cluster console, and the mesh will show up after doing some traffic in your application.
 
 Added to this we have been using the gateway api as an ingress to the applications, and you can combine service mesh with the gateway api as described here : https://cloud.google.com/service-mesh/docs/managed/service-mesh-cloud-gateway. If you look into the repository used by gke-conf/my-fleet-conf you will notice that there is file **l7-gateway-class.yaml** that describe a GatewayClass that should have also been deployed by now. Meaning that you can replace in gke-conf/my-fleet-conf/bootstrap.yaml the **gatewayClassName** by the one of servicemesh. You may also notice that flagger have been used in the prod namespace to do canary deployment and this is done on the app level, not per service. Doing canary per service, for example the writers service comes with a new version will imply configuring a destination rule and a virtual service as described here https://cloud.google.com/service-mesh/docs/by-example/canary-deployment.
 
@@ -647,7 +656,7 @@ Then after you can create a policy that "Allow all images" to be deployed Kubern
 Fetch IP for DNS setup (used to test the application back end rest services)
 
 ```
-kubectl get gateways.gateway.networking.k8s.io app-dev  -n dev -o=jsonpath="{.status.addresses[0].value}"
+kubectl get gateways.gateway.networking.k8s.io app  -n dev -o=jsonpath="{.status.addresses[0].value}"
 ```
 
 Trigger Pipelines : inner loop in workstation
