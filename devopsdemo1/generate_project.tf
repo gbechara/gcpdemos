@@ -415,12 +415,12 @@ resource "google_project_iam_member" "clouddeploy_serviceAgent_prod" {
 #  depends_on = [google_project_service.project_googleapis_compute]
 #}
 
-#resource "google_project_iam_member" "clouddeploy_run_admin" {
-#  project = var.project_id
-#  role    = "roles/run.admin"
-#  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-#  depends_on = [google_project_service.project_googleapis_compute]
-#}
+resource "google_project_iam_member" "clouddeploy_run_admin" {
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  depends_on = [google_project_service.project_googleapis_compute]
+}
 
 resource "google_project_iam_member" "clouddeploy_artifactregistry_reader_prod" {
   project = var.project_id
