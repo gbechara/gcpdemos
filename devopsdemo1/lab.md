@@ -43,7 +43,7 @@ On your github repo:
 
 Create a new project and:
 
-- Fork this repo in github then clone it locally in you dev env 
+- Fork this repo https://github.com/gbechara/gcpdemos/ in github then clone it locally in you dev env 
 - In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml
 - In your local dev env change project ids in related ./devopsdemo1/gke-conf/my-fleet-conf/serviceaccounts.yaml example : cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 - In your local dev env change the 3 occurences of projectid in ./devopsdemo1/quote-front/skaffold.yaml
