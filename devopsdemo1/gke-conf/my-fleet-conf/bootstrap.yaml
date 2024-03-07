@@ -30,7 +30,7 @@ spec:
     tls:
       mode: Terminate
       options:
-        networking.gke.io/pre-shared-certs: gab-prod-devops-1-certificate
+        networking.gke.io/pre-shared-certs: gab-dev-devops-1-certificate
 ---
 kind: Gateway
 apiVersion: gateway.networking.k8s.io/v1beta1
