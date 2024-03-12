@@ -451,6 +451,10 @@ resource "google_sql_database_instance" "devopsdemo_instance" {
   database_version = "POSTGRES_14"
   settings {
     tier = "db-f1-micro"
+    database_flags {
+      name = "cloudsql.iam_authentication"
+      value = "on"
+    }
   }
 }
 
