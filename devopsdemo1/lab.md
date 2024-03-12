@@ -58,6 +58,7 @@ Create a new project and:
 When using this content in your own GCP env you can eventually create a Google Workstation using ../workstationdemo2/Dockerfile and look at the complete insctructions in https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1. This will give a better experience of the inner loop. The cloud shell editor is just to have a shorter lab.
 
 ```
+gcloud auth application-default login
 terraform init
 terraform plan
 terraform apply

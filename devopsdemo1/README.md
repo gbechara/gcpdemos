@@ -70,6 +70,7 @@ Create a new project and:
 
 
 ```
+gcloud auth application-default login
 terraform init
 terraform plan
 terraform apply
