@@ -389,12 +389,12 @@ resource "google_project_iam_member" "clouddeploy_jobrunner_prod" {
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
-resource "google_project_iam_member" "clouddeploy_developer_prod" {
-  project = var.project_id
-  role    = "roles/container.developer"
-  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-  depends_on = [google_project_service.project_googleapis_compute]
-}
+#resource "google_project_iam_member" "clouddeploy_developer_prod" {
+#  project = var.project_id
+#  role    = "roles/container.developer"
+#  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+#  depends_on = [google_project_service.project_googleapis_compute]
+#}
 
 resource "google_project_iam_member" "clouddeploy_admin_prod" {
   project = var.project_id
