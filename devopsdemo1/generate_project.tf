@@ -181,12 +181,12 @@ resource "google_container_cluster" "example_cluster" {
     resource_limits {
       resource_type = "cpu"
       minimum       = "1"
-      maximum       = "10"
+      maximum       = "12"
     }
     resource_limits {
       resource_type = "memory"
       minimum       = "1"
-      maximum       = "20"
+      maximum       = "24"
     }
   }
 
@@ -228,11 +228,12 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   initial_node_count = 0
   node_config {
     # preemptible  = true
-    machine_type = "e2-medium"
+    # machine_type = "e2-medium"
+    machine_type = "e2-standard-2"
   }
   autoscaling{
     min_node_count = 0
-    max_node_count = 3
+    max_node_count = 4
   }
 
 }

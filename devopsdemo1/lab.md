@@ -22,7 +22,7 @@ The application has:
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide3.png?raw=true)
 
-InnerLoop, for Dev, is done on Workstation (or in the cloud shell editor) and OuterLoop will start when pushing the code to github.
+Inner Loop, for Dev, is done on Workstation (or in the cloud shell editor) and OuterLoop will start when pushing the code to github.
 
 - Skaffold is used to deploy the frontend to cloudrun, the default profile being dev
 - Skaffold is used to deploy to backend to gke, the default profile being dev
@@ -84,21 +84,7 @@ gcloud container clusters get-credentials example-cluster --zone us-central1-a -
 ### Deploy the App
 Application related Inner Loop and OuterLoop
 
-Set Env on workstation  
-
-```
-# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
-# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
-export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
-export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
-export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
-export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
-gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
-gcloud auth application-default login
-gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
-```
-
-Frontend innerloop: you can do local tests for react page, you may need to install the npm packages. Note that the npm experience in cloudshell is not dev ready. So unless you install workstation skip this step and deploy frontend on cloudrun using the skaffold file.  
+Frontend inner loop: you can do local tests for react page, you may need to install the npm packages. Note that the npm experience in cloudshell is not dev ready. So unless you install workstation skip this step and deploy frontend on cloudrun using the skaffold file.  
 
 ```
 # In workstation if you followed the instruction you should have node installed
@@ -111,15 +97,15 @@ cd ./devopsdemo1/quotes-front/views
 npm run start
 ```
 
-Frontend innerloop: you can deploy frontend on cloudrun using the skaffold file, deployed to dev profile
+Frontend inner loop: you can deploy frontend on cloudrun using the skaffold file, deployed to dev profile
 
 ```
 cd ./devopsdemo1/quotes-front/
 skaffold run
 ```
 
-Backend innerloop: you can use skaddold to deploy composite backend on on GKE, deployed to dev profile
-For database connection thru WorloadIndentity you will need to give to the gcloud user the Service Account Token Creator role.
+Backend inner loop deployed to dev profile: you can use skaffold to deploy composite backend on on GKE.
+When deplying using skaffold for database connection thru Workload Identity you will need to give to the cloudsql-sa@ $GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com user the Service Account Token Creator role.
 
 ```
 cd ./devopsdemo1/quotes-back/
@@ -136,8 +122,8 @@ git commit -m "a commit message"
 git push
 ```
 
-Use Cloudbuild for new releases (this also can be done using the trigger in the region), before doing that you need either to comment the binauthz attestations steps in cloudbuild-github.yaml or create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring** .
-Added to this you need to give to the gcloud user the Service Account Token Creator role. 
+Use Cloudbuild for new releases (this also can be done using the trigger in the region), before doing that you can comment the binauthz attestations steps in cloudbuild-github.yaml. This should work by keeping it as is, since those are steps are optional. You can also create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring** .
+Added to this you might need to give to the gcloud user the Service Account Token Creator role. 
 
 ```
 gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./ \

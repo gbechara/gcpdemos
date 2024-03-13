@@ -504,8 +504,8 @@ cd ./devopsdemo1/quotes-front/
 skaffold run
 ```
 
-Backend innerloop: you can use skaddold to deploy composite backend on on GKE, deployed to dev profile
-For database connection thru WorloadIndentity you will need to give to the gcloud user the Service Account Token Creator role.
+Backend inner loop deployed to dev profile: you can use skaffold to deploy composite backend on on GKE.
+When deplying using skaffold for database connection thru Workload Identity you will need to give to the cloudsql-sa@ $GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com user the Service Account Token Creator role.
 
 ```
 cd ./devopsdemo1/quotes-back/
@@ -522,8 +522,8 @@ git commit -m "a commit message"
 git push
 ```
 
-Use Cloudbuild for new releases (this also can be done using the trigger in the region), before doing that you need either to comment the binauthz attestations steps in cloudbuild-github.yaml or create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring** .
-Added to this you need to give to the gcloud user the Service Account Token Creator role. 
+Use Cloudbuild for new releases (this also can be done using the trigger in the region), before doing that you can comment the binauthz attestations steps in cloudbuild-github.yaml. This should work by keeping it as is, since those are steps are optional. You can also create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring** .
+Added to this you might need to give to the gcloud user the Service Account Token Creator role. 
 
 ```
 gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./ \
