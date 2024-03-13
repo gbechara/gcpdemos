@@ -490,7 +490,8 @@ depends_on = [
 resource "google_project_iam_member" "cloudsql_admin" {
   project = var.project_id
   role    = "roles/cloudsql.admin"
-  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  #member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  member  = "serviceAccount:cloudsql-sa@${var.project_id}.iam.gserviceaccount.com"
   depends_on = [google_sql_database.quotes-app-db, google_sql_database_instance.devopsdemo_instance]
 }
 
