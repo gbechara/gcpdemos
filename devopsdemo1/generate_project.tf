@@ -497,22 +497,39 @@ resource "google_project_iam_member" "cloudsql_admin" {
 resource "google_project_iam_member" "cloudsql_client" {
   project = var.project_id
   role    = "roles/cloudsql.client"
-  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  #member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  member  = "serviceAccount:cloudsql-sa@${var.project_id}.iam.gserviceaccount.com"
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "cloudsql_instanceUser" {
   project = var.project_id
   role    = "roles/cloudsql.instanceUser"
-  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  #member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  member  = "serviceAccount:cloudsql-sa@${var.project_id}.iam.gserviceaccount.com"
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
 resource "google_project_iam_member" "cloudsql_logWriter" {
   project = var.project_id
   role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  #member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  member  = "serviceAccount:cloudsql-sa@${var.project_id}.iam.gserviceaccount.com"
   depends_on = [google_project_service.project_googleapis_compute]
+}
+
+resource "google_service_account_iam_binding" "cloudsql_dev" {
+  role    = "roles/iam.workloadIdentityUser"
+  members  = ["serviceAccount:${var.project_id}.svc.id.goog[dev/ksa-cloud-sql-dev]"]
+  service_account_id = google_service_account.cloudsql_sa.name
+  depends_on = [google_container_cluster.example_cluster]
+}
+
+resource "google_service_account_iam_binding" "cloudsql_prod" {
+  role    = "roles/iam.workloadIdentityUser"
+  members  = ["serviceAccount:${var.project_id}.svc.id.goog[prod/ksa-cloud-sql-prod]"]
+  service_account_id = google_service_account.cloudsql_sa.name
+  depends_on = [google_container_cluster.example_cluster]
 }
 
 resource "google_service_account" "llm_sa" {

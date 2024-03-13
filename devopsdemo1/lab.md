@@ -105,7 +105,6 @@ skaffold run
 ```
 
 Backend inner loop deployed to dev profile: you can use skaffold to deploy composite backend on on GKE.
-When deplying using skaffold for database connection thru Workload Identity you will need to give to the cloudsql-sa@ $GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com user the Service Account Token Creator role.
 
 ```
 cd ./devopsdemo1/quotes-back/
