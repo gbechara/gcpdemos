@@ -21,7 +21,7 @@ spec:
   replicas: 1
   template:
     spec:
-      serviceAccountName: ksa-cloud-sql-dev
+      serviceAccountName: ksa-csql-dev
       containers:
       - name: writers
         image: writers

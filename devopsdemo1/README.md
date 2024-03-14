@@ -358,12 +358,12 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 
 gcloud iam service-accounts add-iam-policy-binding \
   --role="roles/iam.workloadIdentityUser" \
-  --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[dev/ksa-cloud-sql-dev]" \
+  --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[dev/ksa-csql-dev]" \
   cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com    
 
 gcloud iam service-accounts add-iam-policy-binding \
   --role="roles/iam.workloadIdentityUser" \
-  --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[prod/ksa-cloud-sql-prod]" \
+  --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[prod/ksa-csql-prod]" \
   cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 ```
 
@@ -373,12 +373,12 @@ Service accounts roles for cloud sql database (split later dev and prod)
 
 ```
 kubectl annotate serviceaccount \
-  ksa-cloud-sql-dev  \
+  ksa-csql-dev  \
   --namespace dev \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com  
 
 kubectl annotate serviceaccount \
-  ksa-cloud-sql-prod  \
+  ksa-csql-prod  \
   --namespace prod \
   iam.gke.io/gcp-service-account=cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
 ```
