@@ -343,6 +343,25 @@ resource "google_service_account_iam_binding" "flagger" {
   depends_on = [google_container_cluster.example_cluster]
 }
 
+resource "google_service_account" "gmp_sa" {
+  account_id = "gmp-sa"
+  display_name = "GMP Service Account"
+}
+
+resource "google_service_account_iam_binding" "gmp_sa" {
+  role    = "roles/iam.workloadIdentityUser"
+  members  = ["serviceAccount:${var.project_id}.svc.id.goog[prod/gmp]"]
+  service_account_id = google_service_account.gmp_sa.name
+  depends_on = [google_container_cluster.example_cluster]
+}
+
+resource "google_project_iam_member" "gmp_sa" {
+  project = var.project_id
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:gmp-sa@${var.project_id}.iam.gserviceaccount.com"
+  depends_on = [google_container_cluster.example_cluster]
+}
+
 resource "google_compute_managed_ssl_certificate" "gab-dev-certificate" {
 #  name        = "gab-dev-certificate"
   name        = "gab-dev-devops-1-certificate"
