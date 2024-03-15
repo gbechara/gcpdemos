@@ -75,9 +75,9 @@ terraform plan
 terraform apply
 ```
 
-You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#-ptional-step-:-Set-up-Workstations" target="_blank">Google Workstation</a>** then jump to **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#step-app---deploy-the-app" target="_blank">Step APP</a> - Deploy the App** .
+You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#optional-step--set-up-workstations" target="_blank">Google Workstation</a>** then jump to **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#step-app---deploy-the-app" target="_blank">Step APP</a> - Deploy the App** .
 
-The intermadiary steps **Step 2** to **Step 17** are already executed using: 
+The intermediary steps **Step 2** to **Step 17** are already executed using: 
 
 - Terraform for GCP ressouces 
 - ConfigSync for KRM ressouces.

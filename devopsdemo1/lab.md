@@ -64,6 +64,11 @@ terraform plan
 terraform apply
 ```
 
+You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#optional-step--set-up-workstations" target="_blank">Google Workstation</a>.
+
+The intermediary steps **Step 2** to **Step 17** are already executed using: 
+
+
 Next steps will cover both the dev inner loop (skaffold) or trigger cloudbuild thru the git push to the main branch (for this demo). Cloudbuild will then build the images and create a new deploy release
 
 ### Set Env 
