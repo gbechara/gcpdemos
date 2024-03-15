@@ -275,7 +275,7 @@ skaffold build --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
 
 ## Optional step : Set up Workstations
 
-A Workstations Cluster and Config has been set up by the terraform script if you have used it. You may need to build a custom image containing node and other dev related options. To do this 
+A Workstations Cluster and Config has been set up by the terraform script. You may need to build a custom image containing node and other dev related options. To do this 
 
 In .workstationdemo2/ set env
 
