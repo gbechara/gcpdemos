@@ -267,3 +267,27 @@ Create new release for deployment
 skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID -p prod
 skaffold build --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID 
 ```
+
+## Optional step : Set up Workstations
+
+A Workstations Cluster and Config has been set up by the terraform script if you have used it. You may need to build a custom image containing node and other dev related options. To do this 
+
+In .workstationdemo2/ set env
+
+```
+export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
+export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
+export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
+export ARTIFACT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
+docker build -t cloud-custom-workstation-1 .
+```
+
+Build, tag then push the docker image 
+
+```
+docker build -t cloud-custom-workstation-1 .
+docker tag cloud-custom-workstation-1:latest  $ARTIFACT_REPO/cloud-custom-workstation-1:latest
+docker push $ARTIFACT_REPO/cloud-custom-workstation-1
+```
+
+In the GCP console edit the Workstations config and replace the image by the custom image you just built, then you can create a custom workstation based on the custom image.

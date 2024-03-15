@@ -115,6 +115,12 @@ resource "google_project_service" "project_googleapis_iam" {
   disable_dependent_services = true
 }
 
+resource "google_project_service" "project_googleapis_workstations" {
+  project = var.project_id
+  service = "workstations.googleapis.com"
+  disable_dependent_services = true
+}
+
 resource "google_compute_network" "project_vpc_devops" {
   name = "vpc-devops"
   depends_on = [google_project_service.project_googleapis_compute]
@@ -768,4 +774,31 @@ resource "google_cloudbuild_trigger" "google_cloudbuild_trigger_devopsdemo1_tigg
   }
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
   depends_on = [google_project_service.project_googleapis_cloudbuild]
+}
+
+resource "google_workstations_workstation_cluster" "workstation_cluster" {
+  provider = google-beta
+  workstation_cluster_id = "my-workstation-cluster"
+  location = var.region
+  network = google_compute_network.project_vpc_devops.id
+  subnetwork = "projects/${var.project_id}/regions/${var.region}/subnetworks/vpc-devops"
+  labels = {
+    env = "dev"
+  }
+  depends_on = [google_project_service.project_googleapis_workstations]
+}
+
+resource "google_workstations_workstation_config" "workstation_config" {
+  provider = google-beta
+  workstation_config_id = "my-workstation-config"
+  workstation_cluster_id = google_workstations_workstation_cluster.workstation_cluster.workstation_cluster_id
+  location  = var.region
+
+   host {
+    gce_instance {
+      machine_type  = "e2-standard-4"
+      boot_disk_size_gb = 35
+      disable_public_ip_addresses = true
+    }
+  }
 }

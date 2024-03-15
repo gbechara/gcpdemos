@@ -45,7 +45,6 @@ sed -i "s/GOOGLE_CLOUD_REGION/$GOOGLE_CLOUD_REGION/g" clouddeploy.yaml
 Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 ## Installing the demo 
 ### Step 1 - Terraform set up of the project
-Prepare your Google Workstation using ../workstationdemo2/Dockerfile. <br/> 
 
 On your github repo:
 
@@ -76,7 +75,7 @@ terraform plan
 terraform apply
 ```
 
-You can now Jump to **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#step-app---deploy-the-app" target="_blank">Step APP</a> - Deploy the App** .
+You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#-ptional-step-:-Set-up-Workstations" target="_blank">Google Workstation</a>** then jump to **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#step-app---deploy-the-app" target="_blank">Step APP</a> - Deploy the App** .
 
 The intermadiary steps **Step 2** to **Step 17** are already executed using: 
 
@@ -667,3 +666,27 @@ Create new release for deployment
 skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID -p prod
 skaffold build --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID 
 ```
+
+## Optional step : Set up Workstations
+
+A Workstations Cluster and Config has been set up by the terraform script if you have used it. You may need to build a custom image containing node and other dev related options. To do this 
+
+In .workstationdemo2/ set env
+
+```
+export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
+export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
+export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
+export ARTIFACT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
+docker build -t cloud-custom-workstation-1 .
+```
+
+Build, tag then push the docker image 
+
+```
+docker build -t cloud-custom-workstation-1 .
+docker tag cloud-custom-workstation-1:latest  $ARTIFACT_REPO/cloud-custom-workstation-1:latest
+docker push $ARTIFACT_REPO/cloud-custom-workstation-1
+```
+
+In the GCP console edit the Workstations config and replace the image by the custom image you just built, then you can create a custom workstation based on the custom image.
