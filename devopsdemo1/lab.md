@@ -64,7 +64,7 @@ terraform plan
 terraform apply
 ```
 
-You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#optional-step--set-up-workstations" target="_blank">Google Workstation</a>.
+You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/lab.md#optional-step--set-up-workstations" target="_blank">Google Workstation</a>**.
 
 The intermediary steps **Step 2** to **Step 17** are already executed using: 
 
