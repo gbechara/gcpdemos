@@ -798,7 +798,9 @@ resource "google_workstations_workstation_config" "workstation_config" {
     gce_instance {
       machine_type  = "e2-standard-4"
       boot_disk_size_gb = 35
-      disable_public_ip_addresses = true
+      service_account = "${var.project_number}-compute@developer.gserviceaccount.com"
+      #disable_public_ip_addresses = true
     }
   }
+  depends_on = [google_project_service.project_googleapis_compute]
 }
