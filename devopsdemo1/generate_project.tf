@@ -797,10 +797,22 @@ resource "google_workstations_workstation_config" "workstation_config" {
    host {
     gce_instance {
       machine_type  = "e2-standard-4"
-      boot_disk_size_gb = 35
+      boot_disk_size_gb = 30
       service_account = "${var.project_number}-compute@developer.gserviceaccount.com"
       #disable_public_ip_addresses = true
     }
   }
+
+  persistent_directories {
+    mount_path = "/home"
+    gce_pd {
+      size_gb        = 200
+      fs_type        = "ext4"
+      # disk_type      = "pd-ssd"
+      disk_type      = "pd-standard"
+      reclaim_policy = "DELETE"
+    }
+  }
+
   depends_on = [google_project_service.project_googleapis_compute]
 }
