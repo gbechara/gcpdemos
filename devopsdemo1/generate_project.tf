@@ -182,19 +182,19 @@ resource "google_container_cluster" "example_cluster" {
   networking_mode =  "VPC_NATIVE"
   enable_shielded_nodes = true
   default_max_pods_per_node = 30
-  cluster_autoscaling {
-    enabled = true
-    resource_limits {
-      resource_type = "cpu"
-      minimum       = "1"
-      maximum       = "12"
-    }
-    resource_limits {
-      resource_type = "memory"
-      minimum       = "1"
-      maximum       = "24"
-    }
-  }
+  #cluster_autoscaling {
+  #  enabled = true
+  #  resource_limits {
+  #    resource_type = "cpu"
+  #    minimum       = "1"
+  #    maximum       = "12"
+  #  }
+  #  resource_limits {
+  #    resource_type = "memory"
+  #    minimum       = "1"
+  #    maximum       = "24"
+  #  }
+  #}
 
 #  fleet = google_gke_hub_fleet.gke_fleet.name
 #  the created separately
@@ -231,14 +231,15 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = "my-node-pool"
   location   = var.zone
   cluster    = google_container_cluster.example_cluster.name
-  initial_node_count = 0
+  initial_node_count = 3
   node_config {
     # preemptible  = true
     # machine_type = "e2-medium"
     machine_type = "e2-standard-2"
+    disk_size_gb = 50
   }
   autoscaling{
-    min_node_count = 0
+    min_node_count = 3
     max_node_count = 4
   }
 
