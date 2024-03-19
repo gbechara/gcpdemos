@@ -798,7 +798,7 @@ resource "google_workstations_workstation_config" "workstation_config" {
    host {
     gce_instance {
       machine_type  = "e2-standard-4"
-      boot_disk_size_gb = 30
+      boot_disk_size_gb = 50
       service_account = "${var.project_number}-compute@developer.gserviceaccount.com"
       #disable_public_ip_addresses = true
     }
