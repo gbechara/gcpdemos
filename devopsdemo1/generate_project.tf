@@ -234,13 +234,13 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   initial_node_count = 4
   node_config {
     # preemptible  = true
-    # machine_type = "e2-medium"
-    machine_type = "e2-standard-2"
+    machine_type = "e2-medium"
+    # machine_type = "e2-standard-2"
     disk_size_gb = 50
   }
   autoscaling{
-    min_node_count = 3
-    max_node_count = 5
+    min_node_count = 4
+    max_node_count = 6
   }
 
 }
