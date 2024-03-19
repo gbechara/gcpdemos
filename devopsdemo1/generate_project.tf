@@ -231,7 +231,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = "my-node-pool"
   location   = var.zone
   cluster    = google_container_cluster.example_cluster.name
-  initial_node_count = 3
+  initial_node_count = 4
   node_config {
     # preemptible  = true
     # machine_type = "e2-medium"
@@ -240,7 +240,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   }
   autoscaling{
     min_node_count = 3
-    max_node_count = 4
+    max_node_count = 5
   }
 
 }
