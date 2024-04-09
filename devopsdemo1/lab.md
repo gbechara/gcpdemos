@@ -1,4 +1,4 @@
-### Introduction 
+## Introduction 
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide1.png?raw=true)
 
@@ -32,7 +32,7 @@ Inner Loop, for Dev, is done on Workstation (or in the cloud shell editor) and O
 
 Flagger combined with Kubernetes GatewayAPI is used for Canary on prod, based on GMP metrics. 
 
-### Terraform the project
+## Terraform the project
 
 On your github repo:
 
@@ -68,7 +68,7 @@ You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos
 
 Next steps will cover both the dev inner loop (skaffold) or trigger cloudbuild thru the git push to the main branch (for this demo). Cloudbuild will then build the images and create a new deploy release
 
-### Set Env 
+## Set Env 
 
 This is done either in workstation or in the cloud shell editor, for this lab we will be using cloud shell editor.
 
@@ -83,7 +83,8 @@ gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
 gcloud auth application-default login
 gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
 ```
-### Deploy the App
+## Deploy the App
+
 Application related Inner Loop and OuterLoop
 
 Frontend inner loop: you can do local tests for react page, you may need to install the npm packages. Note that the npm experience in cloudshell is not dev ready. So unless you install workstation skip this step and deploy frontend on cloudrun using the skaffold file.  
@@ -132,7 +133,8 @@ gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github
 --format="value(projectNumber)")-compute@developer.gserviceaccount.com
 ```
 
-### Challenge
+## Challenge
+
 The back end will not be accessible and you need to:
 
 - create a new certificate using a domain that you own. This is an example using a project name and gabrielbechara.demo 
@@ -155,7 +157,8 @@ The front end is accessing another backend, to adjust this you need to:
 - Redeploy the frontend on dev using skaffold
 - Test the frontend on the cloudrun url of the GCP console 
 
-### One more thing
+## One more thing
+
 The better feature kept until last ... well we have a backend that could use a servicemesh. The app is composing the quotes and writers. We may think that this is done for the purposes of this demo? Well yes, and this has become mandatory since microservices has become the default architecture. This will add :
 
 - Robust tracing, monitoring 
@@ -174,7 +177,8 @@ and then go to the servicemesh feature of your gkee cluster console, and the mes
 
 Added to this we have been using the gateway api as an ingress to the applications, and you can combine service mesh with the gateway api as described here : https://cloud.google.com/service-mesh/docs/managed/service-mesh-cloud-gateway. If you look into the repository used by gke-conf/my-fleet-conf you will notice that there is file **l7-gateway-class.yaml** that describe a GatewayClass that should have also been deployed by now. Meaning that you can replace in gke-conf/my-fleet-conf/bootstrap.yaml the **gatewayClassName** by the one of servicemesh. You may also notice that flagger have been used in the prod namespace to do canary deployment and this is done on the app level, not per service. Doing canary per service, for example the writers service comes with a new version will imply configuring a destination rule and a virtual service as described here https://cloud.google.com/service-mesh/docs/by-example/canary-deployment.
 
-### Additional steps 
+## Additional steps
+
 To test releases without pushing the code upstream 
 quotes-front (CloudRun)
 
@@ -215,7 +219,8 @@ kubectl -n prod describe canary/app
 gcloud compute url-maps export gkegw1-ll1w-prod-app-4bpekl57o1qy --region=$GOOGLE_CLOUD_REGION
 ```
 
-### Using Binautz for the production ns on example_cluster
+## Using Binautz for the production namespace on example_cluster
+
 Give access for cloudbuild to attestor for binary auth 
 Binautz assets are assumed to be created before this step
 You can either:
