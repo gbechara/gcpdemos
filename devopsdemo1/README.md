@@ -16,11 +16,7 @@ In this demo we will cover:
 
 The application has:
 
-- The front end written in ReactJS and deployed to CloudRun. GCS could have been as a target. CloudRun have been chosen for it's versatility when mooving to Server Side rendering ithub
-
-
-
-frameworks such as NextJS 
+- The front end written in ReactJS and deployed to CloudRun. GCS could have been as a target. CloudRun have been chosen for it's versatility when moving to Server Side rendering frameworks such as NextJS
 - The back end "app", assembling the "quotes" and "writers" components are written in Go and deployed to GKE
 - The "writers" component is accessing a Cloud SQL instance is using workload identity and the Go connector
 - kustomize, using configmaps, will changes setting of the applications between environnements
@@ -690,3 +686,14 @@ docker push $ARTIFACT_REPO/cloud-custom-workstation-1
 ```
 
 In the GCP console edit the Workstations config and replace the image by the custom image you just built, then you can create a custom workstation based on the custom image.
+
+## Conclusion and next steps
+
+In this lab/demo, we demonstrated automating the setup of app foundations for GCP and GKE. We used Workstation and Skaffold for the development inner loop, and Cloud Build/Deploy for the outer loop. To manage deployments across environments (dev/prod), we employed kustomize to variabilize source code and deployment manifests. Workload identity was also utilized.  However, to keep the lab/demo simple, some real-world considerations were omitted.  Here are additional factors to address in a production setting:
+
+- **Branching and Tagging Strategy:** Define a clear branching and tagging model (e.g., GitFlow, Trunk-Based) that aligns with your development workflow. Establish triggers in Cloud Build to execute the appropriate pipelines based on branching and tagging events.
+- **Git Repository Structure:** Maintain separate Git repositories for infrastructure-as-code (IaC) and application code. Further organize application code repositories based on team ownership and microservice architecture, to promote modularity and independent versioning. 
+- **Environment and Resource Isolation:** Use separate GCP projects for development, staging, and production environments. This enhances security and change control. Consider dedicating GKE clusters per environment or utilizing namespaces, depending on isolation needs and cost factors. Align project and cluster access with team responsibilities.
+
+
+
