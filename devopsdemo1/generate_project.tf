@@ -545,16 +545,10 @@ resource "google_project_iam_member" "cloudsql_logWriter" {
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
-resource "google_service_account_iam_binding" "cloudsql_dev" {
+resource "google_service_account_iam_binding" "cloudsql_binding" {
   role    = "roles/iam.workloadIdentityUser"
-  members  = ["serviceAccount:${var.project_id}.svc.id.goog[dev/ksa-csql-dev]"]
-  service_account_id = google_service_account.cloudsql_sa.name
-  depends_on = [google_container_cluster.example_cluster]
-}
-
-resource "google_service_account_iam_binding" "cloudsql_prod" {
-  role    = "roles/iam.workloadIdentityUser"
-  members  = ["serviceAccount:${var.project_id}.svc.id.goog[prod/ksa-csql-prod]"]
+  members  = ["serviceAccount:${var.project_id}.svc.id.goog[dev/ksa-csql-dev]",
+            "serviceAccount:${var.project_id}.svc.id.goog[prod/ksa-csql-prod]"]
   service_account_id = google_service_account.cloudsql_sa.name
   depends_on = [google_container_cluster.example_cluster]
 }
