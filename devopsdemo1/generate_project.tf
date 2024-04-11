@@ -165,7 +165,7 @@ resource "google_project_iam_member" "clouddeploy_releaser" {
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
-resource "google_project_iam_member" "clouddeploy_developer" {
+resource "google_project_iam_member" "gke_developer" {
   project = var.project_id
   role    = "roles/container.developer"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
