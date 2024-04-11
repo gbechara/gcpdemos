@@ -9,7 +9,7 @@ This is just a lab/demo, and views expressed here are my own. A broader coverage
 
 In this demo we will cover:
 
-- The application foundations needed to host an application on the top (and in extention) of (to) a landing zone. The application foundations being created for a GCP project using Terraform for GCP services and ConfigSync for Kube related configurations
+- The application foundations needed to host an application on top (and in extention) of (to) a landing zone. The application foundations being created for a GCP project using Terraform for GCP services and ConfigSync for Kube related configurations
 - The Cloud Build and Cloud Deploy configuration used for the outer-loop of application
 
 ![Architecture of the Demo](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/slide2.png?raw=true)
@@ -42,11 +42,11 @@ Note: on mac use sed -i "" "s/XXX/$XXX/g" filename.yaml
 ## Installing the demo 
 ### Step 1 - Terraform set up of the project
 
-On your github repo:
+On your github repo (This step needs to be performed using a github account, you may need to use your account or create one):
 
-- Install the Cloud Build GitHub App on your GitHub account or in an organization you own.
-- Create a PAT
-- Make sure to set your token to have no expiration date and select the following permissions when prompted in GitHub: repo and read:user. If your app is installed in an organization, make sure to also select the read:org permission.
+- Install the Cloud Build GitHub App on your GitHub account or in an organization you own. To do this you can use https://github.com/apps/google-cloud-build after connecting to your github account.
+- Create a PAT (Classic)
+- Make sure to set your token to have no expiration date and select the following permissions when prompted in GitHub: repo (Full control of private repositories) and read:user (Read ALL user profile data). If your app is installed in an organization, make sure to also select the read:org permission.
 - Create a GCP secret to store github PAT in **my-github-secret** 
 
 Create a new project and:
