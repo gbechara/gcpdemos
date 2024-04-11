@@ -772,6 +772,7 @@ resource "google_cloudbuild_trigger" "google_cloudbuild_trigger_devopsdemo1_tigg
 }
 
 resource "google_workstations_workstation_cluster" "workstation_cluster" {
+  project  = var.project_id
   provider = google-beta
   workstation_cluster_id = "my-workstation-cluster"
   location = var.region
@@ -784,6 +785,7 @@ resource "google_workstations_workstation_cluster" "workstation_cluster" {
 }
 
 resource "google_workstations_workstation_config" "workstation_config" {
+  project  = var.project_id
   provider = google-beta
   workstation_config_id = "my-workstation-config"
   workstation_cluster_id = google_workstations_workstation_cluster.workstation_cluster.workstation_cluster_id
