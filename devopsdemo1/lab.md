@@ -36,27 +36,33 @@ Flagger combined with Kubernetes GatewayAPI is used for Canary on prod, based on
 
 On your github repo (This step needs to be performed using a github account, you may need to use your account or create one):
 
-- Install the Cloud Build GitHub App on your GitHub account or in an organization you own. To do this you can use https://github.com/apps/google-cloud-build after connecting to your github account.
-- Create a PAT (Classic)
-- Make sure to set your token to have no expiration date and select the following permissions when prompted in GitHub: repo (Full control of private repositories) and read:user (Read ALL user profile data). If your app is installed in an organization, make sure to also select the read:org permission.
-- Create a GCP secret to store github PAT in **my-github-secret**
+- Install the [Cloud Build GitHub App](https://github.com/apps/google-cloud-build) on your GitHub account or in an organization you own.
+- Create a PAT (Classic) [here](https://github.com/settings/tokens)
+- Make sure to select the following permissions when prompted in GitHub: `repo` (Full control of private repositories) and `read:user` (Read ALL user profile data). If your app is installed in an organization, make sure to also select the read:org permission.
+- Create a GCP secret to store your Github PAT in **my-github-secret** 
 
-Create a new project and:
+In Cloud Shell :
 
-- Fork this repo https://github.com/gbechara/gcpdemos/ in github then clone it locally in you dev env 
-- In your local dev env change configSync/syncRepo in devopsdemo ./devopsdemo1/gke-conf/apply-spec.yaml
-- In your local dev env change project ids in related ./devopsdemo1/gke-conf/my-fleet-conf/serviceaccounts.yaml example : cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com
-- In your local dev env change the 3 occurences of projectid in ./devopsdemo1/quote-front/skaffold.yaml
-- In your local dev env change INSTANCE_CONNECTION_NAME and DB_IAM_USER in your writers in base and overlays to have it connect to the Cloud SQL instance of your project. The files being ./devopsdemo1/quote-back/writers/base/deployment.yaml, ./devopsdemo1/quote-back/writers/overlays/dev/deployment.yaml and ./devopsdemo1/quote-back/writers/overlays/prod/deployment.yaml.  
-- Push this to your github repo
-- In your local dev env change github_config_app_installation_id = 12345678 (you get this from https://github.com/settings/installations/) 
-- In your local dev env change google_cloudbuildv2_repository_remote_uri in ./devopsdemo1/variables.tf
-- In your local dev env google_configmanagement_sync_repo ./devopsdemo1/variables.tf
-- In your local dev env change project_id and project_number in ./devopsdemo1/variables.tf 
-- Then launch and wait (about 15 min)
+* Fork this repo [https://github.com/gbechara/gcpdemos/](https://github.com/gbechara/gcpdemos/) in Github 
+* Clone it locally in your dev environement
+* Replace the `syncRepo` variable in the file `./devopsdemo1/gke-conf/apply-spec.yaml` with the URL of your forked repo.
+* Replace all occurrences of the project ID and project number placeholder with your actual project ID in the following files:
+    * `./devopsdemo1/gke-conf/my-fleet-conf/serviceaccounts.yaml`
+    * `./devopsdemo1/quote-front/skaffold.yaml` (Only for the 3 `projectid:`)
+    * `./devopsdemo1/quote-back/writers/base/deployment.yaml`
+    * `./devopsdemo1/quote-back/writers/overlays/dev/deployment.yaml`
+    * `./devopsdemo1/quote-back/writers/overlays/prod/deployment.yaml`
 
-When using this content in your own GCP env you can eventually create a Google Workstation using ../workstationdemo2/Dockerfile and look at the complete insctructions in https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1. This will give a better experience of the inner loop. The cloud shell editor is just to have a shorter lab.
+* Push your changes to your forked repo in GitHub.
+* Update the following variables in the `./devopsdemo1/variables.tf` file:
 
+    * `github_config_app_installation_id`: Replace this with the ID of your GitHub application installation. You can find this value on [this page](https://github.com/settings/installations) when you click on the GCB app and look at the URL.
+    * `google_cloudbuildv2_repository_remote_uri`: Replace this with the URL of your forked repo in GitHub.
+    * `google_configmanagement_sync_repo`: Replace this with the URL of your forked repo in GitHub.
+    * `project_id`: Replace this with your actual GCP project ID.
+    * `project_number`: Replace this with your actual GCP project number. You can find this value in the project settings in the GCP console.
+
+- Then you can launch the following commands and wait about 15mins
 ```
 gcloud auth application-default login
 terraform init
@@ -64,50 +70,51 @@ terraform plan
 terraform apply
 ```
 
-You can optionnally prepare your **<a href="https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/lab.md#optional-step--set-up-workstations" target="_blank">Google Workstation</a>**.
+You can optionnally prepare your **[Cloud Workstation](https://github.com/gbechara/gcpdemos/blob/main/devopsdemo1/lab.md#optional-step--set-up-workstations)** instead of using Cloud Shell.
 
-Next steps will cover both the dev inner loop (skaffold) or trigger cloudbuild thru the git push to the main branch (for this demo). Cloudbuild will then build the images and create a new deploy release
+The next steps will cover the two options for building and deploying the application. The first option is to use Skaffold for the development inner loop, which allows for rapid iterative development. The second option is to trigger a Cloud Build through a git push to the main branch. Cloud Build will then build the images and create a new Cloud Deploy release.
 
 ## Set Env 
 
-This is done either in workstation or in the cloud shell editor, for this lab we will be using cloud shell editor.
+This is done either in workstation or in the Cloud Shell editor, for this lab we will be using Cloud Shell editor.
 
 ```
-# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID
-# skaffold run --default-repo=gcr.io/$GOOGLE_CLOUD_PROJECT_ID SKAFFOLD_DEFAULT_REPO
 export GOOGLE_CLOUD_PROJECT_ID=<your_project_on_google_cloud>
-export GOOGLE_CLOUD_REGION=<your_google_cloud_region>
-export GOOGLE_CLOUD_ZONE=<your_google_cloud_zone>
+export GOOGLE_CLOUD_REGION=us-central1
+export GOOGLE_CLOUD_ZONE=us-central1-a
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
+export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gcloud/application_default_credentials.json
 gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
 gcloud auth application-default login
-gcloud container clusters get-credentials example-cluster --zone us-central1-a --project $GOOGLE_CLOUD_PROJECT_ID
+gcloud container clusters get-credentials example-cluster --zone $GOOGLE_CLOUD_ZONE --project $GOOGLE_CLOUD_PROJECT_ID
 ```
+
 ## Deploy the App
 
-Application related Inner Loop and OuterLoop
+### Frontend Inner loop
 
-Frontend inner loop: you can do local tests for react page, you may need to install the npm packages. Note that the npm experience in cloudshell is not dev ready. So unless you install workstation skip this step and deploy frontend on cloudrun using the skaffold file.  
+You can experiment locally with your React pages, but you may need to install the npm packages. Note that the npm experience in Cloud Shell is not dev ready. So unless you are using a Cloud Workstation, you should skip this step and deploy the frontend on Cloud Run using the skaffold file.
 
 ```
-# In workstation if you followed the instruction you should have node installed
+# In the workstation if you followed the instruction you should have node installed
 # You may want to install it yourself temporarly until you add it the the docker image serving as template for your workstation 
 # RUN curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs
 # or on cloud shell nvm install stable 
 cd ./devopsdemo1/quotes-front/views
 # npm install 
 ##### you may need to delete package-lock.json and node_modules and reinstall
-npm run start
+npm run start:dev
 ```
 
-Frontend inner loop: you can deploy frontend on cloudrun using the skaffold file, deployed to dev profile
+You can deploy the frontend on Cloud Run using the `skaffold.yaml` file. It will deploy a new revision of the dev service.
 
 ```
 cd ./devopsdemo1/quotes-front/
 skaffold run
 ```
 
-Backend inner loop deployed to dev profile: you can use skaffold to deploy composite backend on on GKE.
+### Backend Inner loop
+You can use skaffold to deploy the composite backend to the dev namespace on GKE 
 
 ```
 cd ./devopsdemo1/quotes-back/
@@ -115,7 +122,8 @@ skaffold run
 kubectl get pod -n dev
 ```
 
-Start outerloop, this is done using the github trigger (on the main branch for this demo). cloudbuild-github.yaml will be triggered. You can also use the console using the trigger in the region.
+### Outer loop
+The outer loop is started on every `git push` to the main branch. The trigger is defined in `cloudbuild-github.yaml`, and has been created in Cloud Build via Terraform in the previous steps. For simplicity in this demo, we will only use the default branch. You can then use the console to see the status of the trigger in the correct region.
 
 ```
 cd ./devopsdemo1
@@ -124,8 +132,8 @@ git commit -m "a commit message"
 git push
 ```
 
-Use Cloudbuild for new releases (this also can be done using the trigger in the region), before doing that you can comment the binauthz attestations steps in cloudbuild-github.yaml. This should work by keeping it as is, since those are steps are optional. You can also create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring** .
-Added to this you might need to give to the gcloud user the Service Account Token Creator role. 
+If you want to start the outer loop manually without pushing to the repository, you can submit a build manually using the following command. However, you can comment the binauthz attestations steps in cloudbuild-github.yaml. This should work by keeping it as is, since those are steps are optional. You can also create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring**.
+Added to this you might need to give to the gcloud user the Service Account Token Creator role.
 
 ```
 gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github.yaml ./ \
@@ -137,25 +145,25 @@ gcloud builds submit --region=us-central1 --config devopsdemo1/cloudbuild-github
 
 The back end will not be accessible and you need to:
 
-- create a new certificate using a domain that you own. This is an example using a project name and gabrielbechara.demo 
+- Create SSL certificates for dev and prod subdomains of a domain you own. This is an example using gabrielbechara.demo.altostrat.com:
 
 ```
 gcloud compute ssl-certificates create gab-dev-devops-1-certificate --domains app.dev.$GOOGLE_CLOUD_PROJECT_ID.gabrielbechara.demo.altostrat.com --global
 gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains app.prod.$GOOGLE_CLOUD_PROJECT_ID.gabrielbechara.demo.altostrat.com --global
 ```
 
-- Create record set, for both dev and prod of type A in DNS with the external IP of your loadbalancer created by the gateway api (or have your instructor create an DNS entry using your IP and hostname for Dev and Prod)
-- Change the certificate of the gke gateway in bootstrap.yaml in gke-conf/my-fleet-conf/bootstrap.yaml then push the code upstream to have configsync update the cluster
-- Change the routing rule in quotes-back/app/overlays/dev/gateway.yaml and in quotes-back/app/overlays/prod/gateway.yaml 
+- For each environment (dev and prod), create an A record in your DNS zone pointing to the external IP of your loadbalancer created by the gateway api (or have your instructor create an DNS entry using your IP and hostname for dev and prod)
+- Change the certificate of the gke gateway in `bootstrap.yaml` and in `gke-conf/my-fleet-conf/bootstrap.yaml` then push the code upstream to have configsync update the cluster
+- Change the routing rule in `quotes-back/app/overlays/dev/gateway.yaml` and in `quotes-back/app/overlays/prod/gateway.yaml`
 - Redeploy the backend on dev using skaffold
-- Test the access to you back end on https://app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com/api/citations
+- Test the access to your backend on https://app.dev.YOUR_DOMAIN/api/citations
 
-The front end is accessing another backend, to adjust this you need to:
+Now, we need to tell the frontend to access the correct backend URL:
 
-- Change the files .env, .env.dev, .env.prod in quotes-front/view
-- Change the REACT_APP_BACK_URL in quotes-front/skaffold.yaml   
+- Change the files `.env`, `.env.dev` and `.env.prod` in `quotes-front/view`
+- Change the `REACT_APP_BACK_URL` in q`uotes-front/skaffold.yaml`
 - Redeploy the frontend on dev using skaffold
-- Test the frontend on the cloudrun url of the GCP console 
+- Test the frontend on the cloudrun URL shown on the GCP console
 
 ## One more thing
 
