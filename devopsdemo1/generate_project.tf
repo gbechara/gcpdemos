@@ -165,7 +165,7 @@ resource "google_project_iam_member" "clouddeploy_releaser" {
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
-resource "google_project_iam_member" "clouddeploy_developer" {
+resource "google_project_iam_member" "gke_developer" {
   project = var.project_id
   role    = "roles/container.developer"
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
@@ -545,16 +545,10 @@ resource "google_project_iam_member" "cloudsql_logWriter" {
   depends_on = [google_project_service.project_googleapis_compute]
 }
 
-resource "google_service_account_iam_binding" "cloudsql_dev" {
+resource "google_service_account_iam_binding" "cloudsql_binding" {
   role    = "roles/iam.workloadIdentityUser"
-  members  = ["serviceAccount:${var.project_id}.svc.id.goog[dev/ksa-csql-dev]"]
-  service_account_id = google_service_account.cloudsql_sa.name
-  depends_on = [google_container_cluster.example_cluster]
-}
-
-resource "google_service_account_iam_binding" "cloudsql_prod" {
-  role    = "roles/iam.workloadIdentityUser"
-  members  = ["serviceAccount:${var.project_id}.svc.id.goog[prod/ksa-csql-prod]"]
+  members  = ["serviceAccount:${var.project_id}.svc.id.goog[dev/ksa-csql-dev]",
+            "serviceAccount:${var.project_id}.svc.id.goog[prod/ksa-csql-prod]"]
   service_account_id = google_service_account.cloudsql_sa.name
   depends_on = [google_container_cluster.example_cluster]
 }
@@ -778,6 +772,7 @@ resource "google_cloudbuild_trigger" "google_cloudbuild_trigger_devopsdemo1_tigg
 }
 
 resource "google_workstations_workstation_cluster" "workstation_cluster" {
+  project  = var.project_id
   provider = google-beta
   workstation_cluster_id = "my-workstation-cluster"
   location = var.region
@@ -790,6 +785,7 @@ resource "google_workstations_workstation_cluster" "workstation_cluster" {
 }
 
 resource "google_workstations_workstation_config" "workstation_config" {
+  project  = var.project_id
   provider = google-beta
   workstation_config_id = "my-workstation-config"
   workstation_cluster_id = google_workstations_workstation_cluster.workstation_cluster.workstation_cluster_id
