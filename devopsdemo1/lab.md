@@ -161,7 +161,7 @@ gcloud compute ssl-certificates create gab-prod-devops-1-certificate --domains a
 Now, we need to tell the frontend to access the correct backend URL:
 
 - Change the files `.env`, `.env.dev` and `.env.prod` in `quotes-front/view`
-- Change the `REACT_APP_BACK_URL` in q`uotes-front/skaffold.yaml`
+- Change the `REACT_APP_BACK_URL` in `quotes-front/skaffold.yaml`
 - Redeploy the frontend on dev using skaffold
 - Test the frontend on the cloudrun URL shown on the GCP console
 
