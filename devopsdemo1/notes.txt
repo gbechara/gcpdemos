@@ -94,6 +94,9 @@ npm install react-scripts --save
 npm install react-table-scroll --save
 # npm install @react-oauth/google@latest --save
 npm install @auth0/auth0-react --save
+npm install react-cookie --save
+#npm install js-cookie --save
+#npm update
 
 
 #gcloud builds submit --region=us-central1 --tag $GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo/quotes-back ./app
@@ -115,5 +118,33 @@ ip -br addr sh
 go mod tidy
 go get github.com/auth0/go-jwt-middleware/v2
 
-
 terraform state list | xargs -L 1 terraform state rm
+
+Examples pqsl 
+# GRANT pg_read_all_data TO postgres;
+# GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;
+# ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT, UPDATE, INSERT, DELETE ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, UPDATE, INSERT, DELETE ON TABLES TO postgres;
+
+#GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;
+#ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, UPDATE, INSERT, DELETE ON TABLES TO postgres;
+#ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE SELECT, UPDATE, INSERT, DELETE ON TABLES FROM postgres;
+#REVOKE ALL ON ALL TABLES IN SCHEMA public FROM postgres;
+#REVOKE ALL ON SCHEMA public FROM public;
+#REVOKE ALL PRIVILEGES ON SCHEMA public FROM public;
+#REVOKE ALL on ALL TABLES IN SCHEMA public FROM public;
+#GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;
+#ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE SELECT, UPDATE, INSERT, DELETE ON TABLES FROM postgres;
+#ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, UPDATE, INSERT, DELETE ON TABLES TO postgres;
+
+#ALTER DATABASE postgres SET SEARCH_PATH to default;
+#grant usage on schema public to public;
+#grant create on schema public to public;
+#GRANT ALL ON SCHEMA public TO public;
+
+SELECT usename FROM pg_catalog.pg_user;
+show search_path;
+ALTER DATABASE "quotes-app-db" SET SEARCH_PATH to default;
+GRANT ALL ON SCHEMA public TO "cloudsql-sa@gab-devops-1.iam";
+#grant usage on schema public to "cloudsql-sa@gab-devops-1.iam";
+#grant create on schema public to "cloudsql-sa@gab-devops-1.iam";

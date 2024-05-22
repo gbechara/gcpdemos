@@ -96,6 +96,8 @@ class LoggedIn extends React.Component {
             this.setState({
               writers: res.data
             });
+          }).catch(function(error){
+            console.log("axios.get(`https://${process.env.REACT_APP_BACK_URL}/api/writers`)"+error.message);
           });  
         }
       
@@ -186,8 +188,8 @@ class Citation extends React.Component {
 
   
   render() {
-    console.log("props citation in render... ", this.props.citation);
-    console.log("state citation in render... ", this.state.citations[this.props.citation.id-1]);
+    //console.log("props citation in render... ", this.props.citation);
+    //console.log("state citation in render... ", this.state.citations[this.props.citation.id-1]);
     return (
       <div className="col-xs-4">
         <div className="panel panel-default">

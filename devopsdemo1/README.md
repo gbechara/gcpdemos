@@ -362,6 +362,11 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
   --member="serviceAccount:cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/logging.logWriter"
 
+# Not needed
+#gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+#  --member="serviceAccount:cloudsql-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+#  --role="roles/iam.serviceAccountTokenCreator"  
+
 gcloud iam service-accounts add-iam-policy-binding \
   --role="roles/iam.workloadIdentityUser" \
   --member="serviceAccount:$GOOGLE_CLOUD_PROJECT_ID.svc.id.goog[dev/ksa-csql-dev]" \

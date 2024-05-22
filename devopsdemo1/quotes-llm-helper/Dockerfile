@@ -11,16 +11,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#FROM node:14-alpine as nodebuilder
-#WORKDIR /code
-#COPY views/ ./views/ 
-#WORKDIR /code/views
-##ARG REACT_APP_BACK_URL
-#ARG REACT_APP_ENV
-##RUN echo "App Backend Url  $REACT_APP_BACK_URL"
-#RUN echo "App Build REACT_APP_ENV  $REACT_APP_ENV"
-##RUN sed -i "s/REACT_APP_BACK_URL/$REACT_APP_BACK_URL/g" public/js/app.jsx
-#RUN npm run build:$REACT_APP_ENV
+
+FROM node:21-alpine as nodebuilder
+WORKDIR /code
+COPY views/ ./views/ 
+WORKDIR /code/views
+ARG REACT_APP_BACK_URL
+ARG REACT_APP_ENV
+RUN echo "App Backend Url  $REACT_APP_BACK_URL"
+RUN echo "App Build REACT_APP_ENV  $REACT_APP_ENV"
+RUN npm install
+RUN npm run build:$REACT_APP_ENV
 
 FROM golang:1.19 as golangbuilder
 WORKDIR /code
@@ -39,6 +40,4 @@ FROM golang:1.19
 ENV GOTRACEBACK=single
 CMD ["./app"]
 COPY --from=golangbuilder /app .
-
-#COPY --from=golangbuilder /app .
-#COPY --from=nodebuilder /code/views/build ./views/public 
+COPY --from=nodebuilder /code/views/build ./views/public 

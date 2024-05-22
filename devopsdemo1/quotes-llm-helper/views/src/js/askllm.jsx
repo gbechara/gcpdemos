@@ -34,7 +34,7 @@ class AskBard extends React.Component {
         characterCount: 0,
         promptchatbisonresponse: '',
         prompttextbisonresponse: '',
-        GCP_IAP_UID: cookies.get('GCP_IAP_UID') || 'undefined',
+        // GCP_IAP_UID: cookies.get('GCP_IAP_UID') || 'undefined',
         //GCP_IAP_UID : document.cookie.match("(^|;)\\s*" + "GCP_IAP_UID" + "\\s*=\\s*([^;]+)"),
       }
 
@@ -215,7 +215,7 @@ class AskBard extends React.Component {
     {
         headers: {
           //'Authorization': localStorage.getItem("access_token")&& localStorage.getItem("access_token")!='undefined'? `Bearer ${localStorage.getItem("access_token")}`:''
-          'Authorization': (this.state.GCP_IAP_UID!='undefined') ? `Bearer ${this.state.GCP_IAP_UID}`:''
+          // 'Authorization': (this.state.GCP_IAP_UID!='undefined') ? `Bearer ${this.state.GCP_IAP_UID}`:''
         }
       }
     )
@@ -225,8 +225,8 @@ class AskBard extends React.Component {
         console.log(res.data); 
         console.log(res.data.predictions);
         
-        console.log("this.state.GCP_IAP_UID");
-        console.log(this.state.GCP_IAP_UID);
+        //console.log("this.state.GCP_IAP_UID");
+        //console.log(this.state.GCP_IAP_UID);
 
 
         if (res.data.predictions[0].content.length){
@@ -242,7 +242,9 @@ class AskBard extends React.Component {
             });      
           };
 
-      });
+      }).catch(function(error){
+        console.log("https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper/:${encodeURIComponent(this.state.prompt)}"+error.message);
+      });;
 
   }
 

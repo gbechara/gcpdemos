@@ -26,7 +26,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
-//	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/contrib/static"
 )
 
 // JSON request from the Palm API
@@ -159,6 +159,13 @@ func main() {
 
 	//	r.Use(static.Serve("/", static.LocalFile("./views/public", true)))
 
+	// Serve frontend static files
+	r.Use(static.Serve("/", static.LocalFile("./views/public", true)))
+
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./views/public/index.html")
+	})
+
 	r.GET("/metrics", prometheusHandler())
 	r.Use(cors.Middleware(cors.Config{
 		Origins:        "*",
@@ -173,12 +180,6 @@ func main() {
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong 100..%.",
-		})
-	})
-
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "hey-cors-v0.4",
 		})
 	})
 
