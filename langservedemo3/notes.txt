@@ -1,0 +1,39 @@
+sudo pip install --upgrade pip
+sudo pip install langchain-cli
+langchain app new my-demo --package vertexai-chuck-norris
+
+pip install -U langchain-google-vertexai
+gcloud auth application-default set-quota-project gab-devops-1
+
+#pip install langchainhub
+
+langchain serve
+langchain serve --port=8080
+gcloud run deploy --service-account llm-sa@gab-devops-1.iam.gserviceaccount.com
+
+https://github.com/langchain-ai/langchain/blob/master/templates/vertexai-chuck-norris/vertexai_chuck_norris/chain.py
+ins using 'from langchain_community.chat_models import ChatVertexAI'
+The class `ChatVertexAI` was deprecated in LangChain 0.0.12 and will be removed in 0.2.0. 
+An updated version of the class exists in the langchain-google-vertexai package and should be used instead. To use it run `pip install -U langchain-google-vertexai` and import as `from langchain_google_vertexai import ChatVertexAI`.
+
+Samples 
+https://python.langchain.com/docs/modules/model_io/prompts/few_shot_examples_chat/
+https://python.langchain.com/docs/integrations/llms/google_vertex_ai_palm/
+
+RAG with search
+https://github.com/GoogleCloudPlatform/generative-ai/tree/main/search/retrieval-augmented-generation
+
+
+https://python.langchain.com/v0.1/docs/get_started/quickstart/
+
+Langserve with retriever
+https://python.langchain.com/v0.1/docs/langserve/
+https://github.com/langchain-ai/langserve/blob/main/examples/retrieval/server.py
+
+
+pip install -q --upgrade --user google-cloud-aiplatform google-cloud-discoveryengine langchain langchain-google-vertexai langchain-google-community
+
+To test locally
+https://8000-workstation-.....cloudworkstations.dev/groundedsearch/playground/
+https://8000-workstation-.....cloudworkstations.dev/groundedconversation/playground/
+https://8000-workstation-.....cloudworkstations.dev/findquote/playground/
