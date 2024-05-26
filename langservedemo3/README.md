@@ -77,9 +77,26 @@ We also expose port 8080 with the `-p 8080:8080` option.
 ```shell
 docker run -e OPENAI_API_KEY=$OPENAI_API_KEY -p 8080:8080 my-langserve-app
 ```
-###
+
+### Running using CloudRun
+
+Service accounts roles for LLM (split later dev and prod) and IAP SA
+
+```
+gcloud iam service-accounts create vertex-search-sa \
+  --display-name="vertex SA"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:vertex-search-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/aiplatform.user"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:vertex-search-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/discoveryengine.viewer"
+
+```
 
 To run on cloud run you need a SA with the adequate roles (example using the SA generated in devopsdemo1)
 ```
-gcloud run deploy --service-account llm-sa@gab-devops-1.iam.gserviceaccount.com
+gcloud run deploy --service-account vertex-search-sa@gab-devops-1.iam.gserviceaccount.com
 ```

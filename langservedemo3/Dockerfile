@@ -1,6 +1,10 @@
 FROM python:3.11-slim
 
-RUN pip install poetry==1.6.1 langchain-google-vertexai
+RUN pip install poetry==1.6.1
+
+# Install dependencies.
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r  requirements.txt
 
 RUN poetry config virtualenvs.create false
 
@@ -13,6 +17,7 @@ COPY ./pyproject.toml ./README.md ./poetry.lock* ./
 COPY ./package[s] ./packages
 
 RUN poetry install  --no-interaction --no-ansi --no-root
+#RUN poetry install --with vertexaisearch
 
 COPY ./app ./app
 

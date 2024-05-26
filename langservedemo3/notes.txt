@@ -1,8 +1,13 @@
+export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1 
+export GOOGLE_CLOUD_REGION=us-central1
+export GOOGLE_CLOUD_ZONE=us-central1-a
+
 sudo pip install --upgrade pip
 sudo pip install langchain-cli
 langchain app new my-demo --package vertexai-chuck-norris
 
 pip install -U langchain-google-vertexai
+pip show langchain-google-vertexai 
 gcloud auth application-default set-quota-project gab-devops-1
 
 #pip install langchainhub
@@ -34,6 +39,6 @@ https://github.com/langchain-ai/langserve/blob/main/examples/retrieval/server.py
 pip install -q --upgrade --user google-cloud-aiplatform google-cloud-discoveryengine langchain langchain-google-vertexai langchain-google-community
 
 To test locally
+https://8000-workstation-.....cloudworkstations.dev/findquote/playground/
 https://8000-workstation-.....cloudworkstations.dev/groundedsearch/playground/
 https://8000-workstation-.....cloudworkstations.dev/groundedconversation/playground/
-https://8000-workstation-.....cloudworkstations.dev/findquote/playground/
