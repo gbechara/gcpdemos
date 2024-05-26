@@ -80,7 +80,7 @@ docker run -e OPENAI_API_KEY=$OPENAI_API_KEY -p 8080:8080 my-langserve-app
 
 ### Running using CloudRun
 
-Service accounts roles for LLM (split later dev and prod) and IAP SA
+Service accounts 
 
 ```
 gcloud iam service-accounts create vertex-search-sa \
@@ -96,7 +96,7 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 
 ```
 
-To run on cloud run you need a SA with the adequate roles (example using the SA generated in devopsdemo1)
+Run on cloud run 
 ```
 gcloud run deploy --service-account vertex-search-sa@gab-devops-1.iam.gserviceaccount.com
 ```
