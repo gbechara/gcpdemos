@@ -117,6 +117,7 @@ ip -br addr sh
 
 go mod tidy
 go get github.com/auth0/go-jwt-middleware/v2
+go get cloud.google.com/go/vertexai
 
 terraform state list | xargs -L 1 terraform state rm
 

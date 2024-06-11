@@ -27,6 +27,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
 	"github.com/gin-gonic/contrib/static"
+	 "cloud.google.com/go/vertexai/genai"
 )
 
 // JSON request from the Palm API
@@ -130,6 +131,7 @@ type PalmResponseTextBison struct {
 	} `json:"predictions"`
 }
 
+
 var defaultParameters = &Parameters{
 	Temperature:     0.2,
 	MaxOutputTokens: 256,
@@ -188,6 +190,7 @@ func main() {
 		api.GET("/llm-helper/:Prompt", LLMHelperHandler)
 		api.GET("/llm-helper-text-bison/:Prompt", LLMTextBisonHelperHandler)
 		api.GET("/llm-helper-chat-bison/:Prompt", LLMChatBisonHelperHandler)
+		api.GET("/llm-helper-gemini/:Prompt", LLMGeminiHelperHandler)
 	}
 
 	r.Run()
@@ -224,6 +227,13 @@ func LLMTextBisonHelperHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	prompt := c.Params.ByName("Prompt")
 	pr := callLLMTextBison(prompt, c)
+	c.JSON(http.StatusOK, pr)
+}
+
+func LLMGeminiHelperHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	prompt := c.Params.ByName("Prompt")
+	pr := callLLMGemini(prompt, c)
 	c.JSON(http.StatusOK, pr)
 }
 
@@ -280,6 +290,84 @@ func callLLMTextBison(prompt string, c *gin.Context) PalmResponseTextBison {
 	}
 	
 	return *response
+}
+
+func callLLMGemini(prompttxt string, c *gin.Context) *genai.GenerateContentResponse {  
+	
+	location := "us-central1"
+//	modelName := "gemini-1.5-flash-001"
+	modelName := "gemini-1.5-pro-001"
+	projectId := "gab-devops-1"
+
+	fmt.Printf("The requestJson in callLLMGemini is \n%s\n\n", prompttxt)
+
+	ctx := context.Background()
+        client, err := genai.NewClient(ctx, projectId, location)
+        if err != nil {
+                fmt.Errorf("error creating client: %w", err)
+        }
+        gemini := client.GenerativeModel(modelName)
+		gemini.ResponseMIMEType = "application/json"
+		/*gemini.ResponseSchema = &genai.Schema{
+			Type:  genai.TypeArray,
+			Items: &genai.Schema{Type: genai.TypeString},
+		}*/
+		gemini.SystemInstruction = &genai.Content{
+			Parts: []genai.Part{genai.Text("Do not use mardown formatting in your response." +
+			"Only use unformatted plain text. Find the author of the quote." +
+			"Use the history examples to answer the question as required." +
+			"Anwser in French based on the following prompt: ")},
+		}
+
+		//https://github.com/google/generative-ai-go/blob/main/genai/example_test.go
+
+		cs := gemini.StartChat()
+		cs.History = []*genai.Content{
+				{Parts: []genai.Part{
+					genai.Text("Who is this quote from : Le talent sans genie est peu de chose. Le génie sans talent n'est rien !"),
+				},
+				Role: "user",
+			},
+				{Parts: []genai.Part{
+					genai.Text("The quote  is form the wonderful and extraordinary Paul Valéry"),
+				},
+				Role: "model",
+			},
+			{
+				Parts: []genai.Part{
+					genai.Text("Who is this quote from : on ne se baigne jamais deux fois dans le meme fleuve."),
+				},
+				Role: "user",
+			},
+			
+				{Parts: []genai.Part{
+					genai.Text("The quote  is form the wonderful and extraordinary Heraclite d'Ephèse"),
+				},
+				Role: "model",
+			},
+		}
+
+        //prompt := genai.Text(prompttxt)
+        //resp, err := gemini.GenerateContent(ctx, prompt)
+
+		resp, err := cs.SendMessage(ctx, genai.Text("Who is this quote from : "+prompttxt))
+
+        if err != nil {
+                fmt.Errorf("error generating content: %w", err)
+        }
+        // See the JSON response in
+        // https://pkg.go.dev/cloud.google.com/go/vertexai/genai#GenerateContentResponse.
+        //rb, err := json.MarshalIndent(resp, "", "  ")
+        //if err != nil {
+        //        fmt.Errorf("json.MarshalIndent: %w", err)
+        //}
+        //fmt.Fprintln(c.Writer, string(rb))
+
+		//fmt.Printf("The rb response in callLLMGemini is \n%s\n\n", rb)
+		fmt.Printf("The resp response in callLLMGemini is \n%s\n\n", resp)
+
+		return resp
+	
 }
 
 func NewClient(region string, projectId string, modelName string, c *gin.Context) *PalmClient {

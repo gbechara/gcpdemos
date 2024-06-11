@@ -27,6 +27,7 @@ https://python.langchain.com/docs/integrations/llms/google_vertex_ai_palm/
 
 RAG with search
 https://github.com/GoogleCloudPlatform/generative-ai/tree/main/search/retrieval-augmented-generation
+https://github.com/GoogleCloudPlatform/generative-ai/blob/main/search/retrieval-augmented-generation/examples/question_answering.ipynb
 
 
 https://python.langchain.com/v0.1/docs/get_started/quickstart/

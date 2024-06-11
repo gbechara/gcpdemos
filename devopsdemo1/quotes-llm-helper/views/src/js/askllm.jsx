@@ -34,6 +34,7 @@ class AskBard extends React.Component {
         characterCount: 0,
         promptchatbisonresponse: '',
         prompttextbisonresponse: '',
+        promptgeminiresponse: '',
         // GCP_IAP_UID: cookies.get('GCP_IAP_UID') || 'undefined',
         //GCP_IAP_UID : document.cookie.match("(^|;)\\s*" + "GCP_IAP_UID" + "\\s*=\\s*([^;]+)"),
       }
@@ -42,6 +43,7 @@ class AskBard extends React.Component {
       this.handleSubmit = this.handleSubmit.bind(this);
       this.callChatBison = this.callChatBison.bind(this);
       this.callTextBison = this.callTextBison.bind(this);
+      this.callGemini = this.callGemini.bind(this);
     }
 
   refresh() {
@@ -291,6 +293,37 @@ class AskBard extends React.Component {
     
   }
 
+  callGemini(event) {
+
+    console.log(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper-gemini/:${encodeURIComponent(this.state.prompt)}`);
+    
+    axios.get(`https://${process.env.REACT_APP_LLMHELPER_URL}/api/llm-helper-gemini/:${encodeURIComponent(this.state.prompt)}`,
+    //{ withCredentials: true , referrerPolicy: "same-origin"}
+    //{ referrerPolicy: "Access-Control-Allow-Origin"}
+    //,  
+    {
+        headers: {
+          //'Authorization': localStorage.getItem("access_token")&& localStorage.getItem("access_token")!='undefined'? `Bearer ${localStorage.getItem("access_token")}`:''
+          // 'Authorization': (this.state.GCP_IAP_UID!='undefined') ? `Bearer ${this.state.GCP_IAP_UID}`:''
+        }
+      }
+    )
+    .then(res => { 
+      
+      console.log("Réponse Gemini");
+      console.log(res); 
+      console.log(res.data.Candidates[0]);
+      
+      console.log(res.data.Candidates[0].Content.Parts[0]);
+      this.setState({
+        promptgeminiresponse: res.data.Candidates[0].Content.Parts[0]
+      });
+
+
+    });
+    
+  }
+
   render() {
 
     return (
@@ -326,6 +359,12 @@ class AskBard extends React.Component {
                 <div id="formattedResponse">
                     <Text>
                       {this.state.prompttextbisonresponse.replace(/\n/g,'\n')}
+                    </Text>
+                </div>
+                <Button type='submit' disabled={!this.state.formValid} onClick={this.callGemini}>CallGemini</Button>
+                <div id="formattedResponse">
+                    <Text>
+                      {this.state.promptgeminiresponse}
                     </Text>
                 </div>
               </Form>
