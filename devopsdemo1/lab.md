@@ -48,10 +48,10 @@ In Cloud Shell :
 * Replace the `syncRepo` variable in the file `./devopsdemo1/gke-conf/apply-spec.yaml` with the URL of your forked repo.
 * Replace all occurrences of the project ID and project number placeholder with your actual project ID in the following files:
     * `./devopsdemo1/gke-conf/my-fleet-conf/serviceaccounts.yaml`
-    * `./devopsdemo1/quote-front/skaffold.yaml` (Only for the 3 `projectid:`)
-    * `./devopsdemo1/quote-back/writers/base/deployment.yaml`
-    * `./devopsdemo1/quote-back/writers/overlays/dev/deployment.yaml`
-    * `./devopsdemo1/quote-back/writers/overlays/prod/deployment.yaml`
+    * `./devopsdemo1/quotes-front/skaffold.yaml` (Only for the 3 `projectid:`)
+    * `./devopsdemo1/quotes-back/writers/base/deployment.yaml`
+    * `./devopsdemo1/quotes-back/writers/overlays/dev/deployment.yaml`
+    * `./devopsdemo1/quotes-back/writers/overlays/prod/deployment.yaml`
 
 * Push your changes to your forked repo in GitHub.
 * Update the following variables in the `./devopsdemo1/variables.tf` file:
