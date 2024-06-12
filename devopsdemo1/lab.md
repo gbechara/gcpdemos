@@ -39,7 +39,7 @@ On your github repo (This step needs to be performed using a github account, you
 - Install the [Cloud Build GitHub App](https://github.com/apps/google-cloud-build) on your GitHub account or in an organization you own.
 - Create a PAT (Classic) [here](https://github.com/settings/tokens)
 - Make sure to select the following permissions when prompted in GitHub: `repo` (Full control of private repositories) and `read:user` (Read ALL user profile data). If your app is installed in an organization, make sure to also select the read:org permission.
-- Create a GCP secret to store your Github PAT in **my-github-secret** 
+- Create a GCP secret using secret manager to store your Github PAT in **my-github-secret** 
 
 In Cloud Shell :
 
