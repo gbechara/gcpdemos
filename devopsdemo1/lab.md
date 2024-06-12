@@ -63,6 +63,7 @@ In Cloud Shell :
     * `project_number`: Replace this with your actual GCP project number. You can find this value in the project settings in the GCP console.
 
 - Then you can launch the following commands and wait about 15mins
+
 ```
 gcloud auth application-default login
 terraform init
