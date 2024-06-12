@@ -38,7 +38,7 @@ On your github repo (This step needs to be performed using a github account, you
 
 - Install the [Cloud Build GitHub App](https://github.com/apps/google-cloud-build) on your GitHub account or in an organization you own.
 - Create a PAT (Classic) [here](https://github.com/settings/tokens)
-- Make sure to select the following permissions when prompted in GitHub: `repo` (Full control of private repositories) and `read:user` (Read ALL user profile data). If your app is installed in an organization, make sure to also select the read:org permission.
+- Make sure to select the following permissions when prompted in GitHub: `repo` (Full control of private repositories) and `read:user` (Read ALL user profile data). If your app is installed in an organization, make sure to also select the `read:org` permission.
 - Create a GCP secret using secret manager to store your Github PAT in **my-github-secret** 
 
 In Cloud Shell :
@@ -53,7 +53,6 @@ In Cloud Shell :
     * `./devopsdemo1/quotes-back/writers/overlays/dev/deployment.yaml`
     * `./devopsdemo1/quotes-back/writers/overlays/prod/deployment.yaml`
 
-* Push your changes to your forked repo in GitHub.
 * Update the following variables in the `./devopsdemo1/variables.tf` file:
 
     * `github_config_app_installation_id`: Replace this with the ID of your GitHub application installation. You can find this value on [this page](https://github.com/settings/installations) when you click on the GCB app and look at the URL.
@@ -86,7 +85,12 @@ export GOOGLE_CLOUD_ZONE=us-central1-a
 export SKAFFOLD_DEFAULT_REPO=$GOOGLE_CLOUD_REGION-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT_ID/devopsdemo1repo
 export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gcloud/application_default_credentials.json
 gcloud config set project $GOOGLE_CLOUD_PROJECT_ID
-gcloud auth application-default login
+```
+
+Then ensure you are logged in and retrieve the credentials to access the cluster with `kubectl` later.
+
+```
+gcloud auth login
 gcloud container clusters get-credentials example-cluster --zone $GOOGLE_CLOUD_ZONE --project $GOOGLE_CLOUD_PROJECT_ID
 ```
 
@@ -123,6 +127,8 @@ skaffold run
 kubectl get pod -n dev
 ```
 
+Notes : It is possible that some pods fail to start on the cluster because of IAM permissions on the SQL database. Don't worry, IAM authentication has been set up by terraform, but the changes may take some time to be propagate.
+
 ### Outer loop
 The outer loop is started on every `git push` to the main branch. The trigger is defined in `cloudbuild-github.yaml`, and has been created in Cloud Build via Terraform in the previous steps. For simplicity in this demo, we will only use the default branch. You can then use the console to see the status of the trigger in the correct region.
 
@@ -133,7 +139,7 @@ git commit -m "a commit message"
 git push
 ```
 
-If you want to start the outer loop manually without pushing to the repository, you can submit a build manually using the following command. However, you can comment the binauthz attestations steps in cloudbuild-github.yaml. This should work by keeping it as is, since those are steps are optional. You can also create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and it's keyring**.
+If you want to start the outer loop manually without pushing to the repository, you can submit a build manually using the following command. You can comment the binauthz attestations steps in cloudbuild-github.yaml, but it should work by keeping it as is, since those are steps are optional. You can also create the **<a href="https://github.com/gbechara/gcpdemos/tree/main/devopsdemo1#using-binautz-for-the-production-ns-on-example_cluster" target="_blank">binauthz attestors</a> and its keyring**.
 Added to this you might need to give to the gcloud user the Service Account Token Creator role.
 
 ```
