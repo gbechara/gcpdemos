@@ -271,7 +271,9 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
 
 ```
 
-Then after you can create a policy that "Allow all images" to be deployed Kubernetes cluster and namespace-specific rules on the dev and prod namespaces defaulted to "Allow all images". During the demo The one for the prod namespace will be switched to requires the attestations you created in the previous step.
+Now you have to configure the project policy to define custom rules for each namespace. By default, the policy is set to "Allow all images". It means that any image can be deployed to Kubernetes clusters. 
+
+Add two namespace-specific rules for the dev and prod namespaces to require attestations. You can use dry run mode on the dev namespace to only get audit logs instead of blocking untrusted images.
 
 -----
 
