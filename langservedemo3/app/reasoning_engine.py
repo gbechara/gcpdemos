@@ -28,7 +28,9 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain import agents
 
 
-# notebook here https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/reasoning-engine/intro_reasoning_engine.ipynb
+# Notebook here: 
+# https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/reasoning-engine/intro_reasoning_engine.ipynb
+# Examples here:
 # https://cloud.google.com/vertex-ai/generative-ai/docs/reasoning-engine/customize
 # https://cloud.google.com/vertex-ai/generative-ai/docs/reference/python/latest/vertexai.preview.reasoning_engines.LangchainAgent
 # https://www.googlecloudcommunity.com/gc/Community-Blogs/Building-and-Deploying-AI-Agents-with-LangChain-on-Vertex-AI/ba-p/748929
