@@ -70,7 +70,6 @@ def get_exchange_rate(
 
 print(get_exchange_rate(currency_from="USD", currency_to="SEK"))
 
-
 agent = reasoning_engines.LangchainAgent(
     model="gemini-1.5-pro-001",
     tools=[search_documents,get_exchange_rate],
@@ -80,19 +79,63 @@ agent = reasoning_engines.LangchainAgent(
 print("agent")
 print(agent.query(input="What's the exchange rate from US dollars to Swedish currency today?"))
 
+vertexai.init(project="gab-devops-1", location="us-central1", staging_bucket="gs://gab-devops-1vertex_staging_bucket")
 
-prompt = {
-            "input": lambda x: x["input"],
-            "agent_scratchpad": (
-                lambda x: format_to_tool_messages(x["intermediate_steps"])
-            ),
-        } | prompts.ChatPromptTemplate.from_messages([
-            ("user", "{input}"),
-            prompts.MessagesPlaceholder(variable_name="agent_scratchpad"),
-        ])
+#remote_agent = reasoning_engines.ReasoningEngine.create(
+#    agent,
+#    requirements=[
+#        "google-cloud-aiplatform[langchain,reasoningengine]",
+#        "langchain-google-vertexai",
+#        "cloudpickle==3.0.0",
+#        "pydantic==2.7.4",
+#        "requests",
+#    ],
+#)
 
-tools=[search_documents, get_exchange_rate]
+#remote_agent = reasoning_engines.ReasoningEngine.create(
+#    agent,
+#    requirements=[
+#        "google-cloud-aiplatform==1.51.0",
+#        "langchain==0.1.20",
+#        "langchain-google-vertexai==1.0.3",
+#        "cloudpickle==2.2.1",
+#        "pydantic==2.7.1",
+#        "langchain_google_community",
+#        "google-cloud-discoveryengine",
+#        "google-cloud-bigquery",
+#        "requests",
+#        "pandas",
+#    ],
+#)
 
-agent_executor = agents.AgentExecutor(
-    agent=prompt | llm.bind_tools(tools=tools) | ToolsAgentOutputParser(),
-    tools=[StructuredTool.from_function(tool) for tool in tools])
+# pip install --upgrade --quiet google-cloud-aiplatform==1.51.0 langchain==0.1.20 langchain-google-vertexai==1.0.3 cloudpickle==3.0.0 pydantic==2.7.1 requests
+remote_agent = reasoning_engines.ReasoningEngine.create(
+    reasoning_engines.LangchainAgent(
+        model="gemini-1.5-pro-001",
+        tools=[search_documents,get_exchange_rate],
+        agent_executor_kwargs={"return_intermediate_steps": True},
+        ),
+    requirements=[
+        "google-cloud-aiplatform==1.51.0",
+        "langchain==0.1.20",
+        "langchain-google-vertexai==1.0.3",
+        "cloudpickle==3.0.0",
+        "pydantic==2.7.1",
+        "google-cloud-discoveryengine",
+        "requests",
+        "fastapi>=0.1",
+        "uvicorn>=0.27",
+        "langchain_google_community",
+        "langserve",
+        "sse_starlette",
+        "poetry",
+    ],
+    sys_version="3.10",
+)
+
+
+remote_agent_path = remote_agent.resource_name
+remote_agent = reasoning_engines.ReasoningEngine(remote_agent_path)
+
+print("remote_agent")
+print(remote_agent.query(input="What's the exchange rate from US dollars to Swedish currency today?"))

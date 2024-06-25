@@ -4,7 +4,7 @@ RUN pip install poetry==1.6.1
 
 # Install dependencies.
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r  requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN poetry config virtualenvs.create false
 

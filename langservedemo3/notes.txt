@@ -12,6 +12,20 @@ gcloud auth application-default set-quota-project gab-devops-1
 
 #pip install langchainhub
 
+#pip install google-cloud-aiplatform[reasoningengine]
+#pip install google-cloud-aiplatform[langchain]
+#pip install cloudpickle
+#python3.10 -m pip install --upgrade pip
+pip install --upgrade --quiet google-cloud-aiplatform==1.51.0 langchain==0.1.20 langchain-google-vertexai==1.0.3 cloudpickle==3.0.0 pydantic==2.7.1 requests
+
+curl -X GET \
+     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+     "https://us-central1-aiplatform.googleapis.com/v1beta1/projects/gab-devops-1/locations/us-central1/reasoningEngines"
+curl -X DELETE \
+     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+     "https://us-central1-aiplatform.googleapis.com/v1beta1/projects/gab-devops-1/locations/us-central1/reasoningEngines/REASONING_ENGINE_ID"
+
+
 langchain serve
 langchain serve --port=8080
 gcloud run deploy --service-account llm-sa@gab-devops-1.iam.gserviceaccount.com
