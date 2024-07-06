@@ -149,3 +149,5 @@ ALTER DATABASE "quotes-app-db" SET SEARCH_PATH to default;
 GRANT ALL ON SCHEMA public TO "cloudsql-sa@gab-devops-1.iam";
 #grant usage on schema public to "cloudsql-sa@gab-devops-1.iam";
 #grant create on schema public to "cloudsql-sa@gab-devops-1.iam";
+
+https://app.dev.gab-devops-1.gabrielbechara.demo.altostrat.com/api/citations

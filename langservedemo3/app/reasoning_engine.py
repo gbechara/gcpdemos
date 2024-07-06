@@ -78,7 +78,7 @@ agent = reasoning_engines.LangchainAgent(
 )
 
 print("agent")
-print(agent.query(input="What's the exchange rate from US dollars to Swedish currency today?"))
+print(agent.query(input="What's th exchange rate from US dollars to Swedish currency today?"))
 
 
 prompt = {

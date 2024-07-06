@@ -1,0 +1,42 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: 0.1.9
+
+servers:
+  - url: https://api.frankfurter.app
+    description: Optional server description, e.g. Main (production) server
+
+paths:
+  /latest?amount={amount}&to={cur1},{cur2}:
+    get:
+      operationId : 1
+      summary: Returns a user by ID.
+      parameters:
+        - name: amount
+          in: path
+          required: true
+          description: Parameter description in CommonMark or HTML.
+          schema:
+            type : number
+            format: number
+            minimum: 1
+        - name: cur1
+          in: path
+          required: true
+          description: Parameter description in CommonMark or HTML.
+          schema:
+            type : string
+            format: string
+            minimum: 1
+        - name: cur2
+          in: path
+          required: true
+          description: Parameter description in CommonMark or HTML.
+          schema:
+            type : string
+            format: string
+            minimum: 1            
+      responses: 
+        '200':
+          description: OK

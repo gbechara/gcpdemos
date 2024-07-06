@@ -1,0 +1,11 @@
+{
+  "queryInput": {
+    "text": {
+      "text": "prompt"
+    },
+    "languageCode": "en"
+  },
+  "queryParams": {
+    "timeZone": "America/Los_Angeles"
+  }
+}
