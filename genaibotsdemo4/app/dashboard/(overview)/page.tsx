@@ -10,7 +10,6 @@ import {
   RevenueChartSkeleton,
   ReasoningEngineSkeleton,
   AgentBuilderSkeleton,
-  ChatSkeleton,
   LatestInvoicesSkeleton,
   CardsSkeleton,
   GeminiSkeleton,
@@ -31,15 +30,15 @@ export default async function Page() {
         <Suspense fallback={<RevenueChartSkeleton />}>
           
         </Suspense>
+
+        <Suspense fallback={<GeminiSkeleton />}>
+          <GeminiPage />
+        </Suspense>
         <Suspense fallback={<ReasoningEngineSkeleton />}>
           <ReasoningEnginePage />
         </Suspense>
         <Suspense fallback={<AgentBuilderSkeleton />}>
           <AgentBuilderPage />
-        </Suspense>
-
-        <Suspense fallback={<GeminiSkeleton />}>
-          <GeminiPage />
         </Suspense>
 
         <Suspense fallback={<LatestInvoicesSkeleton />}>

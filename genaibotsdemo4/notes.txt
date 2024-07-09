@@ -1,9 +1,15 @@
+export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1 
+export GOOGLE_CLOUD_REGION=us-central1
+export GOOGLE_CLOUD_ZONE=us-central1-a
+
+
 npx create-next-app@latest client-app
 
 npm i @google/generative-ai prompt-sync chalk
 npm install @google-cloud/vertexai
 
 npm run dev
+pnpm run dev
 
 
 npm add ai class-variance-authority clsx date-fns highlight.js lucide-react openai rehype-highlight react-markdown tailwind-merge tailwindcss-animate zustand
@@ -50,8 +56,34 @@ npm install axios
 npm install react-toastify
 
 https://vercel.com/guides/nextjs-langchain-vercel-ai
+https://github.com/vercel/next-learn
 https://github.com/langchain-ai/langchain-nextjs-template
 
 npm install langchain
+pnpm install @langchain/core
 npm install @langchain/google-vertexai
 npm install @langchain/google-vertexai-web
+npm install react@canary react-dom@canary
+
+sudo npm install -g pnpm
+pnpm install
+
+gcloud run deploy
+
+gcloud iam service-accounts create genai-bots-demo-sa \
+  --display-name="vertex SA"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:genai-bots-demo-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/aiplatform.user"
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:genai-bots-demo-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/serviceusage.serviceUsageConsumer" 
+
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:genai-bots-demo-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/dialogflow.agentAssistClient"
+
+
+gcloud run deploy --service-account genai-bots-demo-sa@gab-devops-1.iam.gserviceaccount.com

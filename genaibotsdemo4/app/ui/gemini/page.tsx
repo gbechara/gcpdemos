@@ -1,6 +1,6 @@
 import { ChatWindow } from "@/components/ChatWindow";
 import { lusitana } from '@/app/ui/fonts';
-
+import {Bot} from 'lucide-react'
 
 export default function Home() {
   const InfoCard = (
@@ -13,7 +13,8 @@ export default function Home() {
     <div className="w-full md:col-span-4">
     <ChatWindow
       endpoint="api/chat"
-      emoji="🦜"
+      //emoji="🦜"
+      emoji=<Bot className="text-zinc-600"/>
       titleText="Gemini 1.5"
       placeholder="I'm an Gemini 1.5 ! Ask me anything!"
       emptyStateComponent={InfoCard}

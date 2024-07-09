@@ -16,3 +16,8 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+#inline{width:100%;height:auto;display:flex;} 
+.one{width:8%;height:auto;margin:18px;align-items:right;justify-content:right}
+.two{width:84%;height:auto;margin:5px;justify-content:left} 
+.tree{width:8%;height:auto;margin:18px;align-items:left}

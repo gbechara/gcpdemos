@@ -9,7 +9,6 @@ import {z} from 'zod'
 
 import axios from 'axios';
 
-import { PromptTemplate } from "@langchain/core/prompts";
 const formatMessage = (message: Message) => {
   return `${message.role}: ${message.content}`;
 };
@@ -67,7 +66,7 @@ async function callAgentBuilder(prompt: String)  {
         var stdout =  subProcess.execSync('gcloud auth print-access-token');
         console.log('stdout: ' + stdout);
         return stdout.toString(); 
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error: ' + err.toString());  
       }
     }

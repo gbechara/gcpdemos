@@ -1,5 +1,6 @@
 import { ChatWindow } from "@/components/ChatWindow";
 import { lusitana } from '@/app/ui/fonts';
+import { Link } from 'lucide-react';
 
 
 export default function Home() {
@@ -13,7 +14,8 @@ export default function Home() {
     <div className="w-full md:col-span-4">
     <ChatWindow
       endpoint="api/reasoningengine"
-      emoji="🦜"
+      //emoji="🦜"
+      emoji=<Link className="text-zinc-600"/>
       titleText="Reasoning Engine on Vertex AI"
       placeholder="I'm a LangChain Agent deployed Reasoning Engine on Vertex AI!"
       emptyStateComponent={InfoCard}

@@ -1,6 +1,6 @@
 import { ChatWindow } from "@/components/ChatWindow";
 import { lusitana } from '@/app/ui/fonts';
-
+import {Cat} from 'lucide-react'
 
 export default function Home() {
   const InfoCard = (
@@ -13,9 +13,10 @@ export default function Home() {
     <div className="w-full md:col-span-4">
     <ChatWindow
       endpoint="api/agentbuilder"
-      emoji="🦜"
+      //emoji="🦜"
+      emoji=<Cat className="text-zinc-600"/>
       titleText="Agent Builder on Vertex AI"
-      placeholder="I'm a lox code Agent created by agent builder on Vertex AI!"
+      placeholder="I'm an Agent created by agent builder on Vertex AI!"
       emptyStateComponent={InfoCard}
     ></ChatWindow>
       </div>

@@ -1,26 +1,20 @@
 import type { Message } from "ai/react";
 import {Bot} from 'lucide-react'
+import {User} from 'lucide-react'
 
 export function ChatMessageBubble(props: { message: Message, aiEmoji?: string, sources: any[] }) {
   const colorClassName =
-    props.message.role === "user" ? "bg-slate-500 text-white" : "bg-slate-400 text-white";
+    props.message.role === "user" ? "bg-slate-500 text-white text-normal font-semibold" : "bg-slate-400 text-white text-normal font-semibold";
   const alignmentClassName =
     props.message.role === "user" ? "ml-auto" : "mr-auto";
-  const prefix = props.message.role === "user" ? "🧑" : props.aiEmoji;
+  const prefix = props.message.role === "user" ? <User className="flex text-blue-600"/> : props.aiEmoji;
+  //const prefix = props.message.role === "user" ? "🧑" : props.aiEmoji;
+  
   return (
-    <div
-      className={`${alignmentClassName} ${colorClassName} rounded px-4 py-2 max-w-[80%] mb-8 flex`}
-    >
-
-
-    <div className="mr-2">
- 
-      </div>  
-    
-      <div className="mr-2">
-        {prefix}
-      </div>
-      <div className="whitespace-pre-wrap flex flex-col">
+    <div className="mr-22" id="inline">
+    {props.message.role === "user" ?<div className="one">{prefix} </div>:""}
+      <div 
+      className={`${alignmentClassName} ${colorClassName} rounded px-4 py-3 max-w-[80%] mb-8 flex two`}>
         <span>{props.message.content}</span>
         {props.sources && props.sources.length ? <>
           <code className="mt-4 mr-auto bg-slate-600 px-2 py-1 rounded">
@@ -28,7 +22,7 @@ export function ChatMessageBubble(props: { message: Message, aiEmoji?: string, s
               🔍 Sources:
             </h2>
           </code>
-          <code className="mt-1 mr-2 bg-slate-600 px-2 py-1 rounded text-xs">
+          <code className="mt-0 mr-2 bg-slate-600 px-2 py-1 rounded text-xs">
             {props.sources?.map((source, i) => (
               <div className="mt-2" key={"source:" + i}>
                 {i + 1}. &quot;{source.pageContent}&quot;{
@@ -42,6 +36,7 @@ export function ChatMessageBubble(props: { message: Message, aiEmoji?: string, s
           </code>
         </> : ""}
       </div>
+      {props.message.role !== "user" ?<div className="tree">{prefix} </div>:""}
     </div>
   );
 }

@@ -163,12 +163,12 @@ export function ChatWindow(props: {
         </div>
         <div className="flex w-full mt-2">
           <input
-            className="grow mr-8 p-4 rounded"
+            className="grow mr-8 p-3 rounded"
             value={input}
             placeholder={placeholder ?? "Can you convert 1000 dollards in EUR"}
             onChange={handleInputChange}
           />
-          <button type="submit"  className={"shrink-0 px-8 py-1 bg-neutral-300 rounded w-18 test"}>
+          <button type="submit"  className={"shrink-0 px-8 py-1 bg-blue-600 rounded w-18 test"}>
             <div role="status" className={`${(chatEndpointIsLoading || intermediateStepsLoading) ? "" : "hidden"} flex justify-center`}>
               <svg aria-hidden="true" className="w-6 h-6 text-white animate-spin dark:text-white fill-sky-800" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
@@ -176,7 +176,7 @@ export function ChatWindow(props: {
               </svg>
               <span className="sr-only">Loading...</span>
             </div>
-            <span className={(chatEndpointIsLoading || intermediateStepsLoading) ? "hidden" : "text-xs"}><Send className="h-4 w-12" />Send</span>
+            <span className={(chatEndpointIsLoading || intermediateStepsLoading) ? "hidden" : "text-xs"}><Send className="h-6 w-6 text-white" /></span>
           </button>
         </div>
       </form>
