@@ -23,7 +23,8 @@ export function ChatWindow(props: {
   emptyStateComponent: ReactElement,
   placeholder?: string,
   titleText?: string,
-  emoji?: string;
+//  emoji?: string;
+  emoji?: React.JSX.Element;
   showIngestForm?: boolean,
   showIntermediateStepsToggle?: boolean
 }) {

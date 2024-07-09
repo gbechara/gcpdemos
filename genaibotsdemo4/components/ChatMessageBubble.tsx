@@ -2,7 +2,8 @@ import type { Message } from "ai/react";
 import {Bot} from 'lucide-react'
 import {User} from 'lucide-react'
 
-export function ChatMessageBubble(props: { message: Message, aiEmoji?: string, sources: any[] }) {
+//export function ChatMessageBubble(props: { message: Message, aiEmoji?: string, sources: any[] }) {
+export function ChatMessageBubble(props: { message: Message, aiEmoji?: React.JSX.Element, sources: any[] }) {
   const colorClassName =
     props.message.role === "user" ? "bg-slate-500 text-white text-normal font-semibold" : "bg-slate-400 text-white text-normal font-semibold";
   const alignmentClassName =
