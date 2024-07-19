@@ -2,6 +2,16 @@ export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1
 export GOOGLE_CLOUD_REGION=us-central1
 export GOOGLE_CLOUD_ZONE=us-central1-a
 
+#alias pip='pip3.10'
+#alias python='python3.10'
+#unalias pip
+#unalias python
+#ls  /usr/bin/pip*
+#ls  /usr/local/bin/
+
+sudo ln -s /usr/bin/python3.10 /usr/local/bin/python3.10
+
+
 sudo pip install --upgrade pip
 sudo pip install langchain-cli
 langchain app new my-demo --package vertexai-chuck-norris

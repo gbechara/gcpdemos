@@ -49,7 +49,7 @@ async function callReasoningEngine(prompt: String)  {
 
       // projects/248688270572/locations/us-central1/reasoningEngines/248688270572
       */
-    console.log("axios url :"+"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/248688270572/locations/us-central1/reasoningEngines/1831170645363261440:query -d "+
+    console.log("axios url :"+"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/248688270572/locations/us-central1/reasoningEngines/8315157840125755392:query -d "+
     //JSON.stringify(
       '\''+JSON.stringify({"input":{"input": prompt}})+'\''
       //)
@@ -81,9 +81,10 @@ async function callReasoningEngine(prompt: String)  {
       }
     }
 
-    return await axios.post('https://us-central1-aiplatform.googleapis.com/v1beta1/projects/248688270572/locations/us-central1/reasoningEngines/1831170645363261440:query' 
+    return await axios.post('https://us-central1-aiplatform.googleapis.com/v1beta1/projects/248688270572/locations/us-central1/reasoningEngines/8315157840125755392:query' 
     //,{"input":{"input": "How are you"}},
-    ,JSON.stringify({"input":{"input": prompt}}),
+    ,JSON.stringify({"input":{"input": prompt}}), //for reasoningning_engine_v0
+    //,JSON.stringify({"input":{"query": prompt}}),
           config,)
       // .then((response) => response.json())
         .then((res) => {
@@ -157,16 +158,15 @@ async function callReasoningEngine(prompt: String)  {
             console.log("responseReasoningEngine:"+JSON.stringify(responseReasoningEngine.data)+"\n");
             
             data.append('initialized call ---');
-            data.append(JSON.stringify(responseReasoningEngine.data.output.output)+"\n");   
+            data.append(JSON.stringify(responseReasoningEngine.data.output.output)+"\n"); //for reasoningning_engine_v0
+            //data.append(responseReasoningEngine.data.output);  
             data.append('initialized call ----');
       
             //return new NextResponse(JSON.stringify(responseReasoningEngine.output.output));
       
             console.log("request.method:"+request.destination);
-      
-      if (request.method != "submitRE"){
-      
-            const output = "0:"+JSON.stringify(responseReasoningEngine.data.output.output);
+            const output = "0:"+JSON.stringify(responseReasoningEngine.data.output.output); //for reasoningning_engine_v0
+            //const output = "0:"+JSON.stringify(responseReasoningEngine.data.output.output);
             const textEncoder = new TextEncoder();
             const fakeStream = new ReadableStream({
               async start(controller) {
@@ -185,7 +185,7 @@ async function callReasoningEngine(prompt: String)  {
               {},
               data,
             );
-            }
+            
       
         } catch (error) {
           console.log('error', error)

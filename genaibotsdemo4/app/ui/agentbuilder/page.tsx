@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="w-full md:col-span-4">
     <ChatWindow
-      endpoint="api/agentbuilder"
+      endpoint="/api/agentbuilder"
       //emoji="🦜"
       emoji=<Cat className="text-zinc-600"/>
       titleText="Agent Builder on Vertex AI"

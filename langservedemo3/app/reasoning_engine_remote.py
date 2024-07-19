@@ -52,6 +52,30 @@ def search_documents(query:str):
     result = str(retriever.invoke(query))
     return result
 
+def search_internal_documents(query:str) -> str:
+    """ Users can ask questions about Alphabet's revenue.
+    Search for documents in a Vertex AI Search data store that contain content from Alphabet's revenue. 
+    
+    Args:
+        query (str): A document search query to help answer the user's question.
+
+    Returns:
+        str: Results of the Vertex AI Search operation.
+    """
+    from langchain_google_community import VertexAISearchRetriever
+    retriever = VertexAISearchRetriever(
+        project_id="gab-devops-1",
+        location_id="global",
+        data_store_id="my-datastore-1_1714069761495",
+        max_documents=10,
+    )
+    #retrieval_qa = RetrievalQA.from_chain_type(
+    #    llm=llm, chain_type="stuff", retriever=retriever
+    #)
+    #result = retrieval_qa.invoke(question)
+    #result = str(retriever.get_relevant_documents(query))
+    result = str(retriever.invoke(query))
+    return result
 
 def get_exchange_rate(
     currency_from: str = "USD",
@@ -71,13 +95,25 @@ def get_exchange_rate(
 print(get_exchange_rate(currency_from="USD", currency_to="SEK"))
 
 agent = reasoning_engines.LangchainAgent(
-    model="gemini-1.5-pro-001",
-    tools=[search_documents,get_exchange_rate],
+    model="gemini-1.5-flash",
+    #model="gemini-1.5-pro",
+    #tools=[search_documents, search_internal_documents,get_exchange_rate],
+    #tools=[search_documents, get_exchange_rate],
+    tools=[search_internal_documents],
     agent_executor_kwargs={"return_intermediate_steps": True},
 )
 
-print("agent")
-print(agent.query(input="What's the exchange rate from US dollars to Swedish currency today?"))
+from langchain.globals import set_debug
+from langchain.globals import set_verbose
+set_debug(True)
+set_verbose(True)
+
+#print("What's the exchange rate from US dollars to Swedish currency today?")
+#print(agent.query(input="What's the exchange rate from US dollars to Swedish currency today?"))
+print("What was Alphabet's Revenue in Q2 2023?")
+print(agent.query(input="What was Alphabet's Revenue in Q2 2023?"))
+#print("Search in vertex ai document store for Alphabet's Revenue in Q2 2023??")
+#print(agent.query(input="Search in vertex ai document store for Alphabet's Revenue in Q2 2023??"))
 
 vertexai.init(project="gab-devops-1", location="us-central1", staging_bucket="gs://gab-devops-1vertex_staging_bucket")
 
@@ -111,7 +147,8 @@ vertexai.init(project="gab-devops-1", location="us-central1", staging_bucket="gs
 # pip install --upgrade --quiet google-cloud-aiplatform==1.51.0 langchain==0.1.20 langchain-google-vertexai==1.0.3 cloudpickle==3.0.0 pydantic==2.7.1 requests
 remote_agent = reasoning_engines.ReasoningEngine.create(
     reasoning_engines.LangchainAgent(
-        model="gemini-1.5-pro-001",
+        #model="gemini-1.5-pro-001",
+        model="gemini-1.5-flash",
         tools=[search_documents,get_exchange_rate],
         agent_executor_kwargs={"return_intermediate_steps": True},
         ),
@@ -142,4 +179,6 @@ remote_agent_path = remote_agent.resource_name
 remote_agent = reasoning_engines.ReasoningEngine(remote_agent_path)
 
 print("remote_agent")
-print(remote_agent.query(input="What's the exchange rate from US dollars to Swedish currency today?"))
+#print(remote_agent.query(input="What's the exchange rate from US dollars to Swedish currency today?"))
+print(remote_agent.query(input="What was Alphabet's Revenue in Q2 2023?"))
+#print(remote_agent.query(input="Search in vertex ai document store for Alphabet's Revenue in Q2 2023?"))

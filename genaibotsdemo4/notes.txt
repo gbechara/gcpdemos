@@ -1,4 +1,5 @@
-export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1 
+export GOOGLE_CLOUD_PROJECT_ID=gab-devops-1
+export GOOGLE_CLOUD_PROJECT_NUMBER=248688270572 
 export GOOGLE_CLOUD_REGION=us-central1
 export GOOGLE_CLOUD_ZONE=us-central1-a
 
@@ -85,5 +86,28 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
   --member="serviceAccount:genai-bots-demo-sa@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/dialogflow.agentAssistClient"
 
+gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT_ID \
+  --member="serviceAccount:service-$GOOGLE_CLOUD_PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com" \
+  --role="roles/discoveryengine.viewer"
+
 
 gcloud run deploy --service-account genai-bots-demo-sa@gab-devops-1.iam.gserviceaccount.com
+
+
+
+Setting for the defualt agent of the agent app 
+
+Goal :
+Get the a currency conversion
+
+Instructions :
+- Greet the user
+- Give a very detailed anwser
+- Answer in French
+- Convert using ${TOOL:currency-tool-1}
+- Thank the user and say goodbuy
+
+Use currencytool.yaml in the openapi yaml schema of currency-tool-1
+
+list(agent_executor.stream({"input": "What is the value of 1000 euros in gbp?"}))  
+list(agent_executor.stream({"input": "What was Alphabet's Revenue in Q2 2023?"})) 

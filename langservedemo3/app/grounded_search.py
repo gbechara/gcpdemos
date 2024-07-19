@@ -34,10 +34,10 @@ retriever = VertexAISearchRetriever(
     project_id="gab-devops-1",
     location_id="global",
     data_store_id="my-datastore-1_1714069761495",
-    get_extractive_answers=True,
-    max_documents=10,
-    max_extractive_segment_count=1,
-    max_extractive_answer_count=5,
+    #get_extractive_answers=True,
+    max_documents=100,
+    #max_extractive_segment_count=1,
+    #max_extractive_answer_count=5,
 )
 
 search_query = "What was Alphabet's Revenue in Q2 2023?"  # @param {type:"string"}
@@ -48,8 +48,14 @@ retrieval_qa = RetrievalQA.from_chain_type(
 
 retrieval_qa.invoke(search_query)
 
-print('line 55:')
+print('retrieval_qa.invoke ================')
 print(retrieval_qa.invoke(search_query))
+
+print("What was Alphabet's Revenue in Q2 2023?:")
+print(retrieval_qa.invoke(input="What was Alphabet's Revenue in Q2 2023?"))
+print("Search in vertex ai document store for Alphabet's Revenue in Q2 2023?")
+print(retrieval_qa.invoke(input="Search in vertex ai document store for Alphabet's Revenue in Q2 2023?"))
+
 
 #retrieval_qa_chain = RetrievalQA.from_chain_type(
 #    llm=llm, retriever=retriever, chain_type_kwargs={"prompt": prompt}
@@ -60,8 +66,13 @@ retrieval_qa_chain = RetrievalQA.from_chain_type(
     llm=llm, chain_type='stuff', return_source_documents=True, retriever=retriever, chain_type_kwargs={"prompt": basic_prompt}
 )
 
-print('line 67:')
+print('retrieval_qa_chain ================')
 print(retrieval_qa_chain({"query": search_query }, return_only_outputs=True))
+
+print("What was Alphabet's Revenue in Q2 2023?:")
+print(retrieval_qa_chain({"query": "What was Alphabet's Revenue in Q2 2023?" }, return_only_outputs=True))
+print("Search in vertex ai document store for Alphabet's Revenue in Q2 2023?")
+print(retrieval_qa_chain({"query": "Search in vertex ai document store for Alphabet's Revenue in Q2 2023?" }, return_only_outputs=True))
 
 #chain =  conversational_retrieval
 #chain = retrieval_qa_chain

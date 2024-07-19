@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="w-full md:col-span-4">
     <ChatWindow
-      endpoint="api/chat"
+      endpoint="/api/chat"
       //emoji="🦜"
       emoji=<Bot className="text-zinc-600"/>
       titleText="Gemini 1.5"

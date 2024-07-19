@@ -31,7 +31,7 @@ async function callAgentBuilder(prompt: String)  {
           -H "x-goog-user-project: gab-devops-1" \
           -H "Content-Type: application/json; charset=utf-8" \
           -d @request.json \
-          "https://us-central1-dialogflow.googleapis.com/v3/projects/gab-devops-1/locations/us-central1/agents/50ae691b-f62c-47d6-9f34-ea971cb29e4e/sessions/gab-devops-1-test-session-1234:detectIntent"
+          "https://us-central1-dialogflow.googleapis.com/v3/projects/gab-devops-1/locations/us-central1/agents/f4b4d341-f2c5-41fc-8167-767195ace7c1/sessions/gab-devops-1-test-session-1234:detectIntent"
 
           set quota project : https://cloud.google.com/docs/authentication/troubleshoot-adc#user-creds-client-based
           gcloud auth application-default set-quota-project gab-devops-1
@@ -39,10 +39,10 @@ async function callAgentBuilder(prompt: String)  {
 
       */
 
-    // https://dialogflow.cloud.google.com/cx/projects/gab-devops-1/locations/us-central1/agents/50ae691b-f62c-47d6-9f34-ea971cb29e4e/playbooks/c93adc28-d189-4c59-9644-192b799fc5fa/basics
+    // https://dialogflow.cloud.google.com/cx/projects/gab-devops-1/locations/us-central1/agents/f4b4d341-f2c5-41fc-8167-767195ace7c1/playbooks/c93adc28-d189-4c59-9644-192b799fc5fa/basics
     // add play book id in the URL
     
-    console.log("axios url :"+"https://us-central1-dialogflow.googleapis.com/v3/projects/gab-devops-1/locations/us-central1/agents/50ae691b-f62c-47d6-9f34-ea971cb29e4e/sessions/gab-devops-1-test-session-123456:detectIntent "+
+    console.log("axios url :"+"https://us-central1-dialogflow.googleapis.com/v3/projects/gab-devops-1/locations/us-central1/agents/f4b4d341-f2c5-41fc-8167-767195ace7c1/sessions/test-session-4:detectIntent "+
       '\''+
       JSON.stringify(
         {
@@ -84,7 +84,7 @@ async function callAgentBuilder(prompt: String)  {
       }
     }
 
-    return await axios.post('https://us-central1-dialogflow.googleapis.com/v3/projects/gab-devops-1/locations/us-central1/agents/50ae691b-f62c-47d6-9f34-ea971cb29e4e/sessions/gab-devops-1-test-session-123456:detectIntent ' 
+    return await axios.post('https://us-central1-dialogflow.googleapis.com/v3/projects/gab-devops-1/locations/us-central1/agents/f4b4d341-f2c5-41fc-8167-767195ace7c1/sessions/gab-devops-1-test-session-1234567:detectIntent ' 
           ,JSON.stringify(
             {
               "queryInput": {

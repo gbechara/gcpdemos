@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="w-full md:col-span-4">
     <ChatWindow
-      endpoint="api/reasoningengine"
+      endpoint="/api/reasoningengine"
       //emoji="🦜"
       emoji=<Link className="text-zinc-600"/>
       titleText="Reasoning Engine on Vertex AI"
