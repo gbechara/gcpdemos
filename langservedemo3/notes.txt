@@ -35,7 +35,6 @@ curl -X DELETE \
      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
      "https://us-central1-aiplatform.googleapis.com/v1beta1/projects/gab-devops-1/locations/us-central1/reasoningEngines/REASONING_ENGINE_ID"
 
-
 langchain serve
 langchain serve --port=8080
 gcloud run deploy --service-account llm-sa@gab-devops-1.iam.gserviceaccount.com

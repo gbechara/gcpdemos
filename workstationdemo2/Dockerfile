@@ -17,8 +17,7 @@ RUN sudo apt-get update -y
 #RUN sudo apt-get upgrade -y
 RUN sudo apt-get install -y jq
 RUN sudo apt-get install postgresql-client -y
-#RUN curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash - && sudo apt-get install -y nodejs
-RUN curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash - && sudo apt-get install -y nodejs
 
 RUN sudo npm install -g pnpm
 
